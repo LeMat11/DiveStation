@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Dive Station · Robotics Interview Prep</title>
+<style>
+:root{
+  --ink:#0b1117; --panel:#131b24; --panel2:#1a2531; --line:#28374a;
+  --text:#dbe4ec; --dim:#8fa1b3; --faint:#5d7082;
+  --sonar:#41d0c7; --sonardim:#2a8a84; --amber:#e8b64c; --red:#e0625d; --green:#5fd08a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55}
+button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.87em;color:var(--sonar);white-space:nowrap}
+pre{background:#0d141c;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
+pre code{background:none;border:none;padding:0;color:var(--text);font-size:inherit;white-space:pre}
+header{position:sticky;top:0;z-index:30;background:rgba(11,17,23,.95);backdrop-filter:blur(6px);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:14px;font-weight:700;letter-spacing:.14em;white-space:nowrap}
+header h1 .tick{color:var(--sonar)}
+#menuBtn{display:none;font-size:18px;padding:2px 8px;border:1px solid var(--line);border-radius:6px;color:var(--dim)}
+#depth{flex:1;min-width:80px;height:6px;background:var(--panel2);border-radius:3px;overflow:hidden}
+#depthFill{height:100%;width:0%;background:linear-gradient(90deg,var(--sonardim),var(--sonar));transition:width .5s}
+#statLabel{color:var(--dim);font-size:12px;white-space:nowrap}
+.chip{font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:20px;padding:2px 9px;white-space:nowrap}
+.chip.ok{color:var(--sonar);border-color:var(--sonardim)}
+.tbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 10px}
+.tbtn:hover{color:var(--text);border-color:var(--faint)}
+.wrap{display:flex;min-height:calc(100vh - 50px)}
+nav{width:262px;flex-shrink:0;border-right:1px solid var(--line);padding:10px 0 40px;overflow-y:auto;height:calc(100vh - 50px);position:sticky;top:50px}
+.zone{padding:14px 16px 5px;color:var(--faint);font-size:10.5px;letter-spacing:.13em;font-weight:600}
+.zone .m{color:var(--sonardim);letter-spacing:0}
+.subzone{padding:9px 16px 3px;color:var(--dim);font-size:11.5px;letter-spacing:.06em}
+.prob,.art{display:flex;align-items:center;gap:7px;width:100%;text-align:left;color:var(--dim);padding:6px 14px 6px 20px;font-size:13.5px;border-left:2px solid transparent}
+.prob:hover,.art:hover{color:var(--text);background:var(--panel)}
+.prob.cur,.art.cur{color:var(--text);background:var(--panel);border-left-color:var(--sonar)}
+.prob .nm,.art .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;border:1px solid var(--faint)}
+.dot.solved{background:var(--sonar);border-color:var(--sonar)}
+.dot.studied{background:none;border-color:var(--amber);box-shadow:inset 0 0 0 2px rgba(232,182,76,.55)}
+.dbadge{font-size:10px;font-weight:700;flex-shrink:0;width:16px;text-align:center;border-radius:3px;padding:1px 0}
+.dbadge.E{color:var(--green)}
+.dbadge.M{color:var(--amber)}
+.rvmark{color:var(--amber);font-size:11px;flex-shrink:0}
+.fchips{display:flex;gap:5px;padding:6px 14px;flex-wrap:wrap}
+.fchip{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--dim)}
+.fchip.on{color:var(--ink);background:var(--sonar);border-color:var(--sonar);font-weight:600}
+main{flex:1;min-width:0;padding:22px 26px 90px;max-width:880px}
+.crumb{color:var(--faint);font-size:11px;letter-spacing:.12em;margin-bottom:6px}
+h2{font-size:21px;margin-bottom:8px;font-weight:700}
+h3{font-size:15px;margin:18px 0 6px;color:var(--sonar)}
+.doc p{margin:9px 0;color:var(--text)}
+.doc ul{margin:8px 0 8px 20px}
+.doc li{margin:4px 0}
+.doc table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13px}
+.doc th,.doc td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+.doc th{color:var(--dim);font-weight:600;background:var(--panel)}
+.badges{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.bg{font-size:11px;font-weight:700;border-radius:4px;padding:2px 8px}
+.bg.E{color:var(--green);border:1px solid rgba(95,208,138,.4)}
+.bg.M{color:var(--amber);border:1px solid rgba(232,182,76,.4)}
+.bg.lc{color:var(--faint);border:1px solid var(--line);font-weight:400}
+.bg.solved{color:var(--ink);background:var(--sonar)}
+.bg.studied{color:var(--ink);background:var(--amber)}
+.rvbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:2px 10px}
+.rvbtn.on{color:var(--amber);border-color:var(--amber)}
+.robobox{border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--panel);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;color:var(--dim);font-size:13.5px}
+.robobox b{color:var(--amber);font-size:11px;letter-spacing:.1em;display:block;margin-bottom:3px}
+.promptbox{margin:12px 0;color:var(--text)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:14px 0 6px}
+.seg button{padding:7px 20px;font-size:13.5px;color:var(--dim)}
+.seg button.on{background:var(--panel2);color:var(--sonar);font-weight:600}
+.rev{border:1px solid var(--line);border-radius:8px;margin:9px 0;overflow:hidden}
+.revhead{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;padding:10px 14px;font-size:13.5px;color:var(--amber);background:var(--panel)}
+.revhead .hint{color:var(--faint);font-size:11px}
+.revbody{padding:4px 16px 12px;border-top:1px solid var(--line)}
+.revbody.hide{display:none}
+.revbody ul,.revbody ol{margin:8px 0 4px 20px}
+.revbody li{margin:5px 0;color:var(--text)}
+.pitline{color:var(--red)}
+.tcase{font-size:12.5px;color:var(--dim);font-family:ui-monospace,Menlo,Consolas,monospace;padding:3px 0;overflow-x:auto;white-space:nowrap}
+textarea{width:100%;min-height:340px;background:#0d141c;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;line-height:1.5;resize:vertical;tab-size:4;-moz-tab-size:4}
+textarea:focus{outline:none;border-color:var(--sonardim)}
+.btnrow{display:flex;gap:9px;margin:10px 0;flex-wrap:wrap;align-items:center}
+.run{background:var(--sonar);color:var(--ink);font-weight:700;font-size:14px;border-radius:8px;padding:8px 22px}
+.run:disabled{opacity:.5;cursor:wait}
+.ghost{border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:8px 14px;font-size:13px}
+.ghost:hover{color:var(--text)}
+#out{margin-top:6px}
+.trow{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:7px 0;font-size:13px}
+.trow.ok{border-color:rgba(95,208,138,.45)}
+.trow.bad{border-color:rgba(224,98,93,.5)}
+.trow .tt{font-weight:700}
+.trow.ok .tt{color:var(--green)}
+.trow.bad .tt{color:var(--red)}
+.trow .mono2{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--dim);margin-top:4px;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.bigok{border:1px solid var(--sonardim);color:var(--sonar);border-radius:8px;padding:10px 14px;margin:8px 0;font-weight:600}
+.statusline{color:var(--faint);font-size:12.5px;margin:6px 0}
+.pnav{display:flex;justify-content:space-between;margin-top:28px;gap:10px}
+.homegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin:16px 0}
+.hcard{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel)}
+.hcard .hnum{font-size:26px;font-weight:700;color:var(--sonar)}
+.hcard .hlab{color:var(--dim);font-size:12.5px;margin-top:2px}
+#scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:39}
+@media(max-width:900px){
+  #menuBtn{display:block}
+  #statLabel{display:none}
+  nav{position:fixed;left:0;top:0;height:100vh;z-index:40;background:var(--ink);transform:translateX(-105%);transition:transform .22s;width:280px;padding-top:14px}
+  nav.open{transform:translateX(0)}
+  #scrim.show{display:block}
+  main{padding:16px 14px 90px}
+}
+</style>
+</head>
+<body>
+<header>
+  <button id="menuBtn">&#9776;</button>
+  <h1>DIVE STATION <span class="tick">&#9646;</span></h1>
+  <div id="depth"><div id="depthFill"></div></div>
+  <span id="statLabel"></span>
+  <span id="engChip" class="chip">python: idle</span>
+  <button id="exportBtn" class="tbtn">Export</button>
+  <button id="importBtn" class="tbtn">Import</button>
+  <input type="file" id="importFile" accept="application/json" style="display:none">
+</header>
+<div class="wrap">
+  <nav id="nav"></nav>
+  <main id="main"></main>
+</div>
+<div id="scrim"></div>
+<script>
+/* ============ Field Manual: Python Handbook ============ */
+const MANUAL = [
+{id:"py-flow",grp:"py",t:"Control flow & loop skeletons",body:`
+<p>The skeletons you should be able to write with your eyes closed. Interview bugs cluster in loop bounds, not algorithms.</p>
+<pre><code># branching
+if x > 0:
+    ...
+elif x == 0:
+    ...
+else:
+    ...
+
+# counted loops
+for i in range(n):            # 0 .. n-1
+for i in range(1, n):         # 1 .. n-1
+for i in range(n-1, -1, -1):  # n-1 .. 0  (reverse)
+
+# over items / with index
+for x in nums:
+for i, x in enumerate(nums):
+
+# condition loop
+while lo <= hi:
+    ...
+
+# early exits
+break      # leave the loop
+continue   # skip to next iteration
+return     # leave the function entirely</code></pre>
+<p>Habit: before writing a loop body, whisper the <em>first and last</em> value the index will take. <code>range</code> excludes its end; reverse ranges need that <code>-1, -1</code> pair.</p>`},
+
+{id:"py-list",grp:"py",t:"Lists",body:`
+<pre><code>a = [0] * n                    # fixed-size init
+g = [[0] * cols for _ in range(rows)]  # 2D grid -- NEVER [[0]*cols]*rows
+a.append(x);  a.pop()          # stack push / pop, O(1)
+a.pop(0)                       # O(n)! use deque for queues
+a[-1]                          # last element
+a[i:j]                         # slice COPY, j excluded
+a[::-1]                        # reversed copy
+a.reverse()                    # in place, returns None
+a.sort()                       # in place, returns None
+b = sorted(a)                  # new list
+a.sort(key=lambda x: x[1])     # sort by a field
+x in a                         # O(n) membership -- use a set if hot
+len(a), sum(a), max(a), min(a)</code></pre>
+<p>Two traps: <code>b = a</code> copies the <em>reference</em>, not the list (use <code>a[:]</code> or <code>list(a)</code>); and <code>a.sort()</code> returns <code>None</code>, so <code>x = a.sort()</code> silently destroys your data.</p>`},
+
+{id:"py-dict",grp:"py",t:"Dicts",body:`
+<pre><code>d = {}
+d[k] = v
+d.get(k, default)              # lookup with fallback, no KeyError
+cnt[x] = cnt.get(x, 0) + 1     # THE counting idiom
+k in d                         # O(1) membership
+d.setdefault(k, []).append(v)  # create-or-append buckets
+for k in d:                    # keys
+for k, v in d.items():         # pairs
+d.values();  d.keys()
+sorted(d, key=lambda k: -d[k]) # keys ranked by value, descending
+d.pop(k, None)                 # delete without KeyError</code></pre>
+<p>Keys must be hashable: strings, numbers, tuples yes; lists no. A dict solves five interview jobs: counting, seen-before, value&rarr;index, grouping, memoization. If you are scanning a list twice, ask whether a dict kills the second scan.</p>`},
+
+{id:"py-set",grp:"py",t:"Sets & tuples",body:`
+<pre><code>s = set();  s.add(x);  s.discard(x)
+x in s                         # O(1)
+set(a)                         # dedupe a list
+len(set(a)) < len(a)           # "has duplicates" one-liner
+a & b;  a | b;  a - b          # intersection / union / difference
+
+t = (r, c)                     # tuple: immutable, hashable
+seen.add((r, c))               # grid visited-set pattern
+x, y = point                   # unpacking
+a, b = b, a                    # swap without a temp</code></pre>
+<p>Rule of thumb: need fast membership &rarr; set; need it as a dict key or inside a set &rarr; tuple.</p>`},
+
+{id:"py-str",grp:"py",t:"Strings",body:`
+<pre><code>s[i];  s[i:j];  len(s)         # index / slice / length (immutable!)
+s.lower();  s.upper()
+s.split();  s.split(",")
+"-".join(parts)                # join is called on the SEPARATOR
+s.strip()
+c.isalnum();  c.isdigit();  c.isalpha()
+s == s[::-1]                   # palindrome check
+"".join(sorted(s))             # canonical anagram key
+ord("a");  chr(97)             # char <-> code</code></pre>
+<p>Strings are immutable: building with <code>s += ch</code> in a loop is O(n&sup2;). Collect pieces in a list and <code>"".join</code> once at the end.</p>`},
+
+{id:"py-func",grp:"py",t:"Functions & scope",body:`
+<pre><code>def f(a, b=0):                 # defaults evaluated ONCE, at def time
+    return a + b
+
+def bad(x, acc=[]):            # BUG: one shared list across calls
+    acc.append(x)
+    return acc
+
+def good(x, acc=None):
+    if acc is None:
+        acc = []
+    ...
+
+def stats(a):
+    return min(a), max(a)      # multiple return = tuple
+lo, hi = stats(nums)
+
+key = lambda p: p[0]*p[0] + p[1]*p[1]   # lambdas: mostly sort keys</code></pre>
+<p>In nested helpers (DFS closures): <em>reading</em> outer variables is free; <em>mutating</em> an outer list/dict is free; <em>rebinding</em> an outer int (a counter) needs <code>nonlocal count</code> &mdash; a very common stumble when counting inside a nested DFS.</p>`},
+
+{id:"py-builtin",grp:"py",t:"Built-ins you must know",body:`
+<pre><code>enumerate(a)                   # (i, x) pairs
+zip(a, b)                      # pairs; stops at the shorter
+list(zip(*matrix))             # transpose trick
+min(a);  max(a);  sum(a)
+max(a, key=len)                # extremes by a key
+any(x > 0 for x in a)
+all(v == 0 for v in cnt.values())
+abs(x);  divmod(a, b)
+
+[f(x) for x in a if cond]      # list comprehension
+{x % 3 for x in a}             # set comprehension
+{k: v for k, v in pairs}       # dict comprehension</code></pre>
+<p>Comprehensions read as: OUTPUT <b>for</b> ITEM <b>in</b> SOURCE <b>if</b> FILTER. If the logic needs two lines, use a plain loop &mdash; interview code gets read aloud.</p>`},
+
+{id:"py-mod",grp:"py",t:"Modules: math / deque / heapq / bisect",body:`
+<pre><code>import math
+math.atan2(dy, dx)             # y FIRST; full 4-quadrant angle
+math.hypot(dx, dy)             # sqrt(dx*dx + dy*dy)
+math.pi;  math.inf;  math.sqrt(x)
+math.cos(t);  math.sin(t)      # RADIANS
+math.radians(d);  math.degrees(r)
+math.floor(x);  math.ceil(x)
+
+from collections import deque
+q = deque([start])
+q.append(x);  q.popleft()      # O(1) both ends -> BFS queue
+
+import heapq                   # a MIN-heap, always
+heapq.heappush(h, (dist, node))
+d, u = heapq.heappop(h)
+h[0]                           # peek smallest
+heapq.heappush(h, -x)          # max-heap: negate in, negate out
+
+import bisect
+bisect.bisect_left(a, x)       # first i with a[i] >= x
+bisect.bisect_right(a, x)      # first i with a[i] >  x</code></pre>
+<p>These four modules cover ~90% of interview needs. heapq compares tuples element-by-element &mdash; put the priority first in the tuple.</p>`},
+
+{id:"py-pit",grp:"py",t:"Hand-writing pitfalls (the greatest hits)",body:`
+<ul>
+<li><code>b = a</code> aliases the same list. Copy with <code>a[:]</code>, <code>list(a)</code>, or <code>copy.deepcopy</code> for nested structures.</li>
+<li><code>[[0]*n]*m</code> creates m references to ONE row. Always <code>[[0]*n for _ in range(m)]</code>. Same trap as <code>[[]]*n</code> for adjacency lists.</li>
+<li><code>/</code> returns a float even for 8/2. Index math uses <code>//</code>. Also <code>int(-1.5)</code> truncates to -1, while <code>-3 // 2</code> floors to -2 &mdash; different for negatives.</li>
+<li>Floats: never <code>==</code>. Compare with tolerance: <code>abs(a - b) < 1e-9</code>. You have sensor intuition for this &mdash; use it.</li>
+<li><code>a.sort()</code>, <code>a.reverse()</code> return <code>None</code>. <code>sorted(a)</code>, <code>a[::-1]</code> return new lists.</li>
+<li>Mutable default arguments (<code>def f(x, acc=[])</code>) persist across calls.</li>
+<li>Modifying a list while iterating it skips elements. Iterate a copy or build a new list.</li>
+<li><code>range(i, j)</code> and <code>a[i:j]</code> exclude j. Say the bounds out loud.</li>
+<li><code>"1"</code> and <code>1</code> are different dict keys and different grid cell values. Read the problem's data types.</li>
+<li>Python ints never overflow &mdash; worth saying in a C++-flavored interview; it deletes a whole class of edge cases.</li>
+</ul>`},
+/* ============ Field Manual: Robotics Algorithms ============ */
+{id:"rb-map",grp:"rb",t:"Signal-word &rarr; pattern map",body:`
+<p>The reflex table. When you read a problem, the left column should trigger the right two columns automatically. Scan this for 10 minutes before any interview.</p>
+<table>
+<tr><th>Signal in the problem</th><th>Pattern</th><th>First line you write</th></tr>
+<tr><td>pair summing to a target, unsorted</td><td>hash map</td><td><code>seen = {}</code></td></tr>
+<tr><td>sorted array + find / threshold</td><td>binary search</td><td><code>lo, hi = 0, n-1</code></td></tr>
+<tr><td>minimum k such that feasible(k)</td><td>binary search on the answer</td><td><code>while lo < hi:</code></td></tr>
+<tr><td>longest substring/window with property</td><td>sliding window (grow r, jump l)</td><td><code>l = 0</code></td></tr>
+<tr><td>smallest window meeting a &ge; target</td><td>sliding window (shrink while valid)</td><td><code>total = 0</code></td></tr>
+<tr><td>next greater / days until warmer</td><td>monotonic stack</td><td><code>stack = []</code></td></tr>
+<tr><td>nested / matched pairs</td><td>stack</td><td><code>stack = []</code></td></tr>
+<tr><td>connected regions in a grid</td><td>flood fill (DFS/BFS)</td><td>seed loop over cells</td></tr>
+<tr><td>shortest path, unweighted</td><td>BFS</td><td><code>q = deque([start])</code></td></tr>
+<tr><td>spreads from many sources / nearest X for every cell</td><td>multi-source BFS</td><td>seed ALL sources at 0</td></tr>
+<tr><td>shortest path, weighted</td><td>Dijkstra</td><td><code>h = [(0, src)]</code></td></tr>
+<tr><td>ordering with dependencies</td><td>topological sort (Kahn)</td><td><code>indeg = [0] * n</code></td></tr>
+<tr><td>k largest / closest / most frequent</td><td>heap of size k, or sort by key</td><td><code>import heapq</code></td></tr>
+<tr><td>overlapping intervals</td><td>sort by start, one sweep</td><td><code>iv.sort(key=lambda x: x[0])</code></td></tr>
+<tr><td>max set of non-overlapping</td><td>greedy by END time</td><td><code>iv.sort(key=lambda x: x[1])</code></td></tr>
+<tr><td>count ways / min cost to reach a state</td><td>DP table</td><td><code>dp = [...]</code></td></tr>
+<tr><td>maximum, can't pick adjacent</td><td>take / skip DP</td><td><code>take, skip = 0, 0</code></td></tr>
+<tr><td>angle of a vector</td><td>atan2</td><td><code>math.atan2(dy, dx)</code></td></tr>
+<tr><td>frame A &rarr; frame B</td><td>SE(2) transform</td><td><code>c, s = cos(t), sin(t)</code></td></tr>
+</table>`},
+
+{id:"rb-search",grp:"rb",t:"The search family: BFS &rarr; Dijkstra &rarr; A*",body:`
+<p>One family, three members, one upgrade path &mdash; the single most useful mental model for robotics interviews.</p>
+<p><b>BFS</b> explores in rings of equal step count. Optimal when every move costs the same (uniform occupancy grid). Data structure: a FIFO <code>deque</code>.</p>
+<p><b>Dijkstra</b> is BFS where moves cost different amounts: swap the queue for a min-heap keyed by accumulated cost g; the rings become iso-cost contours. Optimal for non-negative weights.</p>
+<p><b>A*</b> is Dijkstra with a compass: pop order uses f = g + h, where h is an <em>admissible</em> heuristic (never overestimates), e.g. Euclidean distance to goal. Same code, one added term; with h = 0 it IS Dijkstra.</p>
+<pre><code># the whole family shares one skeleton
+pop the best node      # popleft() | heappop by g | heappop by g+h
+if node is goal: done
+for each neighbor:
+    if this route is better than any known:
+        record it, push it</code></pre>
+<p>Interview sound bite: <em>"BFS when unweighted, Dijkstra when weighted, A* when I also know where the goal is."</em> Then add that your grid planners are benchmarked against exactly these baselines.</p>`},
+
+{id:"rb-grid",grp:"rb",t:"Occupancy grids & connectivity",body:`
+<p>A 2D list of free/occupied cells is both the LeetCode grid and the robotics costmap. Nearly every grid problem is a mapping operation in disguise:</p>
+<ul>
+<li>Flood Fill = free-space segmentation from a seed</li>
+<li>Number of Islands = obstacle clustering</li>
+<li>Rotting Oranges = wavefront / time-to-contact propagation</li>
+<li>Distance transform = clearance field / costmap inflation</li>
+<li>Shortest Path in Binary Matrix = the planner baseline itself</li>
+</ul>
+<pre><code>rows, cols = len(g), len(g[0])
+DIRS4 = ((1,0), (-1,0), (0,1), (0,-1))
+for dr, dc in DIRS4:
+    nr, nc = r + dr, c + dc
+    if 0 <= nr < rows and 0 <= nc < cols and g[nr][nc] == FREE:
+        ...</code></pre>
+<p>Habits that read as senior: bounds-check <em>before</em> dereferencing; mark visited at <em>enqueue</em> time; mutate the grid itself as a free visited-set; build grids with a comprehension, never <code>[[0]*c]*r</code>; keep (row, col) indexing and never let x/y sneak in halfway.</p>`},
+
+{id:"rb-frames",grp:"rb",t:"Coordinate frames, SE(2), atan2, angle wrap",body:`
+<p>A pose (x, y, &theta;) defines a frame. Points move between frames with a rotation + translation:</p>
+<pre><code># body -> world, robot at (x, y, th)
+wx = x + px*cos(th) - py*sin(th)
+wy = y + px*sin(th) + py*cos(th)
+
+# world -> body: translate FIRST, then rotate by -th
+dx, dy = wx - x, wy - y
+px =  dx*cos(th) + dy*sin(th)
+py = -dx*sin(th) + dy*cos(th)</code></pre>
+<p>Bearings come from <code>atan2(dy, dx)</code> &mdash; y first, all four quadrants, no divide-by-zero. Heading errors must be wrapped into [-&pi;, &pi;) before entering any controller, or the robot takes the 350&deg; scenic route:</p>
+<pre><code>err = (target - heading + pi) % (2*pi) - pi</code></pre>
+<p>These two lines &mdash; atan2 argument order and the angle wrap &mdash; are the highest bug-density lines in all of robotics. For 3D, name-drop: rotations compose as matrices or quaternions, SE(3) = rotation + translation, and a ROS 2 tf tree is exactly a chain of SE(3) transforms.</p>`},
+
+{id:"rb-path",grp:"rb",t:"Path parameterization & pure pursuit",body:`
+<p>A path is a function of arc length s, not a bag of points. Precompute cumulative segment lengths once (prefix sums), then any "point at distance s" query is a binary search plus a lerp:</p>
+<pre><code>cum = [0]
+for i in range(len(w) - 1):
+    cum.append(cum[-1] + hypot(w[i+1][0]-w[i][0], w[i+1][1]-w[i][1]))
+# query s: i = bisect_right(cum, s) - 1, then lerp inside segment i
+# build O(n) once, each query O(log n)</code></pre>
+<p><b>Pure pursuit</b> = "steer toward the point a lookahead distance L further along the path than my current projection." Two arc-length queries and one steering law. The trade-off sentence interviewers love: small L tracks tightly but oscillates; large L is smooth but cuts corners. L often scales with speed.</p>`},
+
+{id:"rb-filter",grp:"rb",t:"Filtering sensor streams",body:`
+<p>Three filters cover most "clean this signal" conversations:</p>
+<table>
+<tr><th>Filter</th><th>Kills</th><th>Costs</th><th>Core line</th></tr>
+<tr><td>Moving average</td><td>broadband noise</td><td>lag; O(1) with a running sum</td><td>sliding-window sum / k</td></tr>
+<tr><td>EMA</td><td>broadband noise</td><td>lag; infinite memory tail</td><td><code>y = a*x + (1-a)*y</code></td></tr>
+<tr><td>Median</td><td>spikes / outliers</td><td>sorting the window</td><td><code>sorted(w)[k//2]</code></td></tr>
+</table>
+<p>Order matters: median first (kill spikes), then EMA (smooth). An EMA hit by a 9999 glitch remembers it for roughly 1/&alpha; samples; a median never even sees it. Your own stack is the perfect example: MS5837 pressure spikes &rarr; median; control-rate smoothing on the Pi inside SharedState &rarr; EMA, because it is one multiply-add and O(1) memory.</p>
+<p>The name-drop ladder when asked "what's next": moving average &rarr; EMA &rarr; complementary filter (fuse two sensors) &rarr; Kalman filter (optimal fusion with a motion model).</p>`},
+
+{id:"rb-heap",grp:"rb",t:"Priority queues in robotics",body:`
+<p>Anywhere you repeatedly need "the most urgent thing", a heap turns O(n) scans into O(log n) pops:</p>
+<ul>
+<li>Dijkstra / A* open set &mdash; cheapest node next</li>
+<li>Event and command schedulers &mdash; earliest deadline first</li>
+<li>k nearest obstacles / neighbors &mdash; heap of size k</li>
+<li>Merging k timestamped sensor streams = merging k sorted lists</li>
+</ul>
+<pre><code>h = []
+heapq.heappush(h, (priority, payload))
+prio, item = heapq.heappop(h)</code></pre>
+<p>Python details worth saying out loud: heapq is a <em>min</em>-heap; there is no decrease-key, so push duplicates and skip stale entries on pop (<code>if u in done: continue</code>); tuples compare left-to-right, so the priority goes first.</p>`},
+
+{id:"rb-pid",grp:"rb",t:"PID in 10 lines",body:`
+<pre><code>class PID:
+    def __init__(self, kp, ki, kd):
+        self.kp, self.ki, self.kd = kp, ki, kd
+        self.i = 0.0
+        self.prev = None
+    def step(self, err, dt):
+        self.i += err * dt
+        d = 0.0 if self.prev is None else (err - self.prev) / dt
+        self.prev = err
+        return self.kp*err + self.ki*self.i + self.kd*d</code></pre>
+<p>The talking points matter more than the code: (1) heading error must be angle-wrapped <em>before</em> entering the loop; (2) the integral needs clamping &mdash; anti-windup &mdash; or actuator saturation wrecks recovery; (3) the D term on a noisy sensor needs low-passing, or take the derivative of the <em>measurement</em> instead of the error to avoid setpoint kicks. Each one is a war story you can tell from mantabot hardware.</p>`},
+
+{id:"rb-cx",grp:"rb",t:"Complexity cheat sheet",body:`
+<table>
+<tr><th>Input size n</th><th>Target complexity</th></tr>
+<tr><td>~10&#8309; &ndash; 10&#8310;</td><td>O(n) or O(n log n)</td></tr>
+<tr><td>~10&sup3; &ndash; 10&#8308;</td><td>O(n&sup2;) acceptable</td></tr>
+<tr><td>&le; ~20</td><td>exponential / bitmask territory</td></tr>
+</table>
+<table>
+<tr><th>Operation</th><th>Cost</th></tr>
+<tr><td>dict / set lookup, insert</td><td>O(1) average</td></tr>
+<tr><td><code>x in list</code></td><td>O(n)</td></tr>
+<tr><td>sort</td><td>O(n log n)</td></tr>
+<tr><td>heap push / pop</td><td>O(log n)</td></tr>
+<tr><td>BFS / DFS</td><td>O(V + E)</td></tr>
+<tr><td>Dijkstra (heap)</td><td>O(E log V)</td></tr>
+<tr><td>slice a[i:j]</td><td>O(j - i), and it copies</td></tr>
+</table>
+<p>Interview move: state complexity <em>before</em> coding &mdash; "one pass with a dict, O(n) time, O(n) space." It buys goodwill and catches a wrong plan while it is still cheap.</p>`}
+,
+{id:"iv-behavioral",grp:"iv",t:"Behavioral question bank (mapped to your stories)",body:`
+<p>Interviews spend as much time on "tell me about a time..." as on code. The fix is not memorizing answers &mdash; it is having 6&ndash;8 concrete stories ready, each in <b>STAR</b> shape (Situation, Task, Action, Result), and knowing which one to reach for. Below: 15 common prompts, each mapped to a real incident from your four projects so you never freeze. Prep the starred ones first &mdash; they cover ~80% of what gets asked.</p>
+
+<div class="robobox"><b>YOUR STORY BANK &mdash; the raw material</b>
+<ul>
+<li><b>Triple-cause board kill (VCA bot)</b> &mdash; GPIO-high-on-boot + back-EMF + USB 5V backfeeding through the buck body diode together destroyed a regulator. Fixed with a three-part protection chain (PTC + TVS + Schottky). The definitive "hard bug" and "failures compound" story.</li>
+<li><b>CHANNEL_INVERT layering (VCA bot)</b> &mdash; a reversed-wired actuator first patched ad hoc in several places, then consolidated to one constant at the lowest layer. Your "I fixed it wrong first, then structurally" story.</li>
+<li><b>Bang-bang realization (VCA bot)</b> &mdash; built a PWM&rarr;angle calibration curve before realizing the plant had no stable intermediate positions. "Identify the regime before optimizing" &mdash; a story about a wrong assumption caught.</li>
+<li><b>Cross-attention rank bottleneck (Flow sensing)</b> &mdash; vorticity SSIM capped at ~0.13 no matter the hyperparameters; the real cause was rank &le; 5 from only 5 sensor tokens. Fixed with learnable tokens. "The metric was stuck and tuning could never fix it."</li>
+<li><b>Phase-angle leakage (Flow sensing)</b> &mdash; the model leaned on upstream foil phase that a real AUV cannot observe at inference; replaced it with onboard sensor history. "I caught my own eval was dishonest."</li>
+<li><b>LLM early-frame bias (Badminton coach)</b> &mdash; the model kept confusing "arm raised" with "moment of contact"; a feedback loop asking it to self-correct just confirmed its own wrong answer. Replaced with a computational motion-peak constraint. "The clever approach failed; the simple signal won."</li>
+<li><b>Dead code that looked like features (Badminton coach)</b> &mdash; three functions defined but never called; the real runtime was much simpler. "Trace the call chain, don't trust definitions." A code-review lesson.</li>
+<li><b>Phase accumulator drift (Mantabot)</b> &mdash; differential turning drove two motor accumulators apart; independent idle resets made it worse; fixed with coordinated re-sync. A subtle concurrency/state story.</li>
+<li><b>Pi 5 has no H.264 encoder (Mantabot)</b> &mdash; assumed drone-style hardware encoding existed; had to redesign around CPU MJPEG within a thermal budget. "My assumption was wrong and I re-architected."</li>
+<li><b>SharedState concurrency framework (Mantabot)</b> &mdash; you designed a multi-rate threaded architecture (50Hz control, 200Hz CAN, 15fps camera) sharing state cleanly. Your "system design from scratch" story.</li>
+<li><b>Image-based phase recovery (VCA bot)</b> &mdash; chose offline post-hoc phase over fighting an unreliable hardware trigger on a jittery wireless link. "I picked the pragmatic path over the 'correct' one."</li>
+</ul>
+</div>
+
+<h3>The 15 questions</h3>
+<table>
+<tr><th>Prompt</th><th>Reach for</th></tr>
+<tr><td>&#9733; Tell me about the hardest bug you've debugged.</td><td>Triple-cause board kill &mdash; three independent failures compounding is a rare, memorable answer. Walk the diagnosis, not just the fix.</td></tr>
+<tr><td>&#9733; Describe a time you were wrong about something technical.</td><td>Bang-bang realization, or Pi 5 H.264 assumption. Both are "I assumed X, evidence said not-X, I changed course."</td></tr>
+<tr><td>&#9733; Tell me about a system you designed from scratch.</td><td>SharedState multi-rate architecture. Emphasize the rate-decoupling decision and why threads over one loop.</td></tr>
+<tr><td>&#9733; A time you improved something that already worked.</td><td>CHANNEL_INVERT consolidation &mdash; it worked after the ad-hoc patches, but you refactored to one boundary constant. Talk about maintainability.</td></tr>
+<tr><td>&#9733; When did you catch a mistake others (or you) missed?</td><td>Phase-angle leakage, or dead-code call-chain. Both show rigor and honesty about your own work.</td></tr>
+<tr><td>Tell me about a technical disagreement.</td><td>The VLA-framing discussion with your advisor: naive end-to-end vs. flow-conditioned. You argued from physics for the harder-but-right framing. (Keep it collegial.)</td></tr>
+<tr><td>A time you had to learn something fast.</td><td>ESP-NOW / LEDC PWM v2&rarr;v3 API break, or picking up cross-attention for the decoder. Show the ramp-up method.</td></tr>
+<tr><td>When you hit a wall and had to change approach.</td><td>Cross-attention rank bottleneck &mdash; no hyperparameter could move the metric; you diagnosed the structural cause and switched to learnable tokens.</td></tr>
+<tr><td>A time you made a pragmatic trade-off under constraints.</td><td>Image-based phase recovery over hardware sync; MJPEG over H.264 within thermal budget. "Right answer given real limits."</td></tr>
+<tr><td>Describe a failure and what you learned.</td><td>Board kill (if not used above) framed as "I under-protected the power path" &mdash; the lesson became a design principle: protect every path.</td></tr>
+<tr><td>How do you approach testing / validation?</td><td>Case-level leave-K-out splits in flow sensing; audio-motion cross-validation in the coach. You design tests to expose leakage, not flatter the model.</td></tr>
+<tr><td>A time attention to detail mattered.</td><td>AS5600L at 0x40 not 0x36; the atan2 argument order; sizing the IPROPI resistor to the ADC ceiling. Small detail, whole-system consequence.</td></tr>
+<tr><td>Tell me about working with ambiguity / no clear spec.</td><td>Defining a lock-in criterion for Karman gait entrainment (phase-stationarity) &mdash; you turned an emergent, fuzzy phenomenon into a quantitative test.</td></tr>
+<tr><td>How do you prioritize when everything is urgent?</td><td>The command scheduler: STOP always highest priority, 50ms serial budget. A concrete, systems-level answer about explicit priority.</td></tr>
+<tr><td>Why this company / why robotics? (motivation)</td><td>Your through-line: research &rarr; build &rarr; validate on real hardware. The full closed loop is rare; lead with that, not a generic passion statement.</td></tr>
+</table>
+
+<h3>Delivery notes</h3>
+<ul>
+<li><b>60&ndash;90 seconds each.</b> Situation and Task in two sentences; spend your time on Action (what YOU did, decisions you made) and a concrete Result.</li>
+<li><b>Quantify the result</b> even loosely: "reduced sensing input dimension", "recovered SSIM from 0.13 to a usable field", "zero board failures after the protection chain". Numbers stick.</li>
+<li><b>"I" not "we."</b> These are your incidents &mdash; own the specific decision, even on a solo project where it feels obvious.</li>
+<li><b>End on the lesson.</b> Every strong answer closes with the principle you now carry: "failures compound, so I protect every path," "identify the regime before optimizing," "design tests to expose leakage."</li>
+<li>Practice these <b>out loud in English</b> &mdash; the vocabulary (bring-up, root-cause, regression, trade-off, corner case) is exactly the JD terminology you want to sound fluent in at IROS.</li>
+</ul>`}
+];
+
+/* ============ Problems ============ */
+const ZONES=[["ah","Arrays & Hashing"],["tp","Two Pointers"],["sw","Sliding Window"],["st","Stack"],["bs","Binary Search"],["gr","Grid Search"],["gp","Graphs"],["hp","Heaps"],["iv","Intervals"],["mx","Matrix Ops"],["dp","Dynamic Programming"],["tr","Trees"],["rb","Robotics Bay"],["db","Debug Bay"]];
+
+const PROBLEMS = [
+/* ---- Arrays & Hashing ---- */
+{id:"two-sum",z:"ah",t:"Two Sum",d:"E",lc:"LC 1",fn:"two_sum",
+prompt:"Given an integer array `nums` and an integer `target`, return the indices of the two numbers that add up to `target`. Exactly one solution exists, and you may not use the same element twice. Return the pair of indices in any order.",
+robo:"Same reflex as matching a pair of sensor timestamps whose offsets sum to a target latency: one pass with a hash map beats scanning all pairs.",
+sig:["Find a **pair** hitting an exact sum","Array is unsorted","Brute force is O(n^2) -- the interviewer wants O(n)"],
+app:["Ask: standing on `x`, what am I looking for? `target - x`.","Store every value already seen in a dict `value -> index`.","One pass: check the complement first, then insert the current value. Checking before inserting prevents matching an element with itself."],
+tool:["`seen = {}` then `need in seen` -- O(1) lookup","`enumerate(nums)` gives `(i, x)` without manual indexing"],
+pit:"Inserting into the dict before checking the complement makes `[3,3], target 6` self-match or fail. Check first, insert second.",
+start:`def two_sum(nums, target):
+    # return [i, j]
+`,
+sol:`def two_sum(nums, target):
+    seen = {}                     # value -> index
+    for i, x in enumerate(nums):
+        need = target - x
+        if need in seen:
+            return [seen[need], i]
+        seen[x] = i
+    return []`,
+tests:[{a:[[2,7,11,15],9],w:[0,1]},{a:[[3,2,4],6],w:[1,2]},{a:[[3,3],6],w:[0,1]}],fl:{so:1}},
+
+{id:"valid-anagram",z:"ah",t:"Valid Anagram",d:"E",lc:"LC 242",fn:"is_anagram",
+prompt:"Given two strings `s` and `t`, return True if `t` is an anagram of `s` (same characters with the same counts).",
+robo:"Counting occurrences with a dict is the same idiom as histogramming PIV vector magnitudes -- `cnt[x] = cnt.get(x, 0) + 1` should be muscle memory.",
+sig:["Compare **composition**, not order","Words like anagram, permutation, same letters"],
+app:["Early exit: different lengths can never match.","Count characters of `s` up, then characters of `t` down; any counter going below zero means mismatch.","Worth mentioning: `sorted(s) == sorted(t)` is a correct O(n log n) one-liner."],
+tool:["`cnt[c] = cnt.get(c, 0) + 1` -- the counting idiom","`cnt.get(c, 0)` guards missing keys on the way down"],
+pit:"Skipping the length check lets inputs like 'a' vs 'ab' sneak through subtle count-down bugs.",
+start:`def is_anagram(s, t):
+    # return True / False
+`,
+sol:`def is_anagram(s, t):
+    if len(s) != len(t):
+        return False
+    cnt = {}
+    for c in s:
+        cnt[c] = cnt.get(c, 0) + 1
+    for c in t:
+        if cnt.get(c, 0) == 0:
+            return False
+        cnt[c] -= 1
+    return True`,
+tests:[{a:["anagram","nagaram"],w:true},{a:["rat","car"],w:false},{a:["a","ab"],w:false}],fl:{}},
+
+{id:"group-anagrams",z:"ah",t:"Group Anagrams",d:"M",lc:"LC 49",fn:"group_anagrams",
+prompt:"Given an array of strings, group the anagrams together. Return a list of groups in any order.",
+robo:"Bucketing by a computed key is how you would group CAN frames by arbitration ID: compute the key, append to `dict[key]`.",
+sig:["Group items by an equivalence, not just detect one pair","You need a canonical **key** per group"],
+app:["Every anagram shares the same sorted spelling: use `''.join(sorted(w))` as the dict key.","Append each word to its bucket; return the buckets."],
+tool:["`\"\".join(sorted(w))` -- canonical key","`groups.setdefault(key, []).append(w)` -- create-or-append in one line"],
+pit:"Using a list as a dict key raises TypeError. Keys must be hashable: use a string or a tuple.",
+start:`def group_anagrams(strs):
+    # return list of lists
+`,
+sol:`def group_anagrams(strs):
+    groups = {}
+    for w in strs:
+        key = "".join(sorted(w))
+        groups.setdefault(key, []).append(w)
+    return list(groups.values())`,
+tests:[{a:[["eat","tea","tan","ate","nat","bat"]],w:[["ate","eat","tea"],["bat"],["nat","tan"]]},{a:[[""]],w:[[""]]},{a:[["a"]],w:[["a"]]}],fl:{si:1,so:1}},
+
+{id:"top-k-frequent",z:"ah",t:"Top K Frequent Elements",d:"M",lc:"LC 347",fn:"top_k_frequent",
+prompt:"Return the `k` most frequent elements of `nums`, in any order. The answer is guaranteed unique.",
+robo:"Which fault codes fired most this run? Count with a dict, then rank. On live streams you would keep a heap; offline, sorting the counted keys is cleanest.",
+sig:["Phrases like top k, most frequent, k largest by score","Count first, select second"],
+app:["Pass 1: histogram with `cnt.get(x, 0) + 1`.","Pass 2: sort the unique keys by count descending, slice `[:k]`.","Say the upgrades exist: a heap gives O(n log k), bucket sort gives O(n)."],
+tool:["`sorted(cnt, key=lambda x: -cnt[x])[:k]` -- rank dict keys by value","Slicing never raises even if k is near len"],
+pit:"`sorted(cnt)` alone sorts the keys by their own value, not by count -- the `key=` argument is the whole point.",
+start:`def top_k_frequent(nums, k):
+    # return list of k values
+`,
+sol:`def top_k_frequent(nums, k):
+    cnt = {}
+    for x in nums:
+        cnt[x] = cnt.get(x, 0) + 1
+    order = sorted(cnt, key=lambda x: -cnt[x])
+    return order[:k]`,
+tests:[{a:[[1,1,1,2,2,3],2],w:[1,2]},{a:[[1],1],w:[1]},{a:[[4,4,5,5,6],2],w:[4,5]}],fl:{so:1}},
+
+{id:"product-except-self",z:"ah",t:"Product of Array Except Self",d:"M",lc:"LC 238",fn:"product_except_self",
+prompt:"Return an array where `out[i]` is the product of every element of `nums` except `nums[i]`. Division is not allowed; run in O(n).",
+robo:"Prefix/suffix accumulation is the same trick as your cumulative arc-length table: precompute running aggregates so each query costs O(1).",
+sig:["Phrases like except self, without element i","Division banned points at prefix x suffix"],
+app:["`out[i]` = (product of everything left of i) x (product of everything right of i).","Left pass: carry one running prefix product; write it into `out[i]` **before** multiplying in `nums[i]`.","Right pass: same from the end, multiplying into `out`."],
+tool:["Two passes, one running scalar each -- no extra arrays","`range(n - 1, -1, -1)` for the reverse pass"],
+pit:"Multiplying the current element into the running product before writing `out[i]` -- the order of those two lines is the entire problem.",
+start:`def product_except_self(nums):
+    # return list, no division
+`,
+sol:`def product_except_self(nums):
+    n = len(nums)
+    out = [1] * n
+    left = 1
+    for i in range(n):
+        out[i] = left
+        left *= nums[i]
+    right = 1
+    for i in range(n - 1, -1, -1):
+        out[i] *= right
+        right *= nums[i]
+    return out`,
+tests:[{a:[[1,2,3,4]],w:[24,12,8,6]},{a:[[-1,1,0,-3,3]],w:[0,0,9,0,0]}],fl:{}},
+
+/* ---- Two Pointers ---- */
+{id:"valid-palindrome",z:"tp",t:"Valid Palindrome",d:"E",lc:"LC 125",fn:"is_palindrome",
+prompt:"Return True if `s` reads the same forwards and backwards, considering only alphanumeric characters and ignoring case.",
+robo:"Two pointers walking inward is the same scan structure as checking a symmetric pressure profile across the fin midline.",
+sig:["Compare a sequence with its reverse","Some characters must be skipped while scanning"],
+app:["Pointers `l` and `r` start at both ends.","Inner while-loops skip non-alphanumeric characters on each side.","Compare lowercased characters; mismatch returns False; pointers crossing returns True."],
+tool:["`c.isalnum()` and `c.lower()`","Outer loop `while l < r:`"],
+pit:"The inner skip loops must also guard `l < r`, or punctuation-only inputs run the pointers past each other.",
+start:`def is_palindrome(s):
+    # alphanumeric only, case-insensitive
+`,
+sol:`def is_palindrome(s):
+    l, r = 0, len(s) - 1
+    while l < r:
+        while l < r and not s[l].isalnum():
+            l += 1
+        while l < r and not s[r].isalnum():
+            r -= 1
+        if s[l].lower() != s[r].lower():
+            return False
+        l += 1
+        r -= 1
+    return True`,
+tests:[{a:["A man, a plan, a canal: Panama"],w:true},{a:["race a car"],w:false},{a:[" "],w:true}],fl:{}},
+
+{id:"container-water",z:"tp",t:"Container With Most Water",d:"M",lc:"LC 11",fn:"max_area",
+prompt:"`height[i]` is a wall at x = i. Choose two walls so the container between them holds the most water. Return the maximum area.",
+robo:"Greedy pointer movement with a proof -- the same which-side-is-the-bottleneck reasoning you use whenever one constraint limits the whole system.",
+sig:["Best **pair** under a min() constraint","Squeeze from both ends"],
+app:["Start with the widest container: `l = 0, r = n - 1`.","Area = `(r - l) * min(h[l], h[r])`.","Move the **shorter** wall inward: moving the taller one can only shrink the area, since width drops and height stays capped by the short wall."],
+tool:["`min(height[l], height[r])`","`best = max(best, area)` each step"],
+pit:"Moving the taller pointer to explore -- the greedy proof is exactly why only the shorter one moves.",
+start:`def max_area(height):
+    # return max area
+`,
+sol:`def max_area(height):
+    l, r = 0, len(height) - 1
+    best = 0
+    while l < r:
+        area = (r - l) * min(height[l], height[r])
+        best = max(best, area)
+        if height[l] < height[r]:
+            l += 1
+        else:
+            r -= 1
+    return best`,
+tests:[{a:[[1,8,6,2,5,4,8,3,7]],w:49},{a:[[1,1]],w:1}],fl:{}},
+
+{id:"three-sum",z:"tp",t:"3Sum",d:"M",lc:"LC 15",fn:"three_sum",
+prompt:"Return all unique triplets in `nums` that sum to 0. No duplicate triplets in the output.",
+robo:"Sort-then-two-pointers converts an O(n^3) search into O(n^2) -- the standard move whenever ordering the data unlocks a squeeze.",
+sig:["Triplets summing to a target **with dedup**","Sorting is allowed"],
+app:["Sort first. Fix index `i`, then run two-sum with pointers `l = i + 1, r = n - 1`.","Sum below zero moves `l` right; above zero moves `r` left; zero records and moves both.","Dedup in three places: skip repeated values at `i`, and at `l` and `r` after each hit."],
+tool:["`nums.sort()`","`if i > 0 and nums[i] == nums[i-1]: continue`"],
+pit:"Three separate dedup points (i, l, r). Missing any one of them produces duplicate triplets.",
+start:`def three_sum(nums):
+    # return list of triplets
+`,
+sol:`def three_sum(nums):
+    nums.sort()
+    res = []
+    n = len(nums)
+    for i in range(n - 2):
+        if i > 0 and nums[i] == nums[i - 1]:
+            continue
+        l, r = i + 1, n - 1
+        while l < r:
+            s = nums[i] + nums[l] + nums[r]
+            if s < 0:
+                l += 1
+            elif s > 0:
+                r -= 1
+            else:
+                res.append([nums[i], nums[l], nums[r]])
+                l += 1
+                while l < r and nums[l] == nums[l - 1]:
+                    l += 1
+                r -= 1
+                while l < r and nums[r] == nums[r + 1]:
+                    r -= 1
+    return res`,
+tests:[{a:[[-1,0,1,2,-1,-4]],w:[[-1,-1,2],[-1,0,1]]},{a:[[0,1,1]],w:[]},{a:[[0,0,0]],w:[[0,0,0]]}],fl:{si:1,so:1}},
+
+/* ---- Sliding Window ---- */
+{id:"buy-sell-stock",z:"sw",t:"Best Time to Buy & Sell Stock",d:"E",lc:"LC 121",fn:"max_profit",
+prompt:"One buy, then one later sell. Return the maximum profit, or 0 if no profit is possible.",
+robo:"Single-pass running-minimum tracking, identical to logging the lowest battery voltage seen so far while streaming telemetry.",
+sig:["Buy low earlier, sell high later","One pass carrying a running extreme"],
+app:["Walk left to right remembering the cheapest price so far.","Profit if selling today = `price - min_so_far`; keep the best.","Only two scalars are needed: the running min and the best profit."],
+tool:["`float('inf')` as the initial minimum","`best = max(best, p - lo)`"],
+pit:"Trying to also track a max price. You only need min-so-far and best-profit.",
+start:`def max_profit(prices):
+    # return max profit (0 if none)
+`,
+sol:`def max_profit(prices):
+    lo = float('inf')
+    best = 0
+    for p in prices:
+        if p < lo:
+            lo = p
+        best = max(best, p - lo)
+    return best`,
+tests:[{a:[[7,1,5,3,6,4]],w:5},{a:[[7,6,4,3,1]],w:0}],fl:{}},
+
+{id:"longest-substring",z:"sw",t:"Longest Substring Without Repeats",d:"M",lc:"LC 3",fn:"length_of_longest_substring",
+prompt:"Return the length of the longest substring of `s` without repeating characters.",
+robo:"Variable-size sliding window: grow the right edge, jump the left edge only when the constraint breaks -- the same shape as a longest-clean-sensor-segment scan.",
+sig:["Longest substring/subarray with a property","When the property breaks, the left pointer moves"],
+app:["Window `[l, r]` plus a dict `last` mapping character to last index seen.","If `s[r]` was seen **inside** the current window, jump `l` to `last[s[r]] + 1`.","Answer is the max of `r - l + 1` over all r."],
+tool:["`last[c] = r` after processing each character","The jump must never move l backwards: check `last[c] >= l`"],
+pit:"Jumping `l = last[c] + 1` without checking the entry is inside the window drags l backwards -- the classic 'abba' bug.",
+start:`def length_of_longest_substring(s):
+    # return an int
+`,
+sol:`def length_of_longest_substring(s):
+    last = {}
+    l = 0
+    best = 0
+    for r, c in enumerate(s):
+        if c in last and last[c] >= l:
+            l = last[c] + 1
+        last[c] = r
+        best = max(best, r - l + 1)
+    return best`,
+tests:[{a:["abcabcbb"],w:3},{a:["bbbbb"],w:1},{a:["pwwkew"],w:3},{a:["abba"],w:2},{a:[""],w:0}],fl:{}},
+
+{id:"min-size-subarray",z:"sw",t:"Minimum Size Subarray Sum",d:"M",lc:"LC 209",fn:"min_subarray_len",
+prompt:"All elements of `nums` are positive. Return the smallest length of a contiguous subarray whose sum is at least `target`, or 0 if none exists.",
+robo:"Shortest burst of samples whose energy crosses a threshold: the window sum grows on the right and shrinks greedily from the left.",
+sig:["Minimum window satisfying a >= constraint","All positive means the window sum is monotone in its size"],
+app:["Expand r, adding into a running sum.","While the sum is >= target: record the length, then shrink from the left.","Positivity is exactly what makes shrink-while-valid correct."],
+tool:["Running `total += nums[r]` and `total -= nums[l]`","`best = min(best, r - l + 1)` **inside** the while"],
+pit:"Recording the length outside the shrink loop misses shorter valid windows.",
+start:`def min_subarray_len(target, nums):
+    # return min length, or 0
+`,
+sol:`def min_subarray_len(target, nums):
+    l = 0
+    total = 0
+    best = float('inf')
+    for r in range(len(nums)):
+        total += nums[r]
+        while total >= target:
+            best = min(best, r - l + 1)
+            total -= nums[l]
+            l += 1
+    return 0 if best == float('inf') else best`,
+tests:[{a:[7,[2,3,1,2,4,3]],w:2},{a:[4,[1,4,4]],w:1},{a:[11,[1,1,1,1,1,1,1,1]],w:0}],fl:{}},
+
+/* ---- Stack ---- */
+{id:"valid-parentheses",z:"st",t:"Valid Parentheses",d:"E",lc:"LC 20",fn:"is_valid",
+prompt:"Given a string containing only ()[]{}， return True if every bracket closes in the correct order.",
+robo:"A stack mirrors nested state -- the same structure as tracking nested context frames in a parser or matched start/stop markers in a log.",
+sig:["Matching or nesting pairs","Most recent open must close first = LIFO"],
+app:["Map closers to openers: `{')': '(', ']': '[', '}': '{'}`.","Opener: push. Closer: the stack must be non-empty and its top must match; pop it.","Valid iff the stack is empty at the end."],
+tool:["`stack.append(c)` / `stack.pop()`","`if not stack or stack.pop() != pairs[c]: return False`"],
+pit:"Two distinct failure modes: popping an empty stack (input ')(' ) and leftovers at the end (input '((' ). Handle both.",
+start:`def is_valid(s):
+    # return True / False
+`,
+sol:`def is_valid(s):
+    pairs = {')': '(', ']': '[', '}': '{'}
+    stack = []
+    for c in s:
+        if c in pairs:
+            if not stack or stack.pop() != pairs[c]:
+                return False
+        else:
+            stack.append(c)
+    return len(stack) == 0`,
+tests:[{a:["()"],w:true},{a:["()[]{}"],w:true},{a:["(]"],w:false},{a:["([)]"],w:false},{a:["{[]}"],w:true},{a:["(("],w:false}],fl:{}},
+
+{id:"daily-temperatures",z:"st",t:"Daily Temperatures",d:"M",lc:"LC 739",fn:"daily_temperatures",
+prompt:"For each day, return how many days until a strictly warmer temperature; 0 if it never comes.",
+robo:"Monotonic stack = wait until a bigger event resolves you -- the pattern behind every next-greater query on a time series.",
+sig:["Next greater element, days until warmer","The answer for i is resolved by a later j"],
+app:["The stack holds **indices** of days still waiting; their temperatures are decreasing top-down.","New day j arrives: while it is warmer than the temperature at the stack top i, pop i and set `ans[i] = j - i`.","Push j. Whatever remains unresolved keeps 0."],
+tool:["`while stack and temps[j] > temps[stack[-1]]:`","Preallocate `ans = [0] * n`"],
+pit:"Storing temperatures on the stack instead of indices -- you need the indices to compute distances.",
+start:`def daily_temperatures(temps):
+    # return list of waits
+`,
+sol:`def daily_temperatures(temps):
+    n = len(temps)
+    ans = [0] * n
+    stack = []
+    for j in range(n):
+        while stack and temps[j] > temps[stack[-1]]:
+            i = stack.pop()
+            ans[i] = j - i
+        stack.append(j)
+    return ans`,
+tests:[{a:[[73,74,75,71,69,72,76,73]],w:[1,1,4,2,1,1,0,0]},{a:[[30,40,50,60]],w:[1,1,1,0]}],fl:{}},
+
+/* ---- Lite cards: study here, practice on LeetCode ---- */
+{id:"binary-search",z:"bs",t:"Binary Search",d:"E",lc:"LC 704",lite:1,url:"https://leetcode.com/problems/binary-search/",
+prompt:"Sorted array: return the index of target, or -1.",
+sig:["Sorted + find","O(log n) expected"],
+app:["Template: `lo, hi = 0, n-1`; loop `while lo <= hi`; `mid = (lo + hi) // 2`.","Compare and discard half with `lo = mid + 1` / `hi = mid - 1`.","Pick ONE template convention and never improvise mid-interview."],
+pit:"Mixing `lo <= hi` with `hi = mid` (instead of mid - 1) creates infinite loops."},
+
+{id:"search-rotated",z:"bs",t:"Search in Rotated Sorted Array",d:"M",lc:"LC 33",lite:1,url:"https://leetcode.com/problems/search-in-rotated-sorted-array/",
+prompt:"A sorted array rotated at an unknown pivot; find target in O(log n).",
+sig:["Rotated sorted / circular order","Still O(log n) -> binary search with a twist"],
+app:["At any mid, at least one half is properly sorted: test `nums[lo] <= nums[mid]`.","If the sorted half contains target (inclusive range check), search it; else search the other half.","Everything else is the plain template. Same headache as a wrapped circular sample buffer."],
+pit:"The boundary checks must be inclusive (`<=` at lo) -- the off-by-one here is the classic fail."},
+
+{id:"koko",z:"bs",t:"Koko Eating Bananas",d:"M",lc:"LC 875",lite:1,url:"https://leetcode.com/problems/koko-eating-bananas/",
+prompt:"Minimum integer eating speed k to finish all piles within h hours (ceil per pile).",
+sig:["Minimum k such that feasible(k)","Feasibility monotone in the parameter -> binary search the ANSWER, not the data"],
+app:["`feasible(k)` = `sum((p + k - 1) // k) <= h`; bigger k, fewer hours.","Search k in [1, max(piles)]: `while lo < hi`, feasible -> `hi = mid`, else `lo = mid + 1`.","Exactly how you would auto-tune a gain or PWM limit: define feasible(), find the boundary."],
+pit:"`math.ceil(p / k)` invites float trouble; the integer form `(p + k - 1) // k` is the interview-safe ceiling."},
+
+{id:"flood-fill",z:"gr",t:"Flood Fill",d:"E",lc:"LC 733",lite:1,url:"https://leetcode.com/problems/flood-fill/",
+prompt:"Recolor the 4-connected region containing a seed cell.",
+sig:["Connected region from a seed","4-neighbor grid traversal"],
+app:["Guard first: if the seed already has the new color, return (infinite-loop trap).","Explicit-stack DFS: pop, recolor, push same-colored in-bounds neighbors.","Bounds check BEFORE color check. This is free-space segmentation on an occupancy grid -- the skeleton of all grid work."],
+pit:"Skipping the new-color == old-color guard revisits cells forever."},
+
+{id:"num-islands",z:"gr",t:"Number of Islands",d:"M",lc:"LC 200",lite:1,url:"https://leetcode.com/problems/number-of-islands/",
+prompt:"Count 4-connected regions of '1's in a character grid.",
+sig:["Number of connected regions","Count how many fresh traversals you launch"],
+app:["Scan every cell; on an unvisited '1', increment the count and flood-fill the island away (sink to '0').","Sinking in place doubles as the visited set.","Robotics reading: obstacle cluster counting in an occupancy grid."],
+pit:"Cells are the STRING '1', not the integer 1 -- read the data type."},
+
+{id:"rotting-oranges",z:"gr",t:"Rotting Oranges",d:"M",lc:"LC 994",lite:1,url:"https://leetcode.com/problems/rotting-oranges/",
+prompt:"Rot spreads to 4-adjacent fresh oranges each minute; minutes until none fresh, or -1.",
+sig:["Spreads each step from MULTIPLE sources","Minimum time for everything -> BFS levels"],
+app:["Seed the queue with ALL rotten cells at t = 0 before the loop; count fresh.","BFS with `(r, c, t)` entries; each infection decrements fresh.","Answer = max t; leftover fresh means -1. This is wavefront propagation from every obstacle at once."],
+pit:"Running BFS from one source at a time gives wrong times -- all sources enter the queue first."},
+
+{id:"shortest-path-bm",z:"gr",t:"Shortest Path in Binary Matrix",d:"M",lc:"LC 1091",lite:1,url:"https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+prompt:"8-connected grid of 0s; shortest clear path top-left to bottom-right, or -1.",
+sig:["Shortest path + unweighted grid -> BFS, never DFS","8 directions this time -- read the connectivity spec"],
+app:["Check start AND goal are free before anything.","BFS storing distance with each cell; mark visited at ENQUEUE time.","First pop of the goal is the answer. This is literally the baseline grid planner."],
+pit:"Marking visited at pop time still works but bloats the queue -- interviewers notice."},
+
+{id:"course-schedule",z:"gp",t:"Course Schedule",d:"M",lc:"LC 207",lite:1,url:"https://leetcode.com/problems/course-schedule/",
+prompt:"Given prerequisite pairs, can all courses be finished? (= is the graph acyclic?)",
+sig:["Dependencies / ordering constraints","Can complete all -> cycle detection -> topological sort"],
+app:["Build adjacency b -> a and an indegree array.","Kahn: queue all indegree-0 nodes; pop, decrement children, enqueue new zeros.","Finished all n iff no cycle. Robotics reading: startup-order resolution -- driver before filter before controller; a cycle is deadlock."],
+pit:"`[[]] * n` gives n references to ONE list and silently corrupts the graph -- use a comprehension."},
+
+{id:"network-delay",z:"gp",t:"Network Delay Time",d:"M",lc:"LC 743",lite:1,url:"https://leetcode.com/problems/network-delay-time/",
+prompt:"Weighted directed graph; time for a signal from node k to reach all n nodes, or -1.",
+sig:["Shortest time/cost + WEIGHTED edges -> Dijkstra, not BFS","Single source, non-negative weights"],
+app:["Min-heap of `(dist, node)` seeded `(0, k)`; adjacency list.","Pop; skip if already finalized (`if u in dist: continue`); relax neighbors by pushing `(d + w, v)`.","Answer = max of final distances, -1 if any node unreached. Hand-write Dijkstra cold -- it is the core of every planner and A* is this plus a heuristic."],
+pit:"Forgetting the stale-entry skip after popping: heap entries are never updated in place, duplicates are expected."},
+
+{id:"kth-largest",z:"hp",t:"Kth Largest Element",d:"M",lc:"LC 215",lite:1,url:"https://leetcode.com/problems/kth-largest-element-in-an-array/",
+prompt:"Return the k-th largest element (not distinct).",
+sig:["k-th largest / smallest","Streaming-friendly -> heap of size k"],
+app:["Keep a MIN-heap of the k largest seen so far.","Push each value; when the heap exceeds k, pop the smallest.","The root is the answer, O(n log k). Streaming version = holding the k strongest PIV correlation peaks without storing the field."],
+pit:"Python has no max-heap. For k-largest, the min-heap of size k IS the trick; negate only when you truly need max-pop."},
+
+{id:"k-closest",z:"hp",t:"K Closest Points to Origin",d:"M",lc:"LC 973",lite:1,url:"https://leetcode.com/problems/k-closest-points-to-origin/",
+prompt:"Return the k points closest to the origin.",
+sig:["k closest / nearest by distance","Selection by a computed key"],
+app:["Compare SQUARED distance `x*x + y*y` -- monotone in true distance, no sqrt, no floats.","Simplest: `sorted(points, key=lambda p: p[0]*p[0] + p[1]*p[1])[:k]`.","Mention the heap-of-size-k upgrade with negated distance for O(n log k). This is a k-nearest-neighbor query -- obstacle proximity, vector-to-grid matching."],
+pit:"Calling math.sqrt per point: wasted work plus a float-comparison risk."},
+
+{id:"merge-intervals",z:"iv",t:"Merge Intervals",d:"M",lc:"LC 56",lite:1,url:"https://leetcode.com/problems/merge-intervals/",
+prompt:"Merge all overlapping intervals.",
+sig:["Merge / overlap intervals","Almost always: sort by START first"],
+app:["Sort by start.","Sweep: if `s <= out[-1][1]`, overlap -- extend with `out[-1][1] = max(out[-1][1], e)`.","Else append. Robotics reading: consolidating sensor validity windows or log segments."],
+pit:"Extending with `e` instead of `max(...)` fails on contained intervals like [1,10],[2,3]."},
+
+{id:"non-overlap",z:"iv",t:"Non-overlapping Intervals",d:"M",lc:"LC 435",lite:1,url:"https://leetcode.com/problems/non-overlapping-intervals/",
+prompt:"Minimum removals so no intervals overlap (touching is fine).",
+sig:["Min removals = max non-overlapping set","Greedy by END time"],
+app:["Sort by END, not start -- that is the whole insight.","Keep an interval if it starts at/after the last kept end; otherwise count a removal.","Classic scheduling: pack the most non-conflicting windows."],
+pit:"Sorting by start is the trap: one long early interval greedily blocks everything."},
+
+{id:"rotate-image",z:"mx",t:"Rotate Image",d:"M",lc:"LC 48",lite:1,url:"https://leetcode.com/problems/rotate-image/",
+prompt:"Rotate an n x n matrix 90 degrees clockwise, in place.",
+sig:["Rotate matrix 90","In place -> decompose: transpose + mirror"],
+app:["Clockwise 90 = transpose, then reverse each row.","In-place transpose: swap (i, j) with (j, i) for `j > i` only.","Know without deriving: counterclockwise = transpose + reverse columns; and `list(zip(*m))` is the out-of-place transpose."],
+pit:"A full double loop transposes everything back -- the inner range must start at i + 1."},
+
+{id:"climbing-stairs",z:"dp",t:"Climbing Stairs",d:"E",lc:"LC 70",lite:1,url:"https://leetcode.com/problems/climbing-stairs/",
+prompt:"Climb 1 or 2 steps at a time; count distinct ways to reach step n.",
+sig:["How many ways, with choices per step","f(n) depends on a fixed number of smaller states"],
+app:["ways(n) = ways(n-1) + ways(n-2): the last move was 1 or 2. It is Fibonacci shifted.","Roll two variables: `a, b = b, a + b` -- O(1) space.","The hello-world of DP: recognize the recurrence, store only what you still need."],
+pit:"Plain recursion without memoization is exponential -- and they will time it."},
+
+{id:"house-robber",z:"dp",t:"House Robber",d:"M",lc:"LC 198",lite:1,url:"https://leetcode.com/problems/house-robber/",
+prompt:"Max sum of non-adjacent elements.",
+sig:["Maximum, cannot pick adjacent","State = best including vs excluding current"],
+app:["Per house: `take, skip = skip + x, max(take, skip)` -- simultaneous assignment.","Answer `max(take, skip)`.","Same shape as choosing actuation pulses that cannot fire on consecutive ticks."],
+pit:"Updating take first and then using the NEW take for skip -- tuple assignment sidesteps the ordering bug."},
+
+{id:"coin-change",z:"dp",t:"Coin Change",d:"M",lc:"LC 322",lite:1,url:"https://leetcode.com/problems/coin-change/",
+prompt:"Fewest coins (unlimited supply) to make amount; -1 if impossible.",
+sig:["Fewest / minimum to compose a total","Unlimited reuse -> unbounded DP over amounts"],
+app:["`dp[a]` = fewest coins for amount a; `dp[0] = 0`, rest infinity.","For a in 1..amount: `dp[a] = min(dp[a - c] + 1)` over coins with `c <= a`.","Table of cheapest-way-to-reach-state -- the discrete cousin of value iteration."],
+pit:"Returning dp[amount] without converting untouched inf to -1."},
+
+/* ---- Robotics Bay: full problems with in-browser runner ---- */
+{id:"bearing",z:"rb",t:"Bearing to Waypoint",d:"E",lc:"Custom",fn:"bearing_to_waypoint",
+prompt:"Robot at (x, y), goal at (gx, gy), world frame. Return the bearing angle in radians from robot to goal, measured from the +x axis, in (-pi, pi].",
+robo:"The first line of every go-to-goal controller on mantabot: heading command = bearing to the next waypoint.",
+sig:["Angle of a vector -> `atan2`, never `atan`","Full 4-quadrant range needed"],
+app:["Goal vector = `(gx - x, gy - y)`.","`math.atan2(dy, dx)` -- y first. Handles dx = 0 and all quadrants.","Say why not `atan(dy/dx)`: loses the quadrant and divides by zero."],
+tool:["`math.atan2(dy, dx)` returns (-pi, pi]","`math.degrees(a)` if they want degrees"],
+pit:"Argument order. It is atan2(y, x). Every robotics codebase has had one bug from this.",
+start:`import math
+
+def bearing_to_waypoint(x, y, gx, gy):
+    # return radians
+`,
+sol:`import math
+
+def bearing_to_waypoint(x, y, gx, gy):
+    return math.atan2(gy - y, gx - x)`,
+tests:[{a:[0,0,1,1],w:0.7853981633974483},{a:[0,0,-1,0],w:3.141592653589793},{a:[2,3,2,7],w:1.5707963267948966},{a:[5,5,5,1],w:-1.5707963267948966}],fl:{ap:1}},
+
+{id:"angle-wrap",z:"rb",t:"Normalize Angle",d:"E",lc:"Custom",fn:"normalize_angle",
+prompt:"Wrap an angle in radians into [-pi, pi). Used everywhere, e.g. heading error = normalize(target - current).",
+robo:"Skipping this is why robots spin 350 degrees left instead of 10 degrees right. Every heading subtraction must pass through it.",
+sig:["Angles being compared or subtracted","Any accumulated heading (odometry, IMU integration)"],
+app:["One-liner: `(a + pi) % (2*pi) - pi`. Python's `%` returns a non-negative result for a positive modulus, so this works for negative a too.","Equivalent loop form: while a >= pi subtract 2*pi; while a < -pi add 2*pi."],
+tool:["`math.pi` and float `%`","`math.fmod` differs from `%` for negatives -- prefer `%` here"],
+pit:"In C/C++, fmod keeps the dividend's sign so the same formula breaks there -- robotics interviewers love this detail.",
+start:`import math
+
+def normalize_angle(a):
+    # wrap into [-pi, pi)
+`,
+sol:`import math
+
+def normalize_angle(a):
+    return (a + math.pi) % (2 * math.pi) - math.pi`,
+tests:[{a:[0],w:0},{a:[6.283185307179586],w:0},{a:[4.71238898038469],w:-1.5707963267948966},{a:[-3.141592653589793],w:-3.141592653589793},{a:[7],w:0.7168146928204138}],fl:{ap:1}},
+
+{id:"median-filter",z:"rb",t:"Median Filter",d:"E",lc:"Custom",fn:"median_filter",
+prompt:"Slide a window of odd length k over `readings`; output the median of each full window (output length n - k + 1). The median of a window is the middle element of its sorted copy.",
+robo:"The one-liner that killed the MS5837 pressure spikes: a median filter removes single-sample outliers that would wreck an EMA.",
+sig:["Remove spikes / outliers from a stream","Fixed-size window statistic"],
+app:["For each start i: take `readings[i:i+k]`, sort a COPY, pick index `k // 2`.","O(n * k log k) -- fine at interview scale; mention the two-heap trick exists for large k.","Median vs mean: one 9999 glitch barely moves the median but drags the mean."],
+tool:["`sorted(readings[i:i+k])[k // 2]`","Slices copy -- the original stays untouched"],
+pit:"`list.sort()` returns None; sorting in place inside an expression is the classic one-line bug. Use `sorted(...)`.",
+start:`def median_filter(readings, k):
+    # return list of window medians
+`,
+sol:`def median_filter(readings, k):
+    out = []
+    for i in range(len(readings) - k + 1):
+        w = sorted(readings[i:i + k])
+        out.append(w[k // 2])
+    return out`,
+tests:[{a:[[1,100,3,5,4],3],w:[3,5,4]},{a:[[2,90,2,2],3],w:[2,2]},{a:[[7],1],w:[7]},{a:[[5,5,9999,5,5],3],w:[5,5,5]}],fl:{ap:1}},
+
+{id:"ema",z:"rb",t:"EMA Sensor Filter",d:"E",lc:"Custom",fn:"ema",
+prompt:"Exponential moving average: y[0] = x[0]; y[i] = alpha * x[i] + (1 - alpha) * y[i-1]. Return the smoothed list.",
+robo:"The cheapest low-pass filter that exists: one multiply-add per sample, O(1) memory -- what runs inside the SharedState loop on the Pi at control rate.",
+sig:["Smooth a stream in real time","Embedded constraint: only the previous output may be kept"],
+app:["Initialize with the first sample -- seeding with 0 biases the start.","One pass carrying only `y`.","Say the alpha trade-off out loud: large alpha = fast but noisy; small alpha = smooth but laggy; effective window is about 1/alpha samples."],
+tool:["`y = alpha * x + (1 - alpha) * y` -- the whole filter","Guard the empty input"],
+pit:"Seeding y with 0 instead of x[0]: the output crawls up from zero and the interviewer asks why your filter starts broken.",
+start:`def ema(readings, alpha):
+    # return smoothed list
+`,
+sol:`def ema(readings, alpha):
+    if not readings:
+        return []
+    out = [readings[0]]
+    y = readings[0]
+    for x in readings[1:]:
+        y = alpha * x + (1 - alpha) * y
+        out.append(y)
+    return out`,
+tests:[{a:[[10,10,10],0.5],w:[10,10,10]},{a:[[0,10],0.5],w:[0,5]},{a:[[4,8,6],0.5],w:[4,6,6]},{a:[[0,10,10,10],0.2],w:[0,2,3.6,4.88]}],fl:{ap:1}},
+
+{id:"se2",z:"rb",t:"SE(2) Point Transform",d:"M",lc:"Custom",fn:"transform_points",
+prompt:"A robot sits at pose (x, y, theta) in the world. `points` are [px, py] coordinates in the robot's body frame. Return each point in world coordinates: rotate by theta, then translate by (x, y).",
+robo:"THE transform: sonar hit in body frame to world map. Getting rotate-then-translate backwards puts every obstacle in the wrong place.",
+sig:["Body frame <-> world frame; sensor reading at a robot pose","2D rigid transform = rotation matrix + offset"],
+app:["Precompute `c, s = cos(theta), sin(theta)` once, outside the loop.","`wx = x + px*c - py*s` and `wy = y + px*s + py*c` -- the 2x2 rotation matrix written out.","Know the inverse too (world to body): subtract first, rotate by -theta."],
+tool:["`math.cos`, `math.sin`","Return `[wx, wy]` pairs, same shape as the input"],
+pit:"The minus sign lives on the py*s term of the x-row ONLY. Sign errors here are silent: numbers look plausible, map is garbage.",
+start:`import math
+
+def transform_points(points, x, y, theta):
+    # return list of [wx, wy]
+`,
+sol:`import math
+
+def transform_points(points, x, y, theta):
+    c, s = math.cos(theta), math.sin(theta)
+    out = []
+    for px, py in points:
+        wx = x + px * c - py * s
+        wy = y + px * s + py * c
+        out.append([wx, wy])
+    return out`,
+tests:[{a:[[[1,0]],0,0,1.5707963267948966],w:[[0,1]]},{a:[[[1,2]],3,4,0],w:[[4,6]]},{a:[[[1,0],[0,1]],1,1,3.141592653589793],w:[[0,1],[1,0]]}],fl:{ap:1}},
+
+{id:"odometry",z:"rb",t:"Dead Reckoning (Unicycle)",d:"M",lc:"Custom",fn:"integrate_odometry",
+prompt:"Start at pose (0, 0, 0). `cmds` is a list of [v, omega, dt]. Euler-integrate the unicycle model, updating position with the CURRENT heading before updating heading: x += v*cos(th)*dt; y += v*sin(th)*dt; th += omega*dt. Return [x, y, th].",
+robo:"Dead reckoning from fin/wheel odometry: the pose estimate you have when no external fix exists, and the prediction step of a future EKF.",
+sig:["Integrate velocity commands into a pose","Update ORDER matters -- stated, or you must ask"],
+app:["Loop over commands applying the three update lines in the stated order.","Position must use the heading from BEFORE this step's rotation; swapping lines gives a different discretization.","Say the words Euler integration, and that error shrinks with dt."],
+tool:["`math.cos(th)`, `math.sin(th)` re-evaluated every step","Multiple return: `return [x, y, th]`"],
+pit:"Updating theta before x and y: a one-line-order bug that only shows up as slow drift in tests with turns.",
+start:`import math
+
+def integrate_odometry(cmds):
+    # cmds: [[v, omega, dt], ...] -> [x, y, th]
+`,
+sol:`import math
+
+def integrate_odometry(cmds):
+    x, y, th = 0.0, 0.0, 0.0
+    for v, w, dt in cmds:
+        x += v * math.cos(th) * dt
+        y += v * math.sin(th) * dt
+        th += w * dt
+    return [x, y, th]`,
+tests:[{a:[[[1,0,1]]],w:[1,0,0]},{a:[[[1,0,1],[1,0,1]]],w:[2,0,0]},{a:[[[0,1.5707963267948966,1],[1,0,1]]],w:[0,1,1.5707963267948966]},{a:[[[0,3.141592653589793,1],[2,0,1]]],w:[-2,0,3.141592653589793]}],fl:{ap:1}},
+
+{id:"path-point",z:"rb",t:"Point Along Path",d:"M",lc:"Custom",fn:"point_along_path",
+prompt:"Given a polyline `waypoints` = [[x, y], ...] and an arc length s, return the [x, y] point lying distance s along the path from the first waypoint. Clamp: s <= 0 gives the first point; s >= total length gives the last.",
+robo:"The math under pure pursuit: give me the point 0.5 m ahead along the reference path. You derived exactly this for the trajectory tracker.",
+sig:["Point at distance d along a path","Accumulate segment lengths, interpolate inside one segment"],
+app:["Walk segments, spending s against each segment length until it runs out inside one.","Interpolate there: `t = remaining / seg_len`, point = a + t * (b - a).","Skip zero-length segments (duplicate waypoints).","Upgrade to mention: precompute cumulative lengths once, then bisect per query -- O(log n)."],
+tool:["`math.hypot(dx, dy)` for segment length","Lerp: `a[0] + t * (b[0] - a[0])`"],
+pit:"Dividing by a zero segment length when two waypoints coincide -- one `if seg == 0: continue` guard.",
+start:`import math
+
+def point_along_path(waypoints, s):
+    # return [x, y] at arc length s
+`,
+sol:`import math
+
+def point_along_path(waypoints, s):
+    if s <= 0:
+        return [waypoints[0][0], waypoints[0][1]]
+    for i in range(len(waypoints) - 1):
+        a, b = waypoints[i], waypoints[i + 1]
+        seg = math.hypot(b[0] - a[0], b[1] - a[1])
+        if seg == 0:
+            continue
+        if s <= seg:
+            t = s / seg
+            return [a[0] + t * (b[0] - a[0]),
+                    a[1] + t * (b[1] - a[1])]
+        s -= seg
+    last = waypoints[-1]
+    return [last[0], last[1]]`,
+tests:[{a:[[[0,0],[10,0]],5],w:[5,0]},{a:[[[0,0],[3,0],[3,4]],5],w:[3,2]},{a:[[[0,0],[1,0]],9],w:[1,0]},{a:[[[0,0],[0,0],[2,0]],1],w:[1,0]}],fl:{ap:1}},
+
+{id:"calib",z:"rb",t:"Calibration Table Lookup",d:"M",lc:"Custom",fn:"calib_lookup",
+prompt:"`table` is a list of [raw, value] calibration pairs sorted by raw. Return the calibrated value for reading x by linear interpolation between the two bracketing pairs. Clamp outside the table range.",
+robo:"Exactly how a raw MS5837 count becomes depth in meters when the datasheet polynomial is not trusted: bench-calibrate a table, interpolate at runtime.",
+sig:["Lookup table with interpolation","Sorted keys -> binary search for the bracket"],
+app:["Clamp first: x at or below the first raw gives the first value; at or above the last gives the last.","Find the bracketing segment (linear scan here; say the `bisect_right` O(log n) upgrade exists).","Lerp: `v0 + (x - r0) * (v1 - v0) / (r1 - r0)`."],
+tool:["`bisect.bisect_right(raws, x)` for the fast version","Column extraction: `raws = [p[0] for p in table]`"],
+pit:"Off-by-one picking the bracket after bisect -- always verify with an x exactly equal to a table node.",
+start:`def calib_lookup(table, x):
+    # linear interpolation, clamped
+`,
+sol:`def calib_lookup(table, x):
+    if x <= table[0][0]:
+        return table[0][1]
+    if x >= table[-1][0]:
+        return table[-1][1]
+    for i in range(len(table) - 1):
+        r0, v0 = table[i]
+        r1, v1 = table[i + 1]
+        if r0 <= x <= r1:
+            t = (x - r0) / (r1 - r0)
+            return v0 + t * (v1 - v0)`,
+tests:[{a:[[[0,0],[10,100]],5],w:50},{a:[[[0,0],[10,100]],-3],w:0},{a:[[[0,0],[10,100]],15],w:100},{a:[[[0,0],[2,10],[4,20]],3],w:15},{a:[[[0,0],[2,10],[4,20]],2],w:10}],fl:{ap:1}},
+
+{id:"dist-transform",z:"rb",t:"Obstacle Distance Field",d:"M",lc:"Custom",fn:"distance_transform",
+prompt:"Occupancy grid: 1 = obstacle, 0 = free. Return a same-shape grid where each cell holds its 4-connected step distance to the nearest obstacle (obstacles = 0). At least one obstacle exists.",
+robo:"The clearance field: cost maps for planners (stay 2 cells from walls) and the safety margin your controller checks -- one multi-source BFS.",
+sig:["Distance to the nearest X for EVERY cell","Multi-source BFS: seed all X cells at 0"],
+app:["Seed the queue with every obstacle at distance 0 -- never BFS per free cell.","Standard BFS; first arrival at a cell is its true distance (unweighted).","An output grid initialized to -1 doubles as the visited set."],
+tool:["`dist = [[-1] * cols for _ in range(rows)]`","`from collections import deque`"],
+pit:"`[[-1]*cols]*rows` -- the aliased-rows trap, and in THIS problem it visibly corrupts the whole field.",
+start:`def distance_transform(grid):
+    # return grid of step distances
+`,
+sol:`def distance_transform(grid):
+    from collections import deque
+    rows, cols = len(grid), len(grid[0])
+    dist = [[-1] * cols for _ in range(rows)]
+    q = deque()
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                dist[r][c] = 0
+                q.append((r, c))
+    while q:
+        r, c = q.popleft()
+        for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and dist[nr][nc] == -1:
+                dist[nr][nc] = dist[r][c] + 1
+                q.append((nr, nc))
+    return dist`,
+tests:[{a:[[[1,0,0]]],w:[[0,1,2]]},{a:[[[0,0],[0,1]]],w:[[2,1],[1,0]]},{a:[[[1,0],[0,1]]],w:[[0,1],[1,0]]}],fl:{}},
+
+{id:"simplify",z:"rb",t:"Simplify Waypoint Path",d:"M",lc:"Custom",fn:"simplify_path",
+prompt:"A recorded path [[x, y], ...] with integer coords contains redundant collinear points. Remove every interior point that is collinear (cross product exactly 0) with the previously KEPT point and the next point. Always keep both endpoints.",
+robo:"Waypoint compression before sending a path over the CAN/serial link: collinear samples carry no information, and the cross product is the collinearity test.",
+sig:["Simplify / compress a polyline","Collinearity -> 2D cross product == 0"],
+app:["cross(u, v) = ux*vy - uy*vx; zero iff parallel.","Sweep interior points: u = cur - last_kept, v = next - cur; keep cur only if cross != 0.","Comparing against the last KEPT point (not p[i-1]) collapses whole straight runs in one pass.","Real-world upgrade to name: RDP (Ramer-Douglas-Peucker) with a tolerance, for noisy floats."],
+tool:["`ux * vy - uy * vx`","Build `out = [points[0]]` and compare against `out[-1]`"],
+pit:"Testing against the immediate predecessor instead of the last kept point leaves every other point of a long straight run in place.",
+start:`def simplify_path(points):
+    # return compressed waypoint list
+`,
+sol:`def simplify_path(points):
+    if len(points) <= 2:
+        return points
+    out = [points[0]]
+    for i in range(1, len(points) - 1):
+        ax, ay = out[-1]
+        bx, by = points[i]
+        cx, cy = points[i + 1]
+        cross = (bx - ax) * (cy - by) - (by - ay) * (cx - bx)
+        if cross != 0:
+            out.append(points[i])
+    out.append(points[-1])
+    return out`,
+tests:[{a:[[[0,0],[1,0],[2,0],[2,1]]],w:[[0,0],[2,0],[2,1]]},{a:[[[0,0],[1,1],[2,2],[3,3]]],w:[[0,0],[3,3]]},{a:[[[0,0],[1,0]]],w:[[0,0],[1,0]]},{a:[[[0,0],[1,0],[1,1],[2,1]]],w:[[0,0],[1,0],[1,1],[2,1]]}],fl:{}}
+,
+
+/* ---- Trees: list input, TreeNode prelude injected ---- */
+{id:"max-depth",z:"tr",t:"Maximum Depth of Binary Tree",d:"E",lc:"LC 104",fn:"max_depth",wrap:"_run",
+pre:`class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+def _build(a):
+    if not a or a[0] is None: return None
+    root = TreeNode(a[0]); _dq = deque if 'deque' in dir() else __import__('collections').deque
+    q = _dq([root]); i = 1
+    while q and i < len(a):
+        n = q.popleft()
+        if i < len(a) and a[i] is not None:
+            n.left = TreeNode(a[i]); q.append(n.left)
+        i += 1
+        if i < len(a) and a[i] is not None:
+            n.right = TreeNode(a[i]); q.append(n.right)
+        i += 1
+    return root
+def _run(a):
+    return max_depth(_build(a))`,
+prompt:"Given the root of a binary tree (provided as a level-order list where `null` marks a missing child), return its maximum depth: the number of nodes along the longest root-to-leaf path.",
+robo:"Recursion over a tree is the same shape as walking a tf transform tree or a scene graph: solve a node in terms of its children.",
+sig:["Depth / height / longest path in a tree","'In terms of its children' -> recursion"],
+app:["Base case: an empty node has depth 0.","Recurse: depth = 1 + max(depth(left), depth(right)).","That is the entire function. Trust the recursion; do not try to track a running max by hand."],
+tool:["`if not node: return 0`","`1 + max(left, right)`"],
+pit:"Forgetting the empty-node base case gives an AttributeError on a leaf's None child. Every tree recursion starts with the None check.",
+start:`# TreeNode: .val .left .right  (build handled for you)
+def max_depth(root):
+    # return an int
+`,
+sol:`def max_depth(root):
+    if not root:
+        return 0
+    return 1 + max(max_depth(root.left), max_depth(root.right))`,
+tests:[{a:[[3,9,20,null,null,15,7]],w:3},{a:[[1,null,2]],w:2},{a:[[]],w:0},{a:[[1]],w:1}],fl:{}},
+
+{id:"invert-tree",z:"tr",t:"Invert Binary Tree",d:"E",lc:"LC 226",fn:"invert_tree",wrap:"_run",
+pre:`class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+def _build(a):
+    if not a or a[0] is None: return None
+    root = TreeNode(a[0]); _dq = deque if 'deque' in dir() else __import__('collections').deque
+    q = _dq([root]); i = 1
+    while q and i < len(a):
+        n = q.popleft()
+        if i < len(a) and a[i] is not None:
+            n.left = TreeNode(a[i]); q.append(n.left)
+        i += 1
+        if i < len(a) and a[i] is not None:
+            n.right = TreeNode(a[i]); q.append(n.right)
+        i += 1
+    return root
+def _ser(root):
+    _dq = deque if 'deque' in dir() else __import__('collections').deque
+    if not root: return []
+    out = []; q = _dq([root])
+    while q:
+        n = q.popleft()
+        if n is None: out.append(None); continue
+        out.append(n.val); q.append(n.left); q.append(n.right)
+    while out and out[-1] is None: out.pop()
+    return out
+def _run(a):
+    return _ser(invert_tree(_build(a)))`,
+prompt:"Invert a binary tree: swap the left and right child of every node. Return the (list-serialized) root. Input is a level-order list.",
+robo:"A mirror operation on a tree -- structurally identical to reflecting a kinematic chain across a symmetry plane, which you would do to compare left-vs-right stroke data.",
+sig:["Mirror / flip / reflect a tree","Swap children at every node -> recursion or BFS"],
+app:["At each node, swap left and right, then recurse into both.","Order does not matter: swap-then-recurse or recurse-then-swap both work.","Return the node so the recursion composes."],
+tool:["`node.left, node.right = node.right, node.left`","Base case `if not node: return None`"],
+pit:"Swapping with a temp variable in the wrong order clobbers one side. Python tuple-swap sidesteps it entirely.",
+start:`def invert_tree(root):
+    # return the root
+`,
+sol:`def invert_tree(root):
+    if not root:
+        return None
+    root.left, root.right = root.right, root.left
+    invert_tree(root.left)
+    invert_tree(root.right)
+    return root`,
+tests:[{a:[[4,2,7,1,3,6,9]],w:[4,7,2,9,6,3,1]},{a:[[2,1,3]],w:[2,3,1]},{a:[[]],w:[]}],fl:{}},
+
+{id:"same-tree",z:"tr",t:"Same Tree",d:"E",lc:"LC 100",fn:"is_same",wrap:"_run",
+pre:`class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+def _build(a):
+    if not a or a[0] is None: return None
+    root = TreeNode(a[0]); _dq = deque if 'deque' in dir() else __import__('collections').deque
+    q = _dq([root]); i = 1
+    while q and i < len(a):
+        n = q.popleft()
+        if i < len(a) and a[i] is not None:
+            n.left = TreeNode(a[i]); q.append(n.left)
+        i += 1
+        if i < len(a) and a[i] is not None:
+            n.right = TreeNode(a[i]); q.append(n.right)
+        i += 1
+    return root
+def _run(a, b):
+    return is_same(_build(a), _build(b))`,
+prompt:"Given the roots of two binary trees (each as a level-order list), return True if they are structurally identical with equal node values.",
+robo:"Simultaneous traversal of two structures -- the same lockstep walk you use to diff a recorded trajectory against a reference path node by node.",
+sig:["Compare two trees for equality","Walk both in lockstep"],
+app:["Both empty here -> True. One empty, one not -> False. Values differ -> False.","Otherwise recurse on left pair AND right pair.","The four base cases before the recursion are the whole problem."],
+tool:["`if not p and not q: return True`","`p.val == q.val and same(left) and same(right)`"],
+pit:"Checking `p.val` before confirming both nodes are non-None throws on the None side. Order the base cases first.",
+start:`def is_same(p, q):
+    # return True / False
+`,
+sol:`def is_same(p, q):
+    if not p and not q:
+        return True
+    if not p or not q:
+        return False
+    if p.val != q.val:
+        return False
+    return is_same(p.left, q.left) and is_same(p.right, q.right)`,
+tests:[{a:[[1,2,3],[1,2,3]],w:true},{a:[[1,2],[1,null,2]],w:false},{a:[[1,2,1],[1,1,2]],w:false},{a:[[],[]],w:true}],fl:{}},
+
+{id:"level-order",z:"tr",t:"Binary Tree Level Order Traversal",d:"M",lc:"LC 102",fn:"level_order",wrap:"_run",
+pre:`class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+def _build(a):
+    if not a or a[0] is None: return None
+    root = TreeNode(a[0]); _dq = deque if 'deque' in dir() else __import__('collections').deque
+    q = _dq([root]); i = 1
+    while q and i < len(a):
+        n = q.popleft()
+        if i < len(a) and a[i] is not None:
+            n.left = TreeNode(a[i]); q.append(n.left)
+        i += 1
+        if i < len(a) and a[i] is not None:
+            n.right = TreeNode(a[i]); q.append(n.right)
+        i += 1
+    return root
+def _run(a):
+    return level_order(_build(a))`,
+prompt:"Return the level-order traversal of a binary tree as a list of levels: `[[level0], [level1], ...]`. Input is a level-order list.",
+robo:"BFS on a tree is the same queue machinery as your grid BFS -- but here you snapshot the queue size each round to cut the stream into levels.",
+sig:["Group tree nodes BY LEVEL / by depth","BFS with a per-level boundary"],
+app:["Queue seeded with the root. Each round, read `len(queue)` FIRST and freeze it -- that count is exactly this level's width.","Pop that many nodes, collect their values, enqueue their children.","The frozen count is the whole trick; the queue grows as you go, so you must snapshot before draining."],
+tool:["`from collections import deque`","`for _ in range(len(q)):` -- snapshot the width"],
+pit:"Iterating `while q` without freezing the level size mixes children into the current level. Capture `len(q)` before the inner loop.",
+start:`def level_order(root):
+    # return list of levels
+`,
+sol:`def level_order(root):
+    from collections import deque
+    if not root:
+        return []
+    out = []
+    q = deque([root])
+    while q:
+        level = []
+        for _ in range(len(q)):
+            n = q.popleft()
+            level.append(n.val)
+            if n.left: q.append(n.left)
+            if n.right: q.append(n.right)
+        out.append(level)
+    return out`,
+tests:[{a:[[3,9,20,null,null,15,7]],w:[[3],[9,20],[15,7]]},{a:[[1]],w:[[1]]},{a:[[]],w:[]}],fl:{}},
+
+{id:"path-sum",z:"tr",t:"Path Sum",d:"E",lc:"LC 112",fn:"has_path_sum",wrap:"_run",
+pre:`class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+def _build(a):
+    if not a or a[0] is None: return None
+    root = TreeNode(a[0]); _dq = deque if 'deque' in dir() else __import__('collections').deque
+    q = _dq([root]); i = 1
+    while q and i < len(a):
+        n = q.popleft()
+        if i < len(a) and a[i] is not None:
+            n.left = TreeNode(a[i]); q.append(n.left)
+        i += 1
+        if i < len(a) and a[i] is not None:
+            n.right = TreeNode(a[i]); q.append(n.right)
+        i += 1
+    return root
+def _run(a, target):
+    return has_path_sum(_build(a), target)`,
+prompt:"Return True if the tree has a root-to-LEAF path whose node values sum to `target`. Input is a level-order list plus the target integer.",
+robo:"Accumulate-along-a-path with a leaf test -- the discrete cousin of integrating cost along a planned route until you reach a terminal node.",
+sig:["Root-to-leaf path with a target sum","Carry a running total DOWN the recursion"],
+app:["Subtract the current value from the remaining target as you descend.","A LEAF (no children) succeeds only if the remaining target now equals its value -- i.e. remainder hits 0 exactly at a leaf.","Recurse left OR right; either succeeding is enough.","Empty tree is False."],
+tool:["Pass the shrinking target as a parameter, no globals","`not node.left and not node.right` = leaf test"],
+pit:"Declaring success when the running sum hits target at an INTERNAL node. It must be a leaf -- check both children are None.",
+start:`def has_path_sum(root, target):
+    # return True / False
+`,
+sol:`def has_path_sum(root, target):
+    if not root:
+        return False
+    if not root.left and not root.right:
+        return target == root.val
+    rem = target - root.val
+    return has_path_sum(root.left, rem) or has_path_sum(root.right, rem)`,
+tests:[{a:[[5,4,8,11,null,13,4,7,2,null,null,null,1],22],w:true},{a:[[1,2,3],5],w:false},{a:[[],0],w:false},{a:[[1,2],1],w:false}],fl:{}}
+,
+
+/* ---- Debug Bay: buggy code to fix, real gotchas from the projects ---- */
+{id:"dbg-grid",z:"db",t:"Debug: 2D Grid Init",d:"E",lc:"Gotcha",fn:"make_grid",dbg:1,
+prompt:"`make_grid(rows, cols)` should return a rows x cols grid of zeros, then set `grid[0][0] = 1` and return it. The code below returns a grid where the WHOLE first column became 1. Find and fix the one-line bug.",
+robo:"The single most common grid bug in robotics code. It silently corrupts every occupancy grid, costmap, and visited-set you build with the wrong idiom.",
+sig:["Every row mirrors every edit to another row","One assignment changes multiple 'rows'"],
+app:["`[[0]*cols]*rows` makes ONE row object, then rows references to it. Editing one edits all.","Fix: build each row independently with a comprehension: `[[0]*cols for _ in range(rows)]`.","Same trap bites `[[]]*n` for adjacency lists and any `[[...]]*n`."],
+tool:["`[[0]*cols for _ in range(rows)]`","Test: mutate one cell, confirm the others stay 0"],
+pit:"The outer `*rows` aliases the row. The list comprehension is the only safe construction; memorize it.",
+start:`def make_grid(rows, cols):
+    grid = [[0] * cols] * rows   # <-- bug is here
+    grid[0][0] = 1
+    return grid`,
+sol:`def make_grid(rows, cols):
+    grid = [[0] * cols for _ in range(rows)]
+    grid[0][0] = 1
+    return grid`,
+tests:[{a:[3,3],w:[[1,0,0],[0,0,0],[0,0,0]]},{a:[2,2],w:[[1,0],[0,0]]},{a:[1,4],w:[[1,0,0,0]]}],fl:{}},
+
+{id:"dbg-atan2",z:"db",t:"Debug: Bearing Angle",d:"E",lc:"Gotcha",fn:"bearing",dbg:1,
+prompt:"`bearing(dx, dy)` should return the angle of the vector (dx, dy) from the +x axis, full 4-quadrant, in radians. The code below is wrong for several inputs. Fix it.",
+robo:"Straight out of the mantabot heading controller. This exact bug points the robot in a mirrored or undefined direction.",
+sig:["Angles wrong by sign or by 90 degrees","A divide that can blow up when dx = 0"],
+app:["`atan(dy/dx)` loses the quadrant (returns only -pi/2..pi/2) and divides by zero when dx = 0.","Fix: `atan2(dy, dx)` -- note the argument order is y FIRST, then x.","atan2 covers all four quadrants and handles dx = 0 cleanly."],
+tool:["`math.atan2(dy, dx)`","Test with dx = 0 to catch the divide-by-zero"],
+pit:"Even people who reach for atan2 flip the argument order to `atan2(dx, dy)`. It is (y, x). Always.",
+start:`import math
+
+def bearing(dx, dy):
+    return math.atan(dy / dx)   # <-- two bugs in one line`,
+sol:`import math
+
+def bearing(dx, dy):
+    return math.atan2(dy, dx)`,
+tests:[{a:[1,1],w:0.7853981633974483},{a:[-1,0],w:3.141592653589793},{a:[0,1],w:1.5707963267948966},{a:[0,-1],w:-1.5707963267948966}],fl:{ap:1}},
+
+{id:"dbg-sort",z:"db",t:"Debug: Sort Returns None",d:"E",lc:"Gotcha",fn:"second_largest",dbg:1,
+prompt:"`second_largest(nums)` should return the second-largest DISTINCT value. The code crashes or returns None. Fix it.",
+robo:"The `.sort()` returns None trap -- it has silently destroyed more than one telemetry-processing script by wiping the data mid-pipeline.",
+sig:["A variable is unexpectedly None after sorting","`x = a.sort()` anywhere"],
+app:["`a.sort()` sorts in place and returns None; assigning its result throws away the list.","Fix: either call `a.sort()` on its own line and keep using `a`, or use `b = sorted(a)`.","Then dedup (a set) before picking the second largest."],
+tool:["`vals = sorted(set(nums))`","`.sort()` and `.reverse()` return None; `sorted()` and `[::-1]` return new lists"],
+pit:"`nums = nums.sort()` sets nums to None. This is the #1 silent one-liner bug in hand-written Python.",
+start:`def second_largest(nums):
+    s = nums.sort()          # <-- bug: sort() returns None
+    return s[-2]`,
+sol:`def second_largest(nums):
+    vals = sorted(set(nums))
+    return vals[-2]`,
+tests:[{a:[[3,1,4,1,5,9,2,6]],w:6},{a:[[5,5,4]],w:4},{a:[[1,2]],w:1}],fl:{}},
+
+{id:"dbg-bfs",z:"db",t:"Debug: BFS Visited Timing",d:"M",lc:"Gotcha",fn:"shortest_reach",dbg:1,
+prompt:"`shortest_reach(n, edges, src)` should return a list of shortest hop-distances from `src` to every node (or -1 if unreachable), using BFS on an undirected graph. The code is far too slow / gives wrong counts because nodes get enqueued many times. Fix the visited handling.",
+robo:"The classic BFS bug: marking visited at dequeue time instead of enqueue time. On a dense graph it explodes the queue -- exactly what bit the grid planner.",
+sig:["BFS revisits nodes, queue balloons","Nodes marked visited only when popped"],
+app:["Mark a node visited (set its distance) at the moment you ENQUEUE it, not when you pop it.","If you wait until pop, the same node gets pushed by several neighbors before any of them pops it.","Fix: set `dist[nb]` and enqueue in the same step, guarded by `dist[nb] == -1`."],
+tool:["Guard with `if dist[nb] == -1:` before enqueueing","`dist` array doubles as the visited set"],
+pit:"Setting the distance after popping lets duplicates pile up and can even overwrite a shorter distance with a longer one.",
+start:`def shortest_reach(n, edges, src):
+    from collections import deque
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v); adj[v].append(u)
+    dist = [-1] * n
+    q = deque([src])
+    while q:
+        u = q.popleft()
+        dist[u] = 0 if u == src else dist[u]   # <-- broken visited logic
+        for nb in adj[u]:
+            q.append(nb)                       # <-- enqueues without guard
+    return dist`,
+sol:`def shortest_reach(n, edges, src):
+    from collections import deque
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v); adj[v].append(u)
+    dist = [-1] * n
+    dist[src] = 0
+    q = deque([src])
+    while q:
+        u = q.popleft()
+        for nb in adj[u]:
+            if dist[nb] == -1:
+                dist[nb] = dist[u] + 1
+                q.append(nb)
+    return dist`,
+tests:[{a:[4,[[0,1],[1,2],[2,3]],0],w:[0,1,2,3]},{a:[3,[[0,1]],0],w:[0,1,-1]},{a:[1,[],0],w:[0]}],fl:{}},
+
+{id:"dbg-default",z:"db",t:"Debug: Mutable Default Argument",d:"M",lc:"Gotcha",fn:"collect",dbg:1,wrap:"_run",
+pre:`def _run():
+    r1 = collect(1)
+    r2 = collect(2)
+    return [r1, r2]`,
+prompt:"`collect(x)` should return a fresh list containing just `[x]` on every call. But calling it twice returns `[1]` then `[1, 2]` -- state leaks between calls. Fix it. (The harness calls collect(1) then collect(2) and returns both results.)",
+robo:"The mutable-default-argument trap. In a long-running control process this leaks state across calls and produces bugs that only appear after the program has been up a while -- the worst kind to diagnose.",
+sig:["A function 'remembers' data across calls","A default argument is a list or dict: `def f(x, acc=[])`"],
+app:["Default arguments are evaluated ONCE at definition time, so `acc=[]` is a single shared list reused by every call.","Fix: default to None, then create a new list inside the body when None.","This is the canonical Python gotcha; interviewers ask it by name."],
+tool:["`def f(x, acc=None): if acc is None: acc = []`","Never use a mutable literal as a default"],
+pit:"The shared list persists for the lifetime of the function object. Only the None sentinel pattern fully fixes it.",
+start:`def collect(x, acc=[]):   # <-- shared default list
+    acc.append(x)
+    return acc`,
+sol:`def collect(x, acc=None):
+    if acc is None:
+        acc = []
+    acc.append(x)
+    return acc`,
+tests:[{a:[],w:[[1],[2]]}],fl:{}}
+];
+
+/* ============ App logic ============ */
+const $=s=>document.querySelector(s);
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function md(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
+
+let S={code:{},solved:{},studied:{},review:{},last:null,filter:"all"};
+const KEY="divestation_v1";
+async function loadState(){let raw=null;
+  try{const r=await window.storage.get(KEY);if(r&&r.value)raw=r.value}catch(e){}
+  if(!raw){try{raw=localStorage.getItem(KEY)}catch(e){}}
+  if(raw){try{const o=JSON.parse(raw);for(const k of["code","solved","studied","review"])if(o[k])S[k]=o[k];if(o.last)S.last=o.last}catch(e){}}}
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(async()=>{const raw=JSON.stringify(S);
+  try{localStorage.setItem(KEY,raw)}catch(e){}
+  try{await window.storage.set(KEY,raw)}catch(e){}},500)}
+
+/* ---- nav ---- */
+function passFilter(p){const f=S.filter;
+  if(f==="e")return p.d==="E"; if(f==="m")return p.d==="M";
+  if(f==="todo")return !S.solved[p.id]; if(f==="rev")return !!S.review[p.id];
+  return true}
+function dotCls(p){return S.solved[p.id]?"dot solved":(S.studied[p.id]?"dot studied":"dot")}
+function renderNav(){let h="";
+  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; PYTHON</span></div>';
+  MANUAL.filter(a=>a.grp==="py").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
+  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; ROBOTICS</span></div>';
+  MANUAL.filter(a=>a.grp==="rb").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
+  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; INTERVIEW</span></div>';
+  MANUAL.filter(a=>a.grp==="iv").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
+  const solved=Object.keys(S.solved).length;
+  h+='<div class="zone">PROBLEMS <span class="m">'+solved+' / '+PROBLEMS.length+' solved</span></div>';
+  h+='<div class="fchips">';
+  [["all","All"],["e","Easy"],["m","Med"],["todo","Unsolved"],["rev","&#127744;"]].forEach(([f,l])=>{h+='<button class="fchip'+(S.filter===f?" on":"")+'" data-f="'+f+'">'+l+'</button>'});
+  h+='</div>';
+  ZONES.forEach(([z,name])=>{const list=PROBLEMS.filter(p=>p.z===z&&passFilter(p));if(!list.length)return;
+    h+='<div class="subzone">'+esc(name)+'</div>';
+    list.forEach(p=>{h+='<button class="prob'+(cur==="p:"+p.id?" cur":"")+'" data-p="'+p.id+'"><span class="'+dotCls(p)+'"></span><span class="nm">'+esc(p.t)+'</span>'+(S.review[p.id]?'<span class="rvmark">&#127744;</span>':'')+'<span class="dbadge '+p.d+'">'+p.d+'</span></button>'});
+  });
+  $("#nav").innerHTML=h;
+  const pct=Math.round(100*solved/PROBLEMS.length);
+  $("#depthFill").style.width=pct+"%";
+  $("#statLabel").textContent=solved+"/"+PROBLEMS.length+" solved · "+Object.keys(S.review).filter(k=>S.review[k]).length+" flagged";
+}
+$("#nav").addEventListener("click",e=>{
+  const f=e.target.closest(".fchip");if(f){S.filter=f.dataset.f;renderNav();return}
+  const a=e.target.closest(".art");if(a){showArticle(a.dataset.a);closeNav();return}
+  const p=e.target.closest(".prob");if(p){showProblem(p.dataset.p);closeNav()}
+});
+
+/* ---- views ---- */
+let cur=null;
+function showHome(){cur=null;renderNav();
+  const solved=Object.keys(S.solved).length,studied=Object.keys(S.studied).length,rev=Object.keys(S.review).filter(k=>S.review[k]).length;
+  let h='<div class="crumb">BASE STATION</div><h2>Dive Station</h2>';
+  h+='<p class="doc" style="color:var(--dim)">One station, two muscles: <b style="color:var(--amber)">Study</b> (read the layered approach, build recognition) and <b style="color:var(--sonar)">Practice</b> (hand-write, run tests). Classic problems link to LeetCode; Trees, Robotics Bay, and Debug Bay run right here. The Behavioral bank in the Field Manual maps 15 questions to your own project war stories.</p>';
+  h+='<div class="homegrid"><div class="hcard"><div class="hnum">'+solved+'</div><div class="hlab">solved of '+PROBLEMS.length+'</div></div><div class="hcard"><div class="hnum">'+studied+'</div><div class="hlab">studied</div></div><div class="hcard"><div class="hnum">'+rev+'</div><div class="hlab">flagged &#127744; to re-practice</div></div></div>';
+  h+='<div class="doc"><h3>The loop</h3><p>1. Fragment time: open a problem, reveal layers one at a time, try to predict each before revealing. Flag &#127744; anything shaky.</p><p>2. Block time: filter by &#127744;, pick one, write it cold in Practice (or on LeetCode) without peeking.</p><p>3. Before an interview: read the Signal-word map and the Pitfalls page in Field Manual.</p></div>';
+  if(S.last){const p=PROBLEMS.find(x=>x.id===S.last);if(p)h+='<div class="btnrow" style="margin-top:18px"><button class="run" onclick="showProblem(\''+p.id+'\')">Continue: '+esc(p.t)+'</button></div>'}
+  $("#main").innerHTML=h;window.scrollTo(0,0)}
+function showArticle(id){cur="a:"+id;renderNav();const a=MANUAL.find(x=>x.id===id);
+  $("#main").innerHTML='<div class="crumb">FIELD MANUAL · '+({py:"PYTHON",rb:"ROBOTICS",iv:"INTERVIEW"}[a.grp]||"")+'</div><h2>'+a.t+'</h2><div class="doc">'+a.body+'</div>';
+  window.scrollTo(0,0)}
+
+function revCard(label,inner,extra){return '<div class="rev"><button class="revhead" '+(extra||"")+'><span>'+label+'</span><span class="hint">show</span></button><div class="revbody hide">'+inner+'</div></div>'}
+function showProblem(id){cur="p:"+id;S.last=id;save();renderNav();
+  const p=PROBLEMS.find(x=>x.id===id);const zn=ZONES.find(z=>z[0]===p.z)[1];
+  let h='<div class="crumb">'+esc(zn).toUpperCase()+'</div><h2>'+esc(p.t)+'</h2>';
+  h+='<div class="badges"><span class="bg '+p.d+'">'+(p.d==="E"?"EASY":"MEDIUM")+'</span><span class="bg lc">'+esc(p.lc)+'</span>';
+  if(S.solved[p.id])h+='<span class="bg solved">SOLVED</span>';else if(S.studied[p.id])h+='<span class="bg studied">STUDIED</span>';
+  h+='<button class="rvbtn'+(S.review[p.id]?" on":"")+'" id="rvT">&#127744; '+(S.review[p.id]?"flagged":"flag for re-practice")+'</button></div>';
+  h+='<div class="robobox"><b>MISSION CONTEXT</b>'+md(p.robo)+'</div>';
+  h+='<div class="promptbox">'+md(p.prompt)+'</div>';
+  h+='<div class="seg"><button id="segS" class="on">Study</button><button id="segP">Practice</button></div>';
+  /* study pane */
+  h+='<div id="paneS">';
+  h+=revCard("&#9312; Recognition signals","<ul>"+p.sig.map(x=>"<li>"+md(x)+"</li>").join("")+"</ul>");
+  h+=revCard("&#9313; Approach","<ol>"+p.app.map(x=>"<li>"+md(x)+"</li>").join("")+"</ol>");
+  if(p.tool)h+=revCard("&#9314; Python toolbox","<ul>"+p.tool.map(x=>"<li>"+md(x)+"</li>").join("")+"</ul>");
+  h+=revCard("&#9888; Hand-writing pitfall",'<p class="pitline" style="margin-top:8px">'+md(p.pit)+"</p>");
+  if(p.sol)h+=revCard("&#9315; Reference solution","<pre><code>"+esc(p.sol)+"</code></pre>",'data-sol="1"');
+  h+='</div>';
+  /* practice pane */
+  h+='<div id="paneP" style="display:none">';
+  if(p.lite){
+    h+='<p class="statusline">This is a classic — practice it on LeetCode with the real judge, then come back and mark it.</p>';
+    h+='<div class="btnrow"><a class="run" style="text-decoration:none;display:inline-block" href="'+p.url+'" target="_blank" rel="noopener">Open on LeetCode &#8599;</a>';
+    h+='<button class="ghost" id="markBtn">'+(S.solved[p.id]?"Unmark solved":"Mark as solved")+'</button></div>';
+  }else{
+    if(p.dbg)h+='<div class="robobox" style="border-left-color:var(--red)"><b style="color:var(--red)">DEBUG DRILL</b>The code below has a bug. Read it, find the flaw, fix it in place, and run the tests. Reveal the Study pane only if you are stuck — the pitfall card names the exact bug.</div>';
+    h+='<div class="statusline">'+(p.dbg?"Tests (against the fixed code):":"Test cases:")+'</div>';
+    p.tests.forEach((t,i)=>{const label=p.wrap?p.t.replace(/^Debug: /,""):esc(p.fn)+'('+t.a.map(x=>JSON.stringify(x)).join(", ")+')';
+      h+='<div class="tcase">'+(i+1)+'. '+(p.wrap?('&rarr; '+esc(JSON.stringify(t.w))):(label+' &rarr; '+esc(JSON.stringify(t.w))))+(p.fl.ip?"  (checks the mutated first arg)":"")+(p.fl.ap?"  (float, tolerance ok)":"")+'</div>'});
+    h+='<div style="height:8px"></div><textarea id="ed" spellcheck="false"></textarea>';
+    h+='<div class="btnrow"><button class="run" id="runBtn">Run tests</button><button class="ghost" id="resetBtn">'+(p.dbg?"Reset (restore buggy code)":"Reset to starter")+'</button><span class="statusline" id="runStat"></span></div><div id="out"></div>';
+  }
+  h+='</div>';
+  /* prev/next */
+  const idx=PROBLEMS.indexOf(p);
+  h+='<div class="pnav">'+(idx>0?'<button class="ghost" onclick="showProblem(\''+PROBLEMS[idx-1].id+'\')">&larr; '+esc(PROBLEMS[idx-1].t)+'</button>':'<span></span>')+(idx<PROBLEMS.length-1?'<button class="ghost" onclick="showProblem(\''+PROBLEMS[idx+1].id+'\')">'+esc(PROBLEMS[idx+1].t)+' &rarr;</button>':'')+'</div>';
+  $("#main").innerHTML=h;window.scrollTo(0,0);
+  /* wire */
+  $("#rvT").onclick=()=>{S.review[p.id]=!S.review[p.id];save();showProblem(p.id)};
+  $("#segS").onclick=()=>{$("#segS").classList.add("on");$("#segP").classList.remove("on");$("#paneS").style.display="";$("#paneP").style.display="none"};
+  $("#segP").onclick=()=>{$("#segP").classList.add("on");$("#segS").classList.remove("on");$("#paneP").style.display="";$("#paneS").style.display="none"};
+  document.querySelectorAll(".revhead").forEach(b=>{b.onclick=()=>{const body=b.parentElement.querySelector(".revbody");const hid=body.classList.toggle("hide");b.querySelector(".hint").textContent=hid?"show":"hide";
+    if(!hid&&(b.dataset.sol||p.lite)&&!S.solved[p.id]){S.studied[p.id]=true;save();renderNav()}}});
+  if(p.lite){$("#markBtn").onclick=()=>{if(S.solved[p.id])delete S.solved[p.id];else S.solved[p.id]=true;save();showProblem(p.id)}}
+  else{
+    const ed=$("#ed");ed.value=S.code[p.id]!==undefined?S.code[p.id]:p.start;
+    ed.addEventListener("input",()=>{S.code[p.id]=ed.value;save()});
+    ed.addEventListener("keydown",e=>{
+      if(e.key==="Tab"){e.preventDefault();const st=ed.selectionStart;ed.setRangeText("    ",st,ed.selectionEnd,"end");S.code[p.id]=ed.value;save()}
+      else if(e.key==="Enter"){e.preventDefault();const st=ed.selectionStart;const line=ed.value.slice(0,st).split("\n").pop();let ind=(line.match(/^ */)||[""])[0];if(/:\s*$/.test(line))ind+="    ";ed.setRangeText("\n"+ind,st,ed.selectionEnd,"end");S.code[p.id]=ed.value;save()}});
+    $("#resetBtn").onclick=()=>{ed.value=p.start;S.code[p.id]=p.start;save()};
+    $("#runBtn").onclick=()=>runTests(p);
+  }
+}
+
+/* ---- python engines ---- */
+let ENG={type:null,py:null,ready:false,loading:null};
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function engChip(txt,ok){const c=$("#engChip");c.textContent=txt;c.className="chip"+(ok?" ok":"")}
+async function ensureEngine(stat){if(ENG.ready)return;
+  if(!ENG.loading){ENG.loading=(async()=>{
+    stat("Loading Python engine (first run only, ~6 MB)...");engChip("python: loading");
+    const mirrors=[["https://cdnjs.cloudflare.com/ajax/libs/pyodide/0.24.1/pyodide.js","https://cdnjs.cloudflare.com/ajax/libs/pyodide/0.24.1/"],["https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js","https://cdn.jsdelivr.net/pyodide/v0.24.1/full/"]];
+    for(const[src,idx]of mirrors){try{await loadScript(src);ENG.py=await loadPyodide({indexURL:idx});ENG.type="pyodide";ENG.ready=true;engChip("python: pyodide",true);return}catch(e){}}
+    stat("Pyodide unavailable, loading Skulpt fallback...");
+    const sk=[["https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt.min.js","https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt-stdlib.js"],["https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js","https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"]];
+    for(const[a,b]of sk){try{await loadScript(a);await loadScript(b);ENG.type="skulpt";ENG.ready=true;engChip("python: skulpt",true);return}catch(e){}}
+    engChip("python: offline");throw new Error("Could not load a Python engine — check network and retry.")})()}
+  await ENG.loading}
+const SHIM=[
+"class _Hq:",
+"    def heappush(self, h, item):",
+"        h.append(item)",
+"        i = len(h) - 1",
+"        while i > 0:",
+"            p = (i - 1) // 2",
+"            if h[i] < h[p]:",
+"                t = h[i]; h[i] = h[p]; h[p] = t; i = p",
+"            else: break",
+"    def heappop(self, h):",
+"        last = h.pop()",
+"        if not h: return last",
+"        root = h[0]; h[0] = last",
+"        i = 0; n = len(h)",
+"        while True:",
+"            l = 2*i+1; r = l+1; s = i",
+"            if l < n and h[l] < h[s]: s = l",
+"            if r < n and h[r] < h[s]: s = r",
+"            if s == i: break",
+"            t = h[i]; h[i] = h[s]; h[s] = t; i = s",
+"        return root",
+"    def heapify(self, h):",
+"        tmp = list(h)",
+"        while len(h) > 0: h.pop()",
+"        for x in tmp: self.heappush(h, x)",
+"heapq = _Hq()",
+"heappush = heapq.heappush",
+"heappop = heapq.heappop",
+"heapify = heapq.heapify",
+"class deque:",
+"    def __init__(self, it=None):",
+"        self.d = []",
+"        if it:",
+"            for x in it: self.d.append(x)",
+"    def append(self, x): self.d.append(x)",
+"    def appendleft(self, x): self.d.insert(0, x)",
+"    def popleft(self): return self.d.pop(0)",
+"    def pop(self): return self.d.pop()",
+"    def __len__(self): return len(self.d)",
+"    def __iter__(self): return iter(self.d)",
+"def Counter(it=None):",
+"    d = {}",
+"    if it:",
+"        for x in it: d[x] = d.get(x, 0) + 1",
+"    return d",
+"def bisect_left(a, x):",
+"    lo = 0; hi = len(a)",
+"    while lo < hi:",
+"        m = (lo + hi) // 2",
+"        if a[m] < x: lo = m + 1",
+"        else: hi = m",
+"    return lo",
+"def bisect_right(a, x):",
+"    lo = 0; hi = len(a)",
+"    while lo < hi:",
+"        m = (lo + hi) // 2",
+"        if x < a[m]: lo = m + 1",
+"        else: hi = m",
+"    return lo",
+"def _esc(s):",
+"    bs = chr(92); q = chr(34); out = q",
+"    for ch in s:",
+"        if ch == bs: out = out + bs + bs",
+"        elif ch == q: out = out + bs + q",
+"        else: out = out + ch",
+"    return out + q",
+"def _ser(x):",
+"    if x is True: return 'true'",
+"    if x is False: return 'false'",
+"    if x is None: return 'null'",
+"    if isinstance(x, (list, tuple)):",
+"        parts = []",
+"        for i in x: parts.append(_ser(i))",
+"        return '[' + ','.join(parts) + ']'",
+"    if isinstance(x, str): return _esc(x)",
+"    return str(x)"
+].join("\n");
+function stripImports(code){return code.replace(/^[ \t]*(from[ \t]+(heapq|collections|bisect|typing|functools|itertools)[ \t]+import[^\n]*|import[ \t]+(heapq|collections|bisect|typing|functools|itertools)[^\n]*)$/gm,"# provided by shim")}
+function pyLit(v){if(v===null)return"None";if(v===true)return"True";if(v===false)return"False";
+  if(Array.isArray(v))return"["+v.map(pyLit).join(",")+"]";
+  if(typeof v==="string")return JSON.stringify(v);return String(v)}
+function buildScript(p,user,args){
+  const pre=p.pre?p.pre+"\n":"";
+  const call=p.wrap?("_r="+p.wrap+"(*_args)\n"):("_r="+p.fn+"(*_args)\n");
+  const tail="\n"+call+(p.fl.ip?"_r=_args[0]\n":"");
+  if(ENG.type==="pyodide")return "import json as _json\n"+pre+user+"\n_args=_json.loads("+JSON.stringify(JSON.stringify(args))+")"+tail+"print('@@R@@'+_json.dumps(_r))";
+  return SHIM+"\n"+pre+stripImports(user)+"\n_args="+pyLit(args)+tail+"print('@@R@@'+_ser(_r))"}
+async function runScript(code){
+  if(ENG.type==="pyodide"){const out=[];
+    ENG.py.setStdout({batched:s=>out.push(s)});ENG.py.setStderr({batched:s=>out.push(s)});
+    try{await ENG.py.runPythonAsync(code);return{out:out.join("\n"),err:null}}
+    catch(e){return{out:out.join("\n"),err:String(e.message||e)}}}
+  return new Promise(res=>{const out=[];
+    Sk.configure({output:s=>out.push(s),read:x=>{if(Sk.builtinFiles===undefined||Sk.builtinFiles.files[x]===undefined)throw "File not found: '"+x+"'";return Sk.builtinFiles.files[x]},__future__:Sk.python3,execLimit:10000});
+    Sk.misceval.asyncToPromise(()=>Sk.importMainWithBody("<stdin>",false,code,true)).then(()=>res({out:out.join(""),err:null}),e=>res({out:out.join(""),err:e.toString()}))})}
+function cmpAny(a,b){const x=JSON.stringify(a),y=JSON.stringify(b);return x<y?-1:x>y?1:0}
+function canon(v,p){if(!Array.isArray(v))return v;let r=v;
+  if(p.fl.si)r=r.map(x=>Array.isArray(x)?[...x].sort(cmpAny):x);
+  if(p.fl.so)r=[...r].sort(cmpAny);return r}
+function eq(a,b,ap){
+  if(typeof a==="number"&&typeof b==="number")return ap?Math.abs(a-b)<=1e-6+1e-6*Math.abs(b):Math.abs(a-b)<1e-9;
+  if(Array.isArray(a)&&Array.isArray(b)){if(a.length!==b.length)return false;
+    for(let i=0;i<a.length;i++)if(!eq(a[i],b[i],ap))return false;return true}
+  return a===b}
+async function runTests(p){
+  const btn=$("#runBtn"),stat=t=>{$("#runStat").textContent=t},out=$("#out");
+  btn.disabled=true;out.innerHTML="";
+  try{await ensureEngine(stat)}catch(e){stat("");out.innerHTML='<div class="trow bad"><span class="tt">✗ '+esc(e.message)+'</span></div>';btn.disabled=false;return}
+  stat("Running...");
+  const user=$("#ed").value;let allOk=true;let html="";
+  for(let i=0;i<p.tests.length;i++){const t=p.tests[i];
+    const args=JSON.parse(JSON.stringify(t.a));
+    const res=await runScript(buildScript(p,user,args));
+    let got=null,fail=null,prints="";
+    if(res.err)fail=res.err;
+    else{const k=res.out.indexOf("@@R@@");
+      if(k<0)fail="No result returned — did you rename or forget the function "+p.fn+"()?";
+      else{prints=res.out.slice(0,k).trim();const line=res.out.slice(k+5);const nl=line.indexOf("\n");
+        try{got=JSON.parse(nl<0?line:line.slice(0,nl))}catch(e){fail="Could not read the returned value."}}}
+    let ok=false;
+    if(!fail)ok=eq(canon(got,p),canon(t.w,p),!!p.fl.ap);
+    if(!ok)allOk=false;
+    html+='<div class="trow '+(ok?"ok":"bad")+'"><span class="tt">'+(ok?"✓":"✗")+' Test '+(i+1)+'</span>';
+    if(!ok){html+='<div class="mono2">in:  '+esc(t.a.map(x=>JSON.stringify(x)).join(", "))+'\nexp: '+esc(JSON.stringify(t.w))+'\ngot: '+esc(fail?("[error] "+fail):JSON.stringify(got))+(prints?'\n--- your prints ---\n'+esc(prints):"")+'</div>'}
+    else if(prints){html+='<div class="mono2">'+esc(prints)+'</div>'}
+    html+='</div>';out.innerHTML=html}
+  stat("");
+  if(allOk){S.solved[p.id]=true;save();renderNav();
+    out.innerHTML+='<div class="bigok">All tests passed — marked SOLVED. Engine: '+ENG.type+'.</div>';
+    const b=document.querySelector(".badges");if(b&&!b.querySelector(".bg.solved")){const s=document.createElement("span");s.className="bg solved";s.textContent="SOLVED";b.insertBefore(s,b.querySelector(".rvbtn"))}}
+  btn.disabled=false}
+
+/* ---- export / import / drawer ---- */
+$("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="dive_station_progress.json";a.click();URL.revokeObjectURL(a.href)};
+$("#importBtn").onclick=()=>$("#importFile").click();
+$("#importFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);for(const k of["code","solved","studied","review"])if(o[k])S[k]=o[k];save();renderNav();showHome()}catch(err){alert("Could not read that file.")}};r.readAsText(f)});
+function closeNav(){$("#nav").classList.remove("open");$("#scrim").classList.remove("show")}
+$("#menuBtn").onclick=()=>{$("#nav").classList.toggle("open");$("#scrim").classList.toggle("show")};
+$("#scrim").onclick=closeNav;
+
+(async()=>{await loadState();renderNav();
+  if(S.last&&PROBLEMS.find(p=>p.id===S.last))showProblem(S.last);else showHome()})();
+</script>
+</body>
+</html>
