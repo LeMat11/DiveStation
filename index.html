@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <title>Dive Station · Robotics Interview Prep</title>
 <style>
 :root{
-  --ink:#0b1117; --panel:#131b24; --panel2:#1a2531; --line:#28374a;
-  --text:#dbe4ec; --dim:#8fa1b3; --faint:#5d7082;
-  --sonar:#41d0c7; --sonardim:#2a8a84; --amber:#e8b64c; --red:#e0625d; --green:#5fd08a;
+  --ink:#f2f4f6; --panel:#ffffff; --panel2:#e8edf1; --line:#d7dfe6;
+  --text:#1e2a36; --dim:#54687a; --faint:#7f93a5;
+  --sonar:#0e8f84; --sonardim:#43b0a5; --amber:#b07b16; --red:#c4443d; --green:#178a4c;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.87em;color:var(--sonar);white-space:nowrap}
-pre{background:#0d141c;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
+pre{background:#fafcfd;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
 pre code{background:none;border:none;padding:0;color:var(--text);font-size:inherit;white-space:pre}
-header{position:sticky;top:0;z-index:30;background:rgba(11,17,23,.95);backdrop-filter:blur(6px);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header{background:var(--panel);padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 header h1{font-size:14px;font-weight:700;letter-spacing:.14em;white-space:nowrap}
 header h1 .tick{color:var(--sonar)}
 #menuBtn{display:none;font-size:18px;padding:2px 8px;border:1px solid var(--line);border-radius:6px;color:var(--dim)}
@@ -29,8 +29,15 @@ header h1 .tick{color:var(--sonar)}
 .chip.ok{color:var(--sonar);border-color:var(--sonardim)}
 .tbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 10px}
 .tbtn:hover{color:var(--text);border-color:var(--faint)}
-.wrap{display:flex;min-height:calc(100vh - 50px)}
-nav{width:262px;flex-shrink:0;border-right:1px solid var(--line);padding:10px 0 40px;overflow-y:auto;height:calc(100vh - 50px);position:sticky;top:50px}
+#langBtn.chip.ok{background:rgba(14,143,132,.10);box-shadow:inset 0 0 0 1px rgba(14,143,132,.25)}
+#topbar{position:sticky;top:0;z-index:30}
+#modtabs{display:flex;gap:4px;padding:6px 12px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto}
+#modtabs button{font-size:13px;font-weight:600;color:var(--dim);padding:6px 14px;border-radius:8px;white-space:nowrap;display:flex;gap:7px;align-items:baseline}
+#modtabs button:hover{background:var(--panel2);color:var(--text)}
+#modtabs button.on{background:var(--sonar);color:#fff}
+#modtabs .cnt{font-size:10.5px;font-weight:500;opacity:.85}
+.wrap{display:flex;min-height:calc(100vh - 94px)}
+nav{width:262px;flex-shrink:0;border-right:1px solid var(--line);padding:10px 0 40px;overflow-y:auto;height:calc(100vh - 94px);position:sticky;top:94px}
 .zone{padding:14px 16px 5px;color:var(--faint);font-size:10.5px;letter-spacing:.13em;font-weight:600}
 .zone .m{color:var(--sonardim);letter-spacing:0}
 .zone.deckzone{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
@@ -51,7 +58,7 @@ nav{width:262px;flex-shrink:0;border-right:1px solid var(--line);padding:10px 0 
 .rvmark{color:var(--amber);font-size:11px;flex-shrink:0}
 .fchips{display:flex;gap:5px;padding:6px 14px;flex-wrap:wrap}
 .fchip{font-size:11px;border:1px solid var(--line);border-radius:20px;padding:2px 9px;color:var(--dim)}
-.fchip.on{color:var(--ink);background:var(--sonar);border-color:var(--sonar);font-weight:600}
+.fchip.on{color:#fff;background:var(--sonar);border-color:var(--sonar);font-weight:600}
 main{flex:1;min-width:0;padding:22px 26px 90px;max-width:880px}
 .crumb{color:var(--faint);font-size:11px;letter-spacing:.12em;margin-bottom:6px}
 h2{font-size:21px;margin-bottom:8px;font-weight:700}
@@ -67,8 +74,8 @@ h3{font-size:15px;margin:18px 0 6px;color:var(--sonar)}
 .bg.E{color:var(--green);border:1px solid rgba(95,208,138,.4)}
 .bg.M{color:var(--amber);border:1px solid rgba(232,182,76,.4)}
 .bg.lc{color:var(--faint);border:1px solid var(--line);font-weight:400}
-.bg.solved{color:var(--ink);background:var(--sonar)}
-.bg.studied{color:var(--ink);background:var(--amber)}
+.bg.solved{color:#fff;background:var(--sonar)}
+.bg.studied{color:#fff;background:var(--amber)}
 .rvbtn{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:2px 10px}
 .rvbtn.on{color:var(--amber);border-color:var(--amber)}
 .robobox{border:1px solid var(--line);border-left:3px solid var(--amber);background:var(--panel);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;color:var(--dim);font-size:13.5px}
@@ -88,10 +95,10 @@ h3{font-size:15px;margin:18px 0 6px;color:var(--sonar)}
 .revbody li{margin:5px 0;color:var(--text)}
 .pitline{color:var(--red)}
 .tcase{font-size:12.5px;color:var(--dim);font-family:ui-monospace,Menlo,Consolas,monospace;padding:3px 0;overflow-x:auto;white-space:nowrap}
-textarea{width:100%;min-height:340px;background:#0d141c;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;line-height:1.5;resize:vertical;tab-size:4;-moz-tab-size:4}
+textarea{width:100%;min-height:340px;background:#ffffff;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:16px;line-height:1.5;resize:vertical;tab-size:4;-moz-tab-size:4}
 textarea:focus{outline:none;border-color:var(--sonardim)}
 .btnrow{display:flex;gap:9px;margin:10px 0;flex-wrap:wrap;align-items:center}
-.run{background:var(--sonar);color:var(--ink);font-weight:700;font-size:14px;border-radius:8px;padding:8px 22px}
+.run{background:var(--sonar);color:#fff;font-weight:700;font-size:14px;border-radius:8px;padding:8px 22px}
 .run:disabled{opacity:.5;cursor:wait}
 .ghost{border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:8px 14px;font-size:13px}
 .ghost:hover{color:var(--text)}
@@ -117,11 +124,11 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .hcard{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel)}
 .hcard .hnum{font-size:26px;font-weight:700;color:var(--sonar)}
 .hcard .hlab{color:var(--dim);font-size:12.5px;margin-top:2px}
-#scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:39}
+#scrim{display:none;position:fixed;inset:0;background:rgba(30,42,54,.32);z-index:39}
 @media(max-width:900px){
   #menuBtn{display:block}
   #statLabel{display:none}
-  nav{position:fixed;left:0;top:0;height:100vh;z-index:40;background:var(--ink);transform:translateX(-105%);transition:transform .22s;width:280px;padding-top:14px}
+  nav{position:fixed;left:0;top:0;height:100vh;z-index:40;background:var(--panel);box-shadow:0 0 30px rgba(20,40,60,.18);transform:translateX(-105%);transition:transform .22s;width:280px;padding-top:14px}
   nav.open{transform:translateX(0)}
   #scrim.show{display:block}
   main{padding:16px 14px 90px}
@@ -130,6 +137,7 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 </style>
 </head>
 <body>
+<div id="topbar">
 <header>
   <button id="menuBtn">&#9776;</button>
   <h1>DIVE STATION <span class="tick">&#9646;</span></h1>
@@ -141,6 +149,13 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
   <button id="importBtn" class="tbtn">Import</button>
   <input type="file" id="importFile" accept="application/json" style="display:none">
 </header>
+<div id="modtabs">
+  <button data-m="home" class="on">Overview</button>
+  <button data-m="manual">Field Manual</button>
+  <button data-m="prob">Problems <span class="cnt" id="tabProbCnt"></span></button>
+  <button data-m="deck">Knowledge Deck <span class="cnt" id="tabDeckCnt"></span></button>
+</div>
+</div>
 <div class="wrap">
   <nav id="nav"></nav>
   <main id="main"></main>
@@ -1656,39 +1671,56 @@ function passDeckFilter(c){const f=S.deckFilter;
   return true}
 function dotCls(p){return S.solved[p.id]?"dot solved":(S.studied[p.id]?"dot studied":"dot")}
 function dotClsCard(c){return S.studied[c.id]?"dot studied":"dot"}
+let MOD="home";
+function artBtn(a){return '<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'}
 function renderNav(){let h="";
-  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; PYTHON</span></div>';
-  MANUAL.filter(a=>a.grp==="py").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
-  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; ROBOTICS</span></div>';
-  MANUAL.filter(a=>a.grp==="rb").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
-  h+='<div class="zone">FIELD MANUAL <span class="m">&middot; INTERVIEW</span></div>';
-  MANUAL.filter(a=>a.grp==="iv").forEach(a=>{h+='<button class="art'+(cur==="a:"+a.id?" cur":"")+'" data-a="'+a.id+'"><span class="nm">'+esc(a.t)+'</span></button>'});
   const solved=Object.keys(S.solved).length;
-  h+='<div class="zone">PROBLEMS <span class="m">'+solved+' / '+PROBLEMS.length+' solved</span></div>';
-  h+='<div class="fchips">';
-  [["all","All"],["e","Easy"],["m","Med"],["todo","Unsolved"],["rev","&#127744;"]].forEach(([f,l])=>{h+='<button class="fchip'+(S.filter===f?" on":"")+'" data-f="'+f+'">'+l+'</button>'});
-  h+='</div>';
-  ZONES.forEach(([z,name])=>{const list=PROBLEMS.filter(p=>p.z===z&&passFilter(p));if(!list.length)return;
-    h+='<div class="subzone">'+esc(name)+'</div>';
-    list.forEach(p=>{h+='<button class="prob'+(cur==="p:"+p.id?" cur":"")+'" data-p="'+p.id+'"><span class="'+dotCls(p)+'"></span><span class="nm">'+esc(p.t)+'</span>'+(S.review[p.id]?'<span class="rvmark">&#127744;</span>':'')+'<span class="dbadge '+p.d+'">'+p.d+'</span></button>'});
-  });
   const deckStudied=DECK.filter(c=>S.studied[c.id]).length;
-  h+='<div class="zone deckzone"><span>KNOWLEDGE DECK</span><span class="m">'+deckStudied+' / '+DECK.length+'</span><button class="fchip zonequiz" data-quiz="10">Quiz me</button></div>';
-  h+='<div class="fchips">';
-  [["all","All"],["algo","Algo"],["pylang","Python"],["hw","HW"],["math","Math"],["gotcha","Gotcha"],["rev","Due &#127744;"]].forEach(([f,l])=>{h+='<button class="fchip'+(S.deckFilter===f?" on":"")+'" data-df="'+f+'">'+l+'</button>'});
-  h+='</div>';
-  DECK_PROJECTS.forEach(([proj,name])=>{const projectCards=DECK.filter(c=>c.proj===proj);const studied=projectCards.filter(c=>S.studied[c.id]).length;
-    h+='<div class="subzone"><b>'+esc(name)+'</b><span class="m">'+studied+' / '+projectCards.length+'</span></div>';
-    DECK_CATS.forEach(([cat,catName])=>{const list=projectCards.filter(c=>c.cat===cat&&passDeckFilter(c));if(!list.length)return;
-      h+='<div class="deckcat">'+esc(catName)+'</div>';
-      list.forEach(c=>{h+='<button class="prob'+(cur==="c:"+c.id?" cur":"")+'" data-c="'+c.id+'"><span class="'+dotClsCard(c)+'"></span><span class="nm">'+esc(c.term)+'</span>'+(S.review[c.id]?'<span class="rvmark">&#127744;</span>':'')+'</button>'});
+  if(MOD==="manual"){
+    h+='<div class="zone">FIELD MANUAL <span class="m">&middot; PYTHON</span></div>';
+    MANUAL.filter(a=>a.grp==="py").forEach(a=>{h+=artBtn(a)});
+    h+='<div class="zone">FIELD MANUAL <span class="m">&middot; ROBOTICS</span></div>';
+    MANUAL.filter(a=>a.grp==="rb").forEach(a=>{h+=artBtn(a)});
+    h+='<div class="zone">FIELD MANUAL <span class="m">&middot; INTERVIEW</span></div>';
+    MANUAL.filter(a=>a.grp==="iv").forEach(a=>{h+=artBtn(a)});
+  }else if(MOD==="prob"){
+    h+='<div class="zone">PROBLEMS <span class="m">'+solved+' / '+PROBLEMS.length+' solved</span></div>';
+    h+='<div class="fchips">';
+    [["all","All"],["e","Easy"],["m","Med"],["todo","Unsolved"],["rev","&#127744;"]].forEach(([f,l])=>{h+='<button class="fchip'+(S.filter===f?" on":"")+'" data-f="'+f+'">'+l+'</button>'});
+    h+='</div>';
+    ZONES.forEach(([z,name])=>{const list=PROBLEMS.filter(p=>p.z===z&&passFilter(p));if(!list.length)return;
+      h+='<div class="subzone">'+esc(name)+'</div>';
+      list.forEach(p=>{h+='<button class="prob'+(cur==="p:"+p.id?" cur":"")+'" data-p="'+p.id+'"><span class="'+dotCls(p)+'"></span><span class="nm">'+esc(p.t)+'</span>'+(S.review[p.id]?'<span class="rvmark">&#127744;</span>':'')+'<span class="dbadge '+p.d+'">'+p.d+'</span></button>'});
     });
-  });
+  }else if(MOD==="deck"){
+    h+='<div class="zone deckzone"><span>KNOWLEDGE DECK</span><span class="m">'+deckStudied+' / '+DECK.length+'</span><button class="fchip zonequiz" data-quiz="10">Quiz me</button></div>';
+    h+='<div class="fchips">';
+    [["all","All"],["algo","Algo"],["pylang","Python"],["hw","HW"],["math","Math"],["gotcha","Gotcha"],["rev","Due &#127744;"]].forEach(([f,l])=>{h+='<button class="fchip'+(S.deckFilter===f?" on":"")+'" data-df="'+f+'">'+l+'</button>'});
+    h+='</div>';
+    DECK_PROJECTS.forEach(([proj,name])=>{const projectCards=DECK.filter(c=>c.proj===proj);const studied=projectCards.filter(c=>S.studied[c.id]).length;
+      h+='<div class="subzone"><b>'+esc(name)+'</b><span class="m">'+studied+' / '+projectCards.length+'</span></div>';
+      DECK_CATS.forEach(([cat,catName])=>{const list=projectCards.filter(c=>c.cat===cat&&passDeckFilter(c));if(!list.length)return;
+        h+='<div class="deckcat">'+esc(catName)+'</div>';
+        list.forEach(c=>{h+='<button class="prob'+(cur==="c:"+c.id?" cur":"")+'" data-c="'+c.id+'"><span class="'+dotClsCard(c)+'"></span><span class="nm">'+esc(c.term)+'</span>'+(S.review[c.id]?'<span class="rvmark">&#127744;</span>':'')+'</button>'});
+      });
+    });
+  }
   $("#nav").innerHTML=h;
+  const isHome=MOD==="home";
+  $("#nav").style.display=isHome?"none":"";
+  $("#menuBtn").style.visibility=isHome?"hidden":"";
+  document.querySelectorAll("#modtabs button").forEach(b=>b.classList.toggle("on",b.dataset.m===MOD));
+  $("#tabProbCnt").textContent=solved+"/"+PROBLEMS.length;
+  $("#tabDeckCnt").textContent=deckStudied+"/"+DECK.length;
   const pct=Math.round(100*solved/PROBLEMS.length);
   $("#depthFill").style.width=pct+"%";
   $("#statLabel").textContent=solved+"/"+PROBLEMS.length+" solved · "+deckStudied+"/"+DECK.length+" cards";
 }
+document.querySelectorAll("#modtabs button").forEach(b=>{b.onclick=()=>{const m=b.dataset.m;
+  if(m==="home"){showHome();closeNav();return}
+  MOD=m;renderNav();
+  if(window.matchMedia("(max-width:900px)").matches){$("#nav").classList.add("open");$("#scrim").classList.add("show")}
+}});
 $("#nav").addEventListener("click",e=>{
   const q=e.target.closest("[data-quiz]");if(q){startQuiz(Number(q.dataset.quiz)||10);closeNav();return}
   const df=e.target.closest("[data-df]");if(df){S.deckFilter=df.dataset.df;renderNav();return}
@@ -1700,7 +1732,7 @@ $("#nav").addEventListener("click",e=>{
 
 /* ---- views ---- */
 let cur=null;
-function showHome(){cur=null;renderNav();
+function showHome(){cur=null;MOD="home";renderNav();
   const solved=Object.keys(S.solved).length,studied=PROBLEMS.filter(p=>S.studied[p.id]).length,deckStudied=DECK.filter(c=>S.studied[c.id]).length,rev=DECK.filter(c=>S.review[c.id]).length;
   let h='<div class="crumb">BASE STATION</div><h2>Dive Station</h2>';
   h+='<p class="doc" style="color:var(--dim)">One station, three muscles: <b style="color:var(--amber)">Study</b> the layered approaches, <b style="color:var(--sonar)">Practice</b> problems by hand, and use the <b style="color:var(--amber)">Knowledge Deck</b> to actively recall every technical detail from your four projects.</p>';
@@ -1709,12 +1741,12 @@ function showHome(){cur=null;renderNav();
   h+='<div class="doc"><h3>The loop</h3><p>1. Fragment time: open a problem or knowledge card, predict the hidden material, then reveal it. Flag &#127744; anything shaky.</p><p>2. Block time: run a 10-card quiz, then filter the deck by Due &#127744; and repeat weak details.</p><p>3. Before an interview: practice problems cold, review the Gotchas cards, and use the Field Manual story bank.</p></div>';
   if(S.last||S.lastCard){h+='<div class="btnrow" style="margin-top:18px">';if(S.last){const p=PROBLEMS.find(x=>x.id===S.last);if(p)h+='<button class="ghost" onclick="showProblem(\''+p.id+'\')">Continue problem: '+esc(p.t)+'</button>'}if(S.lastCard){const c=DECK.find(x=>x.id===S.lastCard);if(c)h+='<button class="ghost" onclick="showCard(\''+c.id+'\')">Continue card: '+esc(c.term)+'</button>'}h+='</div>'}
   $("#main").innerHTML=h;window.scrollTo(0,0)}
-function showArticle(id){cur="a:"+id;renderNav();const a=MANUAL.find(x=>x.id===id);
+function showArticle(id){cur="a:"+id;MOD="manual";renderNav();const a=MANUAL.find(x=>x.id===id);
   $("#main").innerHTML='<div class="crumb">FIELD MANUAL · '+({py:"PYTHON",rb:"ROBOTICS",iv:"INTERVIEW"}[a.grp]||"")+'</div><h2>'+a.t+'</h2><div class="doc">'+a.body+'</div>';
   window.scrollTo(0,0)}
 
 function revCard(label,inner,extra){return '<div class="rev"><button class="revhead" '+(extra||"")+'><span>'+label+'</span><span class="hint">show</span></button><div class="revbody hide">'+inner+'</div></div>'}
-function showCard(id){const c=DECK.find(x=>x.id===id);if(!c){showHome();return}cur="c:"+id;S.lastCard=id;save();renderNav();
+function showCard(id){const c=DECK.find(x=>x.id===id);if(!c){showHome();return}cur="c:"+id;MOD="deck";S.lastCard=id;save();renderNav();
   const recall=deckText(c,"recall"),detail=deckText(c,"detail"),solved=deckText(c,"solved");
   let h='<div class="crumb">'+esc(deckProjectName(c.proj)).toUpperCase()+' &middot; '+esc(deckCatName(c.cat)).toUpperCase()+'</div><h2>'+md(c.term)+'</h2>';
   h+='<div class="badges"><span class="bg lc">'+esc(deckCatName(c.cat)).toUpperCase()+'</span>'+(S.studied[c.id]?'<span class="bg studied">STUDIED</span>':'')+'<button class="rvbtn'+(S.review[c.id]?" on":"")+'" id="cardRv">&#127744; '+(S.review[c.id]?"flagged":"flag for review")+'</button></div>';
@@ -1730,7 +1762,7 @@ function showCard(id){const c=DECK.find(x=>x.id===id);if(!c){showHome();return}c
 let Q=null;
 function startQuiz(n=10){const ranked=DECK.map(c=>({c,score:(S.review[c.id]?4:0)+(!S.studied[c.id]?2:0),tie:Math.random()})).sort((a,b)=>b.score-a.score||a.tie-b.tie);
   Q={cards:ranked.slice(0,Math.min(n,ranked.length)).map(x=>x.c.id),index:0,revealed:false,got:0,again:0};renderQuiz()}
-function renderQuiz(){if(!Q)return;cur="q";renderNav();if(Q.index>=Q.cards.length){
+function renderQuiz(){if(!Q)return;cur="q";MOD="deck";renderNav();if(Q.index>=Q.cards.length){
     $("#main").innerHTML='<div class="crumb">KNOWLEDGE DECK &middot; QUIZ COMPLETE</div><h2>Round complete</h2><div class="homegrid"><div class="hcard"><div class="hnum">'+Q.got+'</div><div class="hlab">got it</div></div><div class="hcard"><div class="hnum">'+Q.again+'</div><div class="hlab">review again &#127744;</div></div></div><div class="btnrow"><button class="run" id="quizAgain">Quiz another 10</button><button class="ghost" id="quizHome">Back home</button></div>';
     $("#quizAgain").onclick=()=>startQuiz(10);$("#quizHome").onclick=showHome;window.scrollTo(0,0);return}
   const c=DECK.find(x=>x.id===Q.cards[Q.index]),recall=deckText(c,"recall"),detail=deckText(c,"detail"),solved=deckText(c,"solved");let h='<div class="crumb">KNOWLEDGE DECK &middot; QUIZ '+(Q.index+1)+' / '+Q.cards.length+'</div><h2>'+md(c.term)+'</h2><div class="quizmeta">'+esc(deckProjectName(c.proj))+' &middot; '+esc(deckCatName(c.cat))+'</div><div class="quizquestion">'+md(recall)+'</div>';
@@ -1740,7 +1772,7 @@ function renderQuiz(){if(!Q)return;cur="q";renderNav();if(Q.index>=Q.cards.lengt
   if(!Q.revealed)$("#quizReveal").onclick=()=>{Q.revealed=true;renderQuiz()};
   else{$("#quizGot").onclick=()=>{S.studied[c.id]=true;delete S.review[c.id];Q.got++;Q.index++;Q.revealed=false;save();renderQuiz()};$("#quizAgainFlag").onclick=()=>{S.review[c.id]=true;Q.again++;Q.index++;Q.revealed=false;save();renderQuiz()}}
 }
-function showProblem(id){cur="p:"+id;S.last=id;save();renderNav();
+function showProblem(id){cur="p:"+id;MOD="prob";S.last=id;save();renderNav();
   const p=PROBLEMS.find(x=>x.id===id);const zn=ZONES.find(z=>z[0]===p.z)[1];
   let h='<div class="crumb">'+esc(zn).toUpperCase()+'</div><h2>'+esc(p.t)+'</h2>';
   h+='<div class="badges"><span class="bg '+p.d+'">'+(p.d==="E"?"EASY":"MEDIUM")+'</span><span class="bg lc">'+esc(p.lc)+'</span>';
@@ -1942,7 +1974,7 @@ async function runTests(p){
   btn.disabled=false}
 
 /* ---- export / import / drawer ---- */
-function updateLangBtn(){$("#langBtn").className="tbtn"+(S.lang==="zh"?" chip ok":"")}
+function updateLangBtn(){const zh=S.lang==="zh",b=$("#langBtn");b.className="tbtn"+(zh?" chip ok":"");b.setAttribute("aria-pressed",String(zh));b.title="Knowledge Deck language: "+(zh?"中文":"English");document.documentElement.lang=zh?"zh-CN":"en"}
 $("#langBtn").onclick=()=>{S.lang=S.lang==="zh"?"en":"zh";save();updateLangBtn();if(cur==="q"&&Q)renderQuiz();else if(cur&&cur.startsWith("c:"))showCard(cur.slice(2))};
 $("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="dive_station_progress.json";a.click();URL.revokeObjectURL(a.href)};
