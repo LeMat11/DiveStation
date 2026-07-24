@@ -13,8 +13,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
-body{background:var(--ink);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55}
+body{background:var(--ink);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55;overflow-x:hidden}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid rgba(25,135,124,.22);outline-offset:2px}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.87em;color:var(--sonar);white-space:nowrap}
 pre{background:#fafcfd;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
 pre code{background:none;border:none;padding:0;color:var(--text);font-size:inherit;white-space:pre}
@@ -157,7 +158,9 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .kb-iconbtn{height:36px;padding:0 11px;border:1px solid #d5dfdf;border-radius:10px;background:#fff;color:#455e63;font-size:12px}
 .kb-iconbtn:hover{border-color:#6caaa3;color:#123f45}
 .kb-layout{display:grid;grid-template-columns:268px minmax(0,1fr);max-width:1520px;margin:0 auto}
+.kb-layout.home{grid-template-columns:minmax(0,1fr)}
 .kb-side{position:sticky;top:68px;height:calc(100vh - 68px);padding:24px 16px 28px;border-right:1px solid rgba(26,63,68,.12);overflow-y:auto}
+.kb-scrim{display:none}
 .kb-back{width:100%;text-align:left;padding:9px 10px;margin-bottom:14px;color:#60777b;font-size:12px;border-radius:9px}
 .kb-back:hover{background:rgba(18,63,69,.06);color:#123f45}
 .kb-project-title{padding:0 10px 17px}
@@ -265,49 +268,85 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
   .kb-path{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:720px){
-  .kb-top{height:60px;padding:0 14px;gap:10px}
-  .kb-brand small,.kb-head-actions{display:none}
-  .kb-search input{height:38px;padding-right:12px}
+  .kb-top{height:60px;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));gap:9px}
+  .kb-brand>span:last-child,.kb-head-actions{display:none}
+  .kb-brand{min-width:34px}
+  .kb-mark{width:34px;height:34px}
+  .kb-search{min-width:0}
+  .kb-search input{height:38px;padding:0 10px 0 35px;font-size:14px}
   .kb-search kbd{display:none}
   .kb-layout{display:block}
-  .kb-side{position:fixed;z-index:60;left:0;top:60px;width:280px;height:calc(100vh - 60px);background:#f8faf9;transform:translateX(-105%);transition:.2s;box-shadow:20px 0 40px rgba(10,40,45,.15)}
+  .kb-side{position:fixed;z-index:70;left:0;top:60px;width:min(86vw,310px);height:calc(100dvh - 60px);padding-bottom:max(28px,env(safe-area-inset-bottom));background:#f8faf9;transform:translateX(-105%);transition:transform .2s ease;box-shadow:20px 0 40px rgba(10,40,45,.15)}
   .kb-side.open{transform:translateX(0)}
+  .kb-scrim{position:fixed;inset:60px 0 0;z-index:65;background:rgba(11,36,40,.38);backdrop-filter:blur(2px)}
+  .kb-scrim.show{display:block}
   .kb-mobile-menu{display:block}
-  .kb-main{padding:28px 16px 70px}
+  .kb-main{width:100%!important;max-width:none!important;margin:0!important;padding:27px 16px max(72px,env(safe-area-inset-bottom))}
   .kb-project-grid,.kb-story-grid{grid-template-columns:1fr}
+  .kb-project-grid{gap:11px;margin-top:23px}
+  .kb-project-card{min-height:0;padding:18px}
+  .kb-project-card h3{font-size:20px;margin:14px 0 6px}
   .kb-path{grid-template-columns:1fr 1fr}
   .kb-title{font-size:31px}
+  .kb-lead{font-size:14px;line-height:1.7}
+  .kb-section{margin-top:31px}
+  .kb-section-head{align-items:start}
+  .kb-actions{display:grid;grid-template-columns:1fr}
+  .kb-primary,.kb-secondary,.kb-iconbtn,.kb-navbtn{min-height:44px}
+  .kb-primary,.kb-secondary{width:100%;text-align:center}
+  .kb-overview-grid{gap:11px}
+  .kb-hero-card,.kb-panel{padding:17px}
+  .kb-card-head{padding:14px 13px;grid-template-columns:24px minmax(0,1fr) 16px}
   .kb-card-body{padding-left:16px}
-  .kb-card-title span{max-width:235px}
-  .kb-protocols{display:block;overflow-x:auto}
+  .kb-card-title span{max-width:none;white-space:normal;line-height:1.45}
+  .kb-card-tools{display:grid;grid-template-columns:1fr 1fr}
+  .kb-mini{min-height:40px}
+  .kb-protocols,.kb-protocols tbody,.kb-protocols tr,.kb-protocols td{display:block;width:100%}
+  .kb-protocols{background:transparent;border:0;overflow:visible}
+  .kb-protocols thead{display:none}
+  .kb-protocols tr{margin-bottom:11px;padding:13px 15px;background:#fff;border:1px solid #dbe3e2;border-radius:13px}
+  .kb-protocols td{padding:5px 0 5px 92px;border:0;position:relative;min-height:28px;white-space:normal}
+  .kb-protocols td:before{position:absolute;left:0;top:5px;width:82px;color:#7b8b8e;font-size:10px;font-weight:800;letter-spacing:.05em}
+  .kb-protocols td:nth-child(1):before{content:"协议 / 部件"}
+  .kb-protocols td:nth-child(2):before{content:"项目角色"}
+  .kb-protocols td:nth-child(3):before{content:"选择原因"}
+  .kb-protocols td:nth-child(4):before{content:"风险"}
+  .kb-modal{padding:68px 10px 12px;align-items:start}
+  .kb-modal-box{max-height:calc(100dvh - 80px);padding:12px;border-radius:14px}
+  .kb-modal-top{gap:8px}
+  .kb-modal-top input{min-width:0}
+}
+@media(max-width:430px){
+  .kb-main{padding-left:13px;padding-right:13px}
+  .kb-title{font-size:28px}
+  .kb-path{grid-template-columns:1fr}
+  .kb-section-head{display:block}
+  .kb-section-note{display:block;margin-top:5px}
+  .kb-card-tools{grid-template-columns:1fr}
+  .kb-protocols td{padding-left:84px}
+  .kb-protocols td:before{width:76px}
 }
 </style>
 </head>
 <body>
-<div id="topbar">
-<header>
-  <button id="menuBtn">&#9776;</button>
-  <h1>DIVE STATION <span class="tick">&#9646;</span></h1>
-  <div id="depth"><div id="depthFill"></div></div>
-  <span id="statLabel"></span>
-  <span id="engChip" class="chip">python: idle</span>
-  <button id="langBtn" class="tbtn">EN / 中文</button>
-  <button id="exportBtn" class="tbtn">Export</button>
-  <button id="importBtn" class="tbtn">Import</button>
-  <input type="file" id="importFile" accept="application/json" style="display:none">
-</header>
-<div id="modtabs">
-  <button data-m="home" class="on">Overview</button>
-  <button data-m="manual">Field Manual</button>
-  <button data-m="prob">Problems <span class="cnt" id="tabProbCnt"></span></button>
-  <button data-m="deck">Knowledge Deck <span class="cnt" id="tabDeckCnt"></span></button>
+<div class="kb-shell">
+  <header class="kb-top">
+    <div class="kb-brand"><span class="kb-mark">DS</span><span><strong>DIVE STATION</strong><small>项目面试知识库</small></span></div>
+  </header>
+  <div class="kb-layout" style="display:block">
+    <main class="kb-main" style="max-width:1120px;margin:0 auto">
+      <div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
+      <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
+      <p class="kb-lead">围绕四个真实项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因。</p>
+      <div class="kb-project-grid">
+        <div class="kb-project-card"><span class="kb-project-no">01 · 水下仿生机器人</span><h3>MantaBot</h3><p>多速率控制、CAN 电机、双目视觉与整机安全。</p></div>
+        <div class="kb-project-card"><span class="kb-project-no">02 · 流体实验执行平台</span><h3>VCA Bot</h3><p>ESP-NOW、H 桥、编码器、保护链和实验控制。</p></div>
+        <div class="kb-project-card"><span class="kb-project-no">03 · 稀疏传感流场重建</span><h3>Flow Sensing</h3><p>多模态融合、物理约束、数据泄漏与泛化。</p></div>
+        <div class="kb-project-card"><span class="kb-project-no">04 · 多模态运动分析</span><h3>ClearCoach</h3><p>音视频粗筛、LLM 精判、知识注入与生产部署。</p></div>
+      </div>
+    </main>
+  </div>
 </div>
-</div>
-<div class="wrap">
-  <nav id="nav"></nav>
-  <main id="main"></main>
-</div>
-<div id="scrim"></div>
 <script>
 /* ============ Field Manual: Python Handbook ============ */
 const MANUAL = [
@@ -1785,6 +1824,8 @@ sol:`def collect(x, acc=None):
 tests:[{a:[],w:[[1],[2]]}],fl:{}}
 ];
 
+/* ============ Legacy quiz app (kept as data archive, intentionally disabled) ============ */
+if(false){
 /* ============ App logic ============ */
 const $=s=>document.querySelector(s);
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
@@ -2132,7 +2173,11 @@ function closeNav(){$("#nav").classList.remove("open");$("#scrim").classList.rem
 $("#menuBtn").onclick=()=>{$("#nav").classList.toggle("open");$("#scrim").classList.toggle("show")};
 $("#scrim").onclick=closeNav;
 
+}
+
 /* ============ Chinese project interview knowledge base ============ */
+function kbEsc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function kbMd(s){return kbEsc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
 const KB_PROJECTS={
   mantabot:{
     no:"01",name:"MantaBot",type:"水下仿生机器人",accent:"#58b9ad",
@@ -2242,7 +2287,6 @@ const KB_KEY="divestation_interview_kb_v2";
 function kbClean(v){let s=String(v||"");KB_CLEAN_REPL.forEach(([a,b])=>{s=s.split(a).join(b)});return s}
 function kbLoad(){
   try{const x=JSON.parse(localStorage.getItem(KB_KEY));if(x&&typeof x==="object")KB_STATE={...KB_STATE,...x}}catch(e){}
-  if(!Object.keys(KB_STATE.known).length&&S.studied)KB_STATE.known={...S.studied};
 }
 function kbSave(){try{localStorage.setItem(KB_KEY,JSON.stringify(KB_STATE))}catch(e){}}
 function kbProjectCards(p){return DECK.filter(c=>c.proj===p)}
@@ -2260,21 +2304,42 @@ function kbShell(){
       <div class="kb-head-actions"><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
     </header>
     <div class="kb-layout"><aside class="kb-side" id="kbSide"></aside><main class="kb-main" id="kbMain"></main></div>
+    <div class="kb-scrim" id="kbScrim" aria-hidden="true"></div>
   </div>`;
   document.getElementById("kbHome").onclick=()=>{KB_STATE.project=null;KB_STATE.view="home";KB_STATE.filter="all";kbSave();kbRender()};
-  document.getElementById("kbMenu").onclick=()=>document.getElementById("kbSide").classList.toggle("open");
+  document.getElementById("kbMenu").onclick=()=>kbDrawer(!document.getElementById("kbSide").classList.contains("open"));
+  document.getElementById("kbScrim").onclick=()=>kbDrawer(false);
   document.getElementById("kbStarred").onclick=()=>{KB_STATE.filter=KB_STATE.filter==="starred"?"all":"starred";kbRender()};
   document.getElementById("kbProgress").onclick=()=>{KB_STATE.filter=KB_STATE.filter==="unknown"?"all":"unknown";kbRender()};
   const si=document.getElementById("kbSearch");
   si.onfocus=()=>kbOpenSearch(si.value);si.oninput=()=>kbOpenSearch(si.value);
-  document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("kbSearch")?.focus()}if(e.key==="Escape")document.querySelector(".kb-modal")?.remove()});
+  document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("kbSearch")?.focus()}if(e.key==="Escape"){document.querySelector(".kb-modal")?.remove();kbDrawer(false)}});
+  window.addEventListener("resize",()=>{if(window.innerWidth>720)kbDrawer(false)});
   kbRender();
+}
+function kbDrawer(open){
+  const side=document.getElementById("kbSide"),scrim=document.getElementById("kbScrim"),menu=document.getElementById("kbMenu");
+  if(!side||!scrim||!menu)return;
+  side.classList.toggle("open",open);
+  scrim.classList.toggle("show",open);
+  scrim.setAttribute("aria-hidden",String(!open));
+  menu.setAttribute("aria-expanded",String(open));
 }
 function kbRender(){
   const side=document.getElementById("kbSide"),main=document.getElementById("kbMain");
   if(!side||!main)return;
-  if(!KB_STATE.project){side.innerHTML="";side.style.display="none";main.style.maxWidth="1240px";kbRenderHome(main);return}
-  side.style.display="";main.style.maxWidth="";
+  const layout=document.querySelector(".kb-layout");
+  const menu=document.getElementById("kbMenu");
+  kbDrawer(false);
+  if(!KB_STATE.project){
+    side.innerHTML="";side.style.display="none";
+    menu.style.visibility="hidden";
+    layout.classList.add("home");
+    main.style.maxWidth="1240px";main.style.width="100%";main.style.margin="0 auto";
+    kbRenderHome(main);return
+  }
+  side.style.display="";menu.style.visibility="";layout.classList.remove("home");
+  main.style.maxWidth="";main.style.width="";main.style.margin="";
   const p=KB_STATE.project,meta=KB_PROJECTS[p],cards=kbProjectCards(p),done=kbKnownCount(p),pct=Math.round(100*done/cards.length);
   side.innerHTML=`<button class="kb-back" data-home>← 全部项目</button>
     <div class="kb-project-title"><span>${meta.type}</span><h2>${meta.name}</h2></div>
@@ -2282,7 +2347,7 @@ function kbRender(){
     ${KB_CATS.map(([k,n,i])=>`<button class="kb-navbtn ${KB_STATE.view===k?"on":""}" data-view="${k}"><span class="kb-navico">${i}</span><span>${n}</span>${["algo","pylang","hw","math","gotcha"].includes(k)?`<span class="kb-count">${cards.filter(c=>c.cat===k).length}</span>`:""}</button>`).join("")}
     <div class="kb-side-progress"><div class="row"><span>项目掌握度</span><b>${done} / ${cards.length}</b></div><div class="kb-progress"><i style="width:${pct}%"></i></div></div>`;
   side.querySelector("[data-home]").onclick=()=>{KB_STATE.project=null;KB_STATE.view="home";KB_STATE.filter="all";kbSave();kbRender()};
-  side.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{KB_STATE.view=b.dataset.view;KB_STATE.filter="all";kbSave();kbRender();side.classList.remove("open");window.scrollTo(0,0)});
+  side.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{KB_STATE.view=b.dataset.view;KB_STATE.filter="all";kbSave();kbRender();window.scrollTo(0,0)});
   if(KB_STATE.view==="overview")kbRenderOverview(main,p);
   else if(KB_STATE.view==="interview")kbRenderInterview(main,p);
   else kbRenderCategory(main,p,KB_STATE.view);
@@ -2328,12 +2393,12 @@ function kbRenderOverview(main,p){
 function kbCardHTML(c){
   const solved=kbClean(c.solved_zh||c.solved),detail=kbClean(c.detail_zh||c.detail),recall=kbClean(c.recall_zh||c.recall);
   return `<article class="kb-card ${KB_STATE.known[c.id]?"done":""}" data-id="${c.id}">
-    <button class="kb-card-head" aria-expanded="false"><span class="kb-dot">${KB_STATE.known[c.id]?"✓":"·"}</span><span class="kb-card-title"><strong>${md(solved)}</strong><span>${md(c.term)}</span></span><span class="kb-chevron">⌄</span></button>
+    <button class="kb-card-head" aria-expanded="false"><span class="kb-dot">${KB_STATE.known[c.id]?"✓":"·"}</span><span class="kb-card-title"><strong>${kbMd(solved)}</strong><span>${kbMd(c.term)}</span></span><span class="kb-chevron">⌄</span></button>
     <div class="kb-card-body">
-      <div class="kb-block"><label>技术关键词</label><p>${md(c.term)}</p></div>
-      <div class="kb-block"><label>这个项目为什么需要它</label><p>${md(solved)}</p></div>
-      <div class="kb-block"><label>项目中的做法与权衡</label><p>${md(detail)}</p></div>
-      <div class="kb-block"><label>面试官可能追问</label><p class="kb-question">${md(recall)}</p></div>
+      <div class="kb-block"><label>技术关键词</label><p>${kbMd(c.term)}</p></div>
+      <div class="kb-block"><label>这个项目为什么需要它</label><p>${kbMd(solved)}</p></div>
+      <div class="kb-block"><label>项目中的做法与权衡</label><p>${kbMd(detail)}</p></div>
+      <div class="kb-block"><label>面试官可能追问</label><p class="kb-question">${kbMd(recall)}</p></div>
       <div class="kb-card-tools"><button class="kb-mini ${KB_STATE.known[c.id]?"on":""}" data-known>${KB_STATE.known[c.id]?"✓ 已掌握":"标记为已掌握"}</button><button class="kb-mini ${KB_STATE.starred[c.id]?"on":""}" data-star>${KB_STATE.starred[c.id]?"★ 待复习":"☆ 加入待复习"}</button></div>
     </div></article>`;
 }
@@ -2390,19 +2455,20 @@ function kbRenderAllReview(main){
 function kbOpenSearch(initial=""){
   document.querySelector(".kb-modal")?.remove();
   const modal=document.createElement("div");modal.className="kb-modal";
-  modal.innerHTML=`<div class="kb-modal-box"><div class="kb-modal-top"><input id="kbModalSearch" placeholder="例如：CAN、watchdog、为什么选 ESP-NOW、烧板…" value="${esc(initial)}"><button class="kb-iconbtn" data-close>关闭</button></div><div class="kb-results"></div></div>`;
+  modal.innerHTML=`<div class="kb-modal-box"><div class="kb-modal-top"><input id="kbModalSearch" placeholder="例如：CAN、watchdog、为什么选 ESP-NOW、烧板…" value="${kbEsc(initial)}"><button class="kb-iconbtn" data-close>关闭</button></div><div class="kb-results"></div></div>`;
   document.body.appendChild(modal);
   const input=modal.querySelector("input"),results=modal.querySelector(".kb-results");
   function run(){
     const q=input.value.trim().toLowerCase();
     const hits=(q?DECK.filter(c=>[c.term,c.detail,c.detail_zh,c.solved,c.solved_zh,c.recall,c.recall_zh,KB_PROJECTS[c.proj].name].join(" ").toLowerCase().includes(q)):DECK.filter(c=>KB_STATE.starred[c.id])).slice(0,30);
-    results.innerHTML=hits.length?hits.map(c=>`<button class="kb-result" data-result="${c.id}"><strong>${md(kbClean(c.solved_zh||c.solved))}</strong><span>${KB_PROJECTS[c.proj].name} · ${kbCategoryName(c.cat)} · ${md(c.term)}</span></button>`).join(""):`<div class="kb-empty">${q?"没有找到匹配内容。试试协议名、部件型号或故障现象。":"输入关键词开始全库搜索。"}</div>`;
+    results.innerHTML=hits.length?hits.map(c=>`<button class="kb-result" data-result="${c.id}"><strong>${kbMd(kbClean(c.solved_zh||c.solved))}</strong><span>${KB_PROJECTS[c.proj].name} · ${kbCategoryName(c.cat)} · ${kbMd(c.term)}</span></button>`).join(""):`<div class="kb-empty">${q?"没有找到匹配内容。试试协议名、部件型号或故障现象。":"输入关键词开始全库搜索。"}</div>`;
     results.querySelectorAll("[data-result]").forEach(b=>b.onclick=()=>{const c=DECK.find(x=>x.id===b.dataset.result);KB_STATE.project=c.proj;KB_STATE.view=c.cat;KB_STATE.filter="all";kbSave();modal.remove();kbRender();setTimeout(()=>{const card=document.querySelector('[data-id="'+c.id+'"]');if(card){card.classList.add("open");card.scrollIntoView({behavior:"smooth",block:"center"})}},50)});
   }
   input.oninput=run;modal.querySelector("[data-close]").onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};input.focus();run();
 }
 
-(async()=>{await loadState();kbLoad();kbShell()})();
+kbLoad();
+kbShell();
 </script>
 </body>
 </html>
