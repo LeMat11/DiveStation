@@ -2303,7 +2303,7 @@ function kbShell(){
         <span class="kb-mark">DS</span><span><strong>DIVE STATION</strong><small>项目面试知识库</small></span>
       </button>
       <div class="kb-search"><input id="kbSearch" type="search" placeholder="搜索项目、协议、零部件或故障…" autocomplete="off"><kbd>⌘ K</kbd></div>
-      <div class="kb-head-actions"><a class="kb-iconbtn" href="cld.html">CLD</a><a class="kb-iconbtn" href="fundamentals.html">全栈基础</a><a class="kb-iconbtn" href="coding.html">Coding</a><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
+      <div class="kb-head-actions"><a class="kb-iconbtn" href="cld.html">CLD</a><a class="kb-iconbtn" href="fundamentals.html">全栈基础</a><a class="kb-iconbtn" href="system-design.html">系统设计</a><a class="kb-iconbtn" href="coding.html">Coding</a><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
     </header>
     <div class="kb-layout"><aside class="kb-side" id="kbSide"></aside><main class="kb-main" id="kbMain"></main></div>
     <div class="kb-scrim" id="kbScrim" aria-hidden="true"></div>
@@ -2361,7 +2361,7 @@ function kbRenderHome(main){
   main.innerHTML=`<div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
     <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
     <p class="kb-lead">围绕五个真实机器人项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因；再用全栈基础题和低负担 Coding 练习补齐项目之外的默认知识。</p>
-    <div class="kb-actions"><button class="kb-primary" data-open="mantabot">从 MantaBot 开始</button><a class="kb-secondary" href="cld.html" style="text-decoration:none">CLD 项目深潜</a><a class="kb-secondary" href="fundamentals.html" style="text-decoration:none">机器人全栈基础</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding 训练场</a><button class="kb-secondary" data-review>查看 ${totalStar} 个待复习知识点</button></div>
+    <div class="kb-actions"><button class="kb-primary" data-open="mantabot">从 MantaBot 开始</button><a class="kb-secondary" href="cld.html" style="text-decoration:none">CLD 项目深潜</a><a class="kb-secondary" href="fundamentals.html" style="text-decoration:none">机器人全栈基础</a><a class="kb-secondary" href="system-design.html" style="text-decoration:none">机器人系统设计</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding 训练场</a><button class="kb-secondary" data-review>查看 ${totalStar} 个待复习知识点</button></div>
     <div class="kb-project-grid">${Object.entries(KB_PROJECTS).map(([k,p])=>`<button class="kb-project-card" data-project="${k}" style="--accent:${p.accent};order:${p.no}">
       <span class="kb-project-no">${p.no} · ${p.type}</span><h3>${p.name}</h3><p>${p.tagline}</p>
       <span class="kb-project-meta"><span class="kb-pill">${kbProjectCards(k).length} 个知识点</span><span class="kb-pill">已掌握 ${kbKnownCount(k)}</span></span>

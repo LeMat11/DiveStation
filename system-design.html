@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>机器人系统设计 · Dive Station</title>
+  <meta name="description" content="基于 MantaBot、VCA、Flow Sensing 与 CLD 项目的机器人系统设计面试题。">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">DS</span><span><strong>DIVE STATION</strong><small>ROBOTICS INTERVIEW LAB</small></span></a>
+    <nav class="topnav" aria-label="知识库主导航">
+      <a href="index.html">项目库</a><a href="cld.html">CLD 深潜</a><a href="fundamentals.html">全栈基础</a><a href="system-design.html" aria-current="page">系统设计</a><a href="coding.html">Coding</a>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="side" aria-label="本页目录">
+      <div class="side-label">SYSTEM DESIGN</div>
+      <a href="#method"><span>01</span>回答方法</a>
+      <a href="#rubric"><span>02</span>评分标准</a>
+      <a href="#questions"><span>03</span>核心 8 题</a>
+      <a href="#questions"><span>04</span>扩展 4 题</a>
+      <a href="#checklist"><span>05</span>白板检查表</a>
+      <div class="side-note">每道题先用 3 分钟澄清需求，7 分钟画架构，5 分钟讲失败路径与验证。不要从具体类名开始。</div>
+    </aside>
+
+    <main>
+      <div class="eyebrow">REAL PROJECTS / ARCHITECTURE / FAILURE MODES</div>
+      <h1>机器人系统设计<br>面试训练</h1>
+      <p class="lead">这里不考你背数据结构，而是要求你把真实机器人拆成数据流、控制流、安全链和验证闭环。题目直接来自 MantaBot、VCA、压力–PIV 同步、Flow Sensing 和 CLD 实验系统。</p>
+      <div class="hero-actions"><a class="button primary" href="#questions">开始核心题</a><a class="button" href="coding.html">数据结构 Coding</a><button class="button" id="resetDesign" type="button">清空训练记录</button></div>
+      <div class="status-row"><span class="tag">核心 8 题</span><span class="tag gold">扩展 4 题</span><span class="tag">架构 · 实时 · 安全 · 验证</span><span class="tag" id="designProgress">已完成 0 / 12</span></div>
+
+      <section id="method">
+        <div class="section-head"><h2>15 分钟回答框架</h2><p>面试官看的是判断顺序，不是一张复杂框图</p></div>
+        <div class="pipeline" style="grid-template-columns:repeat(6,minmax(0,1fr))">
+          <div class="step"><b>01 · SCOPE</b><strong>澄清任务</strong><p>用户、环境、自由度、危险能量与成功指标。</p></div>
+          <div class="step"><b>02 · BUDGET</b><strong>量化约束</strong><p>频率、延迟、抖动、带宽、功耗和精度。</p></div>
+          <div class="step"><b>03 · FLOW</b><strong>画两条流</strong><p>数据流与控制流分开，标出方向和速率。</p></div>
+          <div class="step"><b>04 · STATE</b><strong>定义所有权</strong><p>谁写状态、谁读快照、接口契约是什么。</p></div>
+          <div class="step"><b>05 · FAIL</b><strong>逐层失效</strong><p>超时、乱序、冻结、过温、越界与重启。</p></div>
+          <div class="step"><b>06 · PROVE</b><strong>给验证闭环</strong><p>单元、回放、HIL、故障注入与真机验收。</p></div>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>白板开场</strong><p>“我先把安全目标和更新频率定下来，然后画正常数据流；接着补控制权、超时和降级路径，最后给测试计划。这里我假设操作者链路不是安全认证链路，物理急停独立于普通网络命令。”</p></div>
+      </section>
+
+      <section id="rubric">
+        <div class="section-head"><h2>一份完整答案的六个评分面</h2><p>每次练习结束用它自评，而不是看框图是否漂亮</p></div>
+        <div class="grid-3">
+          <div class="card"><h3>1. 需求与量纲</h3><p>有没有明确 Hz、ms、m、°、N、温度和允许失败行为？“实时”必须变成 deadline。</p></div>
+          <div class="card"><h3>2. 边界与所有权</h3><p>控制器、驱动、感知、UI 谁拥有状态？消息是命令、事件还是遥测？</p></div>
+          <div class="card"><h3>3. 正常路径</h3><p>从输入到执行器或从采样到结果，是否能沿箭头解释每一个转换和频率？</p></div>
+          <div class="card"><h3>4. 失效与安全</h3><p>掉线、卡住、过温、传感器冻结、乱序、越界时，系统停在哪里，怎样恢复？</p></div>
+          <div class="card"><h3>5. 可观测性</h3><p>是否记录单调时间、sequence、age、状态转换原因、队列深度和配置版本？</p></div>
+          <div class="card"><h3>6. 验证与演进</h3><p>如何从纯软件测试推进到 HIL 和真机？哪些接口为未来 ROS 2 或新硬件保留？</p></div>
+        </div>
+      </section>
+
+      <section id="questions">
+        <div class="section-head"><h2>项目系统设计题</h2><p>先在纸上回答，再展开参考框架</p></div>
+        <div class="tabs" role="group" aria-label="系统设计题筛选">
+          <button class="filter on" data-design-filter="all" type="button">全部 12</button>
+          <button class="filter" data-design-filter="core" type="button">核心 8</button>
+          <button class="filter" data-design-filter="mantabot" type="button">MantaBot</button>
+          <button class="filter" data-design-filter="vca" type="button">VCA</button>
+          <button class="filter" data-design-filter="sensing" type="button">感知 / 实验</button>
+          <button class="filter" data-design-filter="debug" type="button">故障诊断</button>
+        </div>
+
+        <article class="card problem design-problem" data-id="maris-e2e" data-tags="core mantabot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 01</span><span class="tag">MantaBot</span><span class="tag">端到端架构</span></div><h3>设计一套 Steam Deck 遥操作水下机器人的完整系统</h3></div><span class="q-priority">15–20 分钟</span></div>
+          <p class="prompt">机器人有双 AK45-10 电机、双舵机、IMU、深度传感器和双目相机；需要手柄控制、实时反馈、视频、急停、记录与回放。请画出 Deck 到 Raspberry Pi 5 再到硬件的架构，并说明频率、协议与掉线行为。</p>
+          <div class="knowledge-grid"><div class="knowledge"><b>必须主动问</b><p>有线还是无线？最大距离？允许延迟？失联后保持、回零还是上浮？物理 E-Stop 在哪里？</p></div><div class="knowledge"><b>必须画出</b><p>命令链、遥测链、视频链和安全链四条路径，不能把所有数据塞进一个“network”方框。</p></div></div>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="写下你的架构、关键频率、失败路径和验证计划…"></textarea>
+          <details><summary>展开参考架构与追问</summary><div class="q-answer">
+            <h4>需求预算</h4><p>Deck 输入与 UDP 命令 50 Hz；Pi supervisory control 50 Hz；双翼轨迹 200 Hz；IMU 100 Hz；深度 10 Hz；双相机目标 15 fps；WebSocket 遥测 10 Hz。控制链优先稳定低延迟，视频允许降级和丢帧。</p>
+            <h4>组件与边界</h4><ul><li>Deck：evdev/gamepad → input mapper → 带 sequence、monotonic timestamp、source 的绝对命令包。</li><li>Pi 网络接收：只做验证和写入 command mailbox，不直接碰硬件。</li><li>50 Hz controller：控制权仲裁、armed/E-Stop、mixer、限幅和 setpoint 生成。</li><li>200 Hz motor loop：相位累加、左右镜像、MIT-mode CAN 编解码和机械限位。</li><li>独立 sensor/camera workers 写入带时间戳的 SharedState；遥测层读取一致快照。</li></ul>
+            <h4>通信选择</h4><p>控制命令用 UDP，理由是新包比旧包重要，配 sequence、timestamp 和 500 ms watchdog；遥测用 WebSocket 方便浏览器/GUI；视频使用 latest-frame MJPEG 或低延迟 H.264，慢客户端不应积压历史帧。</p>
+            <h4>失效路径</h4><p>UDP 超时清零输入并安全回零；所有 Web client 消失后控制源回到 none；相机失败不影响控制；CAN/传感器故障标记 invalid 并限制模式；物理 E-Stop 最高优先级。恢复时不得沿用旧命令，必须重新建立 source 和 armed 状态。</p>
+            <h4>验证</h4><p>先回放命令测试状态机，再用虚拟 CAN/无负载执行器验证限幅；故障注入丢包、乱序、冻结相机、拔传感器、过温和进程退出；最后在固定夹具、浅水、目标 3 m 水深逐级验收。</p>
+            <h4>面试官可能追问</h4><p>为什么不全部用 TCP？SharedState 怎样避免锁住控制循环？视频编码使 Pi 过热时怎样降级？</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 我能在 15 分钟内画完并讲清四条链路</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="authority-safety" data-tags="core mantabot debug">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 02</span><span class="tag">MantaBot</span><span class="tag">状态机 / 安全</span></div><h3>多个命令源怎样安全地争夺同一组执行器？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">手柄、Web 控制、巡航锁定、demo 和 E-Stop 都可能产生电机/舵机命令。设计控制权仲裁，要求临时人工接管后可以平滑返回，掉线不保留陈旧指令。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="状态、事件、优先级、entry/exit action、恢复条件…"></textarea>
+          <details><summary>展开状态机与安全不变量</summary><div class="q-answer">
+            <h4>先定义不变量</h4><ul><li>E-Stop 永远覆盖普通命令；disarmed 时电机不能产生运动。</li><li>同一时刻只有一个 actuator command owner。</li><li>source 切换先清空旧命令，再接受新 source 的新鲜数据。</li><li>任何自动恢复都不能绕过显式 re-arm。</li></ul>
+            <h4>状态与事件</h4><p>顶层可用 DISARMED、MANUAL、CRUISE_LOCKED、OVERRIDE、RAMP_DOWN、ESTOP；事件包括 ARM、LOCK、STICK_OVERRIDE、RELEASE、LINK_TIMEOUT、DISARM、ESTOP、RESET。E-Stop 作为全局转换优先处理。</p>
+            <h4>平滑接管</h4><p>锁定时保存 command snapshot；摇杆超过带 hysteresis 的阈值进入 OVERRIDE；释放后用 300 ms ramp 从最后人工命令回到 snapshot，避免 setpoint 跳变。解除巡航用更长 ramp 到安全中位。</p>
+            <h4>实现边界</h4><p>状态转换逻辑和执行器输出分开；entry/exit action 可测试；最终命令经过统一 mechanical clamp、slew-rate 和 armed/E-Stop gate，不能让每个模式各自实现一套安全逻辑。</p>
+            <h4>测试矩阵</h4><p>枚举 state × event；属性测试“ESTOP 后输出恒安全”；在 ramp 中途触发 E-Stop、掉线、重新连接和 source 切换；记录每次转换的 from/to/event/reason。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能给出状态图、优先级和安全不变量</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="multirate" data-tags="core mantabot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 03</span><span class="tag">MantaBot</span><span class="tag">多速率实时系统</span></div><h3>200 Hz 电机环、50 Hz 控制和 15 fps 相机怎样共存？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">设计 Raspberry Pi 5 上的调度与数据交换，使慢相机、Web 客户端或磁盘记录不会拖慢执行器循环。说明 deadline、数据新鲜度与过载降级。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="任务表、优先级、共享数据、overrun 处理、监控指标…"></textarea>
+          <details><summary>展开任务划分与过载策略</summary><div class="q-answer">
+            <h4>任务划分</h4><p>电机轨迹 loop 200 Hz（5 ms 周期）和 supervisor 50 Hz（20 ms）独立；CAN receive、IMU、深度、相机、Web、记录分别为独立 worker。每个任务只做本频率需要的工作。</p>
+            <h4>数据交换</h4><p>command mailbox / immutable snapshot 带 timestamp、sequence、valid；控制线程不等待相机、网络或磁盘。相机用 size 1 的 latest-frame queue；记录用有界队列，满时按策略丢低价值数据并上报 drop count。</p>
+            <h4>调度与时间</h4><p>使用 monotonic clock 和 deadline-based sleep，测量实际 dt、execution time、jitter、deadline miss。不要只写 <code>sleep(0.005)</code> 并假设一定 200 Hz。控制热路径避免同步日志、大分配和阻塞 I/O。</p>
+            <h4>降级顺序</h4><p>CPU/温度上升时先降相机编码与 Web 遥测，再暂停感知，最后才限制执行器频率或进入 E-Stop；降级要有 hysteresis，避免阈值附近反复切换。</p>
+            <h4>容量验证</h4><p>压力测试多客户端、最大视频分辨率、记录开启与网络抖动；检查 200 Hz loop 的 P99 和最坏 overrun，而不只看平均 CPU。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能把频率、数据所有权和过载策略讲清</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="video-telemetry" data-tags="core mantabot sensing">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 04</span><span class="tag">MantaBot</span><span class="tag">感知 / 网络</span></div><h3>设计双目视频、深度显示和遥测的数据管线</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">双 IMX219 输出 2 × 1280×720，Deck 端做校正和 StereoSGBM；需要原视频、深度查询、0.20 m 接近警告、记录与回放。怎样设计格式、队列、时间戳和质量监控？</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="capture → pair → encode → transport → rectify → disparity → UI…"></textarea>
+          <details><summary>展开感知管线与质量边界</summary><div class="q-answer">
+            <h4>主路径</h4><p>Pi 采集左右图并形成带 frame_id、capture timestamp、尺寸和健康状态的 pair；只保留最新 pair，按需编码并传到 Deck。Deck 加载与当前分辨率匹配的 calibration，rectify → StereoSGBM fixed-point disparity → validity mask → Q reprojection → ROI 统计与 UI。</p>
+            <h4>为什么 latest-frame</h4><p>操作者更需要最新画面而不是完整历史。队列积压会让画面“流畅但延迟越来越大”，比偶尔掉帧危险。记录支路可以有独立有界队列和明确 drop policy。</p>
+            <h4>安全与置信</h4><p>接近警告至少要求中心 ROI 有 64 个有效像素；0.20 m 触发、0.25 m 解除形成 hysteresis。它只是操作者辅助，不作为自主避障安全认证输入。</p>
+            <h4>必须监控</h4><p>capture/encode/decode fps、frame age、drop count、pair mismatch、disparity valid ratio、温度和 client lag。标定 RMS 0.246 px 与 0.146 px epipolar error 不等于 metric depth accuracy，另需已知距离靶验证。</p>
+            <h4>降级</h4><p>先降低 fps/分辨率/编码工作量，再关闭深度计算保留原视频；如果 pair 不同步或 calibration 不匹配，标记 depth invalid，绝不显示看似合理的旧距离。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能说明 backpressure、置信和降级</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="vca-controller" data-tags="core vca">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 05</span><span class="tag">VCA</span><span class="tag">嵌入式分布式控制</span></div><h3>为什么 500 Hz PID 必须留在 Driver，而不是放在浏览器或 Commander？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">系统由浏览器、Commander ESP32-C6、ESP-NOW 和 Driver ESP32-C6 组成。设计静态位置、手动 PWM、流式轨迹、遥测和失联安全，并说明控制环放置位置。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="host / Commander / wireless / Driver 的职责、消息类型和 watchdog…"></textarea>
+          <details><summary>展开双 MCU 架构与消息协议</summary><div class="q-answer">
+            <h4>控制环位置</h4><p>AS5600L 读取、20 kHz PWM 和 500 Hz PID 都在 Driver 本地，避免浏览器、串口与 ESP-NOW 的非确定延迟进入反馈环。Commander 只负责 host gateway、命令转发、ACK 匹配和状态汇总。</p>
+            <h4>消息分类</h4><p>区分 mode/setpoint/gain/stop/config 命令与 telemetry/status/ack；每包带 version、message_id、source、timestamp/age 和 checksum 或长度验证。STOP 有独立高优先级队列，不能排在普通 trajectory 后面。</p>
+            <h4>模式语义</h4><p>MANUAL 直接命令有限幅 PWM；STATIC_PID 保持角度；TRACKING 接受 20 Hz 高层 setpoint，但 Driver 仍以 500 Hz 插值/执行反馈；模式切换清积分并做 bumpless transfer。</p>
+            <h4>安全链</h4><p>输出低电平初始化；I²C encoder fault 立即 coast 并锁存；机械 ±45° 限位只禁止向外命令，允许向内恢复；浏览器、串口、无线分别有 watchdog；恢复通信后仍需显式 re-arm。</p>
+            <h4>验证</h4><p>消息丢失/重复/乱序、队列塞满、Commander 重启、Driver 独立运行、encoder 拔出、limit boundary 和 mode mid-transition 全部做故障注入。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能解释 local loop、协议和多层 watchdog</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="vca-autotune" data-tags="core vca debug">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 06</span><span class="tag">VCA</span><span class="tag">自动实验 / 安全</span></div><h3>设计一个不会把硬件调坏的 PID 自动调参系统</h3></div><span class="q-priority">15–20 分钟</span></div>
+          <p class="prompt">Python 工具要自动执行 0→+10→−10→0° 序列，搜索 Kp、Ki、Kd 和 deadband。怎样组织 preflight、评分、实验状态、异常中止和结果复现？</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="preflight、candidate lifecycle、score、abort criteria、artifacts…"></textarea>
+          <details><summary>展开安全自动化框架</summary><div class="q-answer">
+            <h4>Preflight</h4><p>确认 encoder 方向、输出方向、零点、噪声、通信 age、温度、机械限位和 STOP 路径；用低幅值 polarity test，任何符号异常都不进入自动搜索。</p>
+            <h4>候选生命周期</h4><p>ARM → apply gains → warmup → repeated step sequence → coast → cool/check → score → persist。每一步有 deadline 和可中断点；STOP 直接进入 coast，不等当前试验结束。</p>
+            <h4>评分</h4><p>组合 ITAE、overshoot、settling time、steady-state error、limit-cycle amplitude 和 saturation penalty；所有分量归一化并保存原始指标，避免单个 composite score 隐藏危险行为。</p>
+            <h4>Abort 条件</h4><p>角度越界、持续饱和、温度上限、encoder fault、通信超时、振荡幅值或速度超过阈值立即中止并锁存原因。失败候选也保存数据，但不能作为下一轮 seed。</p>
+            <h4>复现</h4><p>保存固件 commit、配置、candidate ID、顺序、原始 50 Hz telemetry、环境/温度和 score 版本。已记录的 36 个候选、72 次序列和 38.5% cost reduction 应明确是该评分定义下的结果。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能从硬件安全而不是搜索算法开始回答</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="piv-pressure-sync" data-tags="core sensing">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 07</span><span class="tag">Flow Sensing</span><span class="tag">同步 / DAQ</span></div><h3>设计五路压力传感器与 PIV 的硬件同步采集系统</h3></div><span class="q-priority">15–20 分钟</span></div>
+          <p class="prompt">五个 MS5803 地址相同，经 TCA9548A 接到 Teensy；压力 80 Hz，PIV 需要外部 TTL。要求数据可配对、可诊断 jitter 和 missed sample，并处理各通道零偏。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="共同时间基、采样调度、I²C 时序、日志 schema、校准…"></textarea>
+          <details><summary>展开同步与采集架构</summary><div class="q-answer">
+            <h4>硬件拓扑</h4><p>Teensy 通过 TCA9548A channel selection 驱动五个同地址 MS5803；400 kHz I²C。先跨五个通道启动压力转换，再读取结果，减少完全串行 conversion+read 带来的 channel skew。</p>
+            <h4>共同时间基</h4><p>同一个 Teensy microsecond clock 产生 1 ms、3.3 V TTL 上升沿并调度压力采样；TTL edge 定义双方 t=0。第一压力样本在已知 12.5 ms 后产生，之后固定 12.5 ms 间隔。不要用键盘开始时间或 USB 接收时间做对齐。</p>
+            <h4>数据契约</h4><p>每行包含 run_id、sequence、channel、raw/calibrated pressure、Teensy timestamp、TTL-relative time、scheduled time、jitter、missed count 和 sensor status；host epoch 映射只是跨设备日志辅助，不替代电气 TTL。</p>
+            <h4>校准</h4><p>每通道先做 zero-flow baseline，计算 Δpᵢ(t)=pᵢ(t)−mean baselineᵢ；若关注差压，可再做 reference/common-mode subtraction，但必须保留原始值和方法版本。</p>
+            <h4>验证</h4><p>示波器同时看 TTL 和采样标志；测 channel skew、周期 jitter、长时间漂移和 missed sample；拔掉单个传感器时其他通道仍应记录并标记局部故障。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能区分硬件同步、host 时钟映射和零偏校准</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="robot-observability" data-tags="core debug mantabot vca">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 08</span><span class="tag red">跨项目 Debug</span><span class="tag">可观测性</span></div><h3>机器人重连后突然运动：怎样设计系统让问题既不发生又能查清？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">操作者 Wi‑Fi 短暂中断，界面显示已恢复，但执行器突然执行了断线前命令。请从协议、队列、状态机、日志和测试五个层面给设计与排查方案。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="可能根因、隔离顺序、预防机制、所需日志和故障注入…"></textarea>
+          <details><summary>展开根因树与防复发设计</summary><div class="q-answer">
+            <h4>可能根因</h4><ul><li>可靠队列在重连后补发旧增量命令；或 consumer 积压后继续消费。</li><li>只检查 connection alive，没有检查 command timestamp/sequence。</li><li>source 切换未清 mailbox；cruise snapshot 或积分器仍保留。</li><li>发送端重启导致 sequence 归零，接收端错误接受。</li><li>UI 显示的是 socket 状态，不是 actuator authority/armed 状态。</li></ul>
+            <h4>预防</h4><p>命令用绝对 setpoint + session_id + monotonic age + sequence；有界 latest-command mailbox；超时立即 revoke authority、清命令并进入安全态；重连只建立通信，不自动恢复 armed；新 session 需要 handshake 和显式 re-arm。</p>
+            <h4>排查顺序</h4><p>先用执行器日志确定实际 command_id/source/session，再向上追接收、网络和发送；不要从 UI 猜。比较 capture time、receive time、apply time 和 state transition reason。</p>
+            <h4>日志</h4><p>统一记录 session_id、seq、command timestamp、receive/apply age、queue depth、drop count、owner、armed、state from/to/reason，以及最终限幅后的 actuator command。</p>
+            <h4>测试</h4><p>在每个状态下注入断网 100 ms/1 s/5 s、乱序、重复、发送端/接收端单独重启、队列满和时钟异常；不变量是“没有新 session 的显式 arm，输出不得恢复”。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能画根因树并定义“不自动恢复”不变量</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="cld-experiment" data-tags="optional sensing">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 09</span><span class="tag">CLD</span><span class="tag">实验系统</span></div><h3>把 CLD 的干态、推力、PIV 和虚拟质量试验做成可复现实验平台</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">不同实验使用 ClearPath、ATI Mini-40、NI DAQ、Simulink Real-Time、CPS 和 Photron/DaVis。如何统一配置、时钟、运行状态和数据产物，使每个结果可追溯？</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="run manifest、state machine、trigger、raw/derived artifacts、QA…"></textarea>
+          <details><summary>展开实验编排与数据谱系</summary><div class="q-answer">
+            <h4>统一 run manifest</h4><p>run_id、UTC/monotonic start、operator、specimen/configuration、CLD coverage、材料批次、频率、振幅、U、St、采样率、设备 serial、calibration version、软件 commit 和环境条件。</p>
+            <h4>实验状态机</h4><p>CONFIGURED → ZEROING → ARMED → WARMUP → RECORDING → COOLDOWN → VALIDATING → COMPLETE/FAILED；只有 RECORDING 窗口进入正式分析，失败保留原因和部分数据。</p>
+            <h4>时钟与触发</h4><p>DAQ/控制命令/力数据尽量同一硬件时钟；PIV 用明确触发与 phase index；保存原始时间戳和 trigger log，不在采集时只保存相位平均结果。</p>
+            <h4>数据层</h4><p>raw immutable、calibrated、cycle/phase averaged、figure-ready 分层；每层记录生成脚本、参数和上游 hash。K*/thrust/efficiency/acceleration 都能回到原始 run。</p>
+            <h4>自动 QA</h4><p>零点漂移、饱和、周期数、频率误差、缺样、PIV valid vector ratio、稳态窗口和重复间差异；不合格 run 标记 excluded + reason，而不是静默删除。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能把科研实验讲成系统工程</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="flow-ml-system" data-tags="optional sensing">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 10</span><span class="tag">Flow Sensing</span><span class="tag">ML 数据系统</span></div><h3>设计压力 + 稀疏 PIV 到全流场重建的训练与部署系统</h3></div><span class="q-priority">15–20 分钟</span></div>
+          <p class="prompt">系统有 54 组流动/几何工况、80 Hz 压力、PIV ground truth 和双路径 attention 模型。怎样组织数据配对、split、版本、指标和在线推理，避免模型靠泄漏取巧？</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="dataset contract、split unit、normalization、training/eval/deploy…"></textarea>
+          <details><summary>展开数据与模型系统</summary><div class="q-answer">
+            <h4>数据契约</h4><p>以 case/run 为一级实体，保存 geometry、St、spacing、trigger、sensor calibration、pressure window、sparse PIV patch、full-field target、mask、units 和 coordinate transform；配对基于 TTL-relative time。</p>
+            <h4>Split</h4><p>按 case/geometry 拆 train/val/test，不能随机拆相邻 frame；同一周期或同一试验的高度相关样本不得跨 split。phase 若部署时不可得，不能作为 oracle input。</p>
+            <h4>预处理</h4><p>normalization 统计只从 train 拟合；每通道零偏/缺失 mask 显式保存；转换版本与原始数据 hash 绑定。数据增强必须保持物理坐标和向量符号一致。</p>
+            <h4>指标</h4><p>不能只用被自由来流像素主导的全场 MSE；同时报告 vorticity SSIM、gradient、peak vorticity、vortex core detection、按 case 泛化和 uncertainty calibration。</p>
+            <h4>部署</h4><p>在线输入带 freshness 和 missing mask；超出训练分布或 ensemble uncertainty 过高时输出 invalid/降级，而不是强行给漂亮流场。记录 model/data/config version 支持回放。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能从 split 与数据契约讲到部署降级</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="ros2-migration" data-tags="optional mantabot vca">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 11</span><span class="tag">通用机器人</span><span class="tag">ROS 2 迁移</span></div><h3>如果把现有 MantaBot 架构迁到 ROS 2，你会怎样拆节点和 QoS？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">要求保留 200 Hz 执行器路径、Steam Deck 控制、双目视频、记录回放和安全行为。说明哪些部分适合 ROS 2，哪些不应盲目消息化。</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="node graph、topics/services/actions、QoS、executor、intra-process、safety…"></textarea>
+          <details><summary>展开迁移边界与 QoS</summary><div class="q-answer">
+            <h4>节点建议</h4><p>teleop_gateway、supervisor/state_machine、motor_driver、sensor drivers、stereo_camera、depth_processor、telemetry/recorder、health_monitor。200 Hz trajectory 与 CAN driver 可同进程/组件甚至保留内部直接接口，避免为了“全 ROS”增加序列化和调度抖动。</p>
+            <h4>接口</h4><p>连续 sensor/state 用 topics；短配置/zero/status query 用 services；长标定或实验流程用 actions。E-Stop 不能只做可能排队的普通 action，应有独立硬件/driver gate。</p>
+            <h4>QoS</h4><p>camera/高频 telemetry 采用 best-effort、small depth、keep last；低频配置与状态转换用 reliable；需要晚加入者获知的静态配置可 transient local。deadline/liveliness 用于健康契约，但不替代 actuator watchdog。</p>
+            <h4>执行模型</h4><p>控制 callback 与图像/日志分 callback group/executor；耗时回调不与控制共享单线程 executor；使用 intra-process/loaned message 时仍检查生命周期和数据所有权。</p>
+            <h4>迁移策略</h4><p>先包裹现有稳定 driver 和协议，通过桥接保持行为；用记录回放对比旧/新输出；性能验收看 P99 loop jitter、端到端 age 和故障行为，不以“topic 能看到”为完成。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能说明 ROS 2 的价值与不该使用的边界</label></div>
+        </article>
+
+        <article class="card problem design-problem" data-id="production-readiness" data-tags="optional debug">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 12</span><span class="tag red">跨项目</span><span class="tag">生产就绪评审</span></div><h3>实验室原型下周要交给别人使用，你做怎样的 readiness review？</h3></div><span class="q-priority">15 分钟</span></div>
+          <p class="prompt">任选 MantaBot 或 VCA。你只有一周，不能重写系统。怎样按风险排序完成安全、部署、诊断、文档和验收？</p>
+          <textarea class="practice design-notes" spellcheck="false" placeholder="风险排序、必须做 / 延后做、验收证据、交接材料…"></textarea>
+          <details><summary>展开一周内的现实优先级</summary><div class="q-answer">
+            <h4>P0：伤害与硬件风险</h4><p>验证物理 E-Stop、上电默认安全、机械限位、过流/过温、失联停机和恢复不自动动作；写出明确禁用条件与 preflight checklist。</p>
+            <h4>P1：可重复启动</h4><p>固定依赖与配置、systemd/启动脚本、设备权限、配置校验、版本显示和一键安全关机；在冷启动、断电和部分设备缺失情况下测试。</p>
+            <h4>P1：可诊断</h4><p>健康页显示每个线程/设备的 status、age、rate、last error、queue depth；日志带 run/session/config/commit，提供最近故障导出。</p>
+            <h4>P2：操作与数据</h4><p>最小操作手册、状态含义、允许动作、故障恢复、数据目录与命名；录制/回放一条 golden run 作为验收基线。</p>
+            <h4>明确延后</h4><p>UI 美化、大规模重构、新功能和未经验证的自动恢复。评审输出 risk register：severity × likelihood × detectability、owner、mitigation 和验收证据。</p>
+          </div></details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能在有限时间内按风险排序而不是列愿望清单</label></div>
+        </article>
+
+        <div class="empty" id="designEmpty">当前筛选下没有题目。</div>
+      </section>
+
+      <section id="checklist">
+        <div class="section-head"><h2>白板交卷前检查</h2><p>最后两分钟按顺序扫一遍</p></div>
+        <div class="grid-3">
+          <div class="card"><h3>数字</h3><ul><li>每条关键路径是否有频率/延迟</li><li>队列是否有容量与 drop policy</li><li>timeout 和恢复阈值是否明确</li><li>单位、坐标系、时钟是否明确</li></ul></div>
+          <div class="card"><h3>失效</h3><ul><li>掉线、乱序、重复与重启</li><li>传感器冻结而非仅断开</li><li>过温、饱和、机械越界</li><li>恢复会不会执行旧命令</li></ul></div>
+          <div class="card"><h3>证明</h3><ul><li>正常路径测试与不变量</li><li>回放、HIL 和故障注入</li><li>P95/P99 而不只平均值</li><li>版本、配置和原始数据可追溯</li></ul></div>
+        </div>
+        <div class="callout success" style="margin-top:13px"><strong>准备完成标准</strong><p>核心 8 题中任抽一题，你能在 3 分钟内列需求、7 分钟画清数据/控制/安全路径、5 分钟说明失败与验证。扩展题只需能给出结构完整的口头答案。</p></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  (() => {
+    const KEY = "divestation_system_design_v1";
+    let state = { done: {}, notes: {} };
+    try { state = { ...state, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch (_) {}
+    const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+    const cards = [...document.querySelectorAll(".design-problem")];
+
+    function updateProgress() {
+      const count = cards.filter(card => state.done[card.dataset.id]).length;
+      document.getElementById("designProgress").textContent = `已完成 ${count} / ${cards.length}`;
+    }
+
+    cards.forEach(card => {
+      const id = card.dataset.id;
+      const notes = card.querySelector(".design-notes");
+      const checkbox = card.querySelector('input[type="checkbox"]');
+      notes.value = state.notes[id] || "";
+      checkbox.checked = Boolean(state.done[id]);
+      card.classList.toggle("is-done", checkbox.checked);
+      notes.addEventListener("input", () => { state.notes[id] = notes.value; save(); });
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) state.done[id] = true; else delete state.done[id];
+        card.classList.toggle("is-done", checkbox.checked);
+        save(); updateProgress();
+      });
+    });
+
+    document.querySelectorAll("[data-design-filter]").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-design-filter]").forEach(x => x.classList.remove("on"));
+      button.classList.add("on");
+      const filter = button.dataset.designFilter;
+      let visible = 0;
+      cards.forEach(card => {
+        const show = filter === "all" || card.dataset.tags.split(" ").includes(filter);
+        card.classList.toggle("hidden", !show);
+        if (show) visible += 1;
+      });
+      document.getElementById("designEmpty").style.display = visible ? "none" : "block";
+    }));
+
+    document.getElementById("resetDesign").addEventListener("click", () => {
+      if (!confirm("清空所有系统设计题的完成状态和草稿？")) return;
+      localStorage.removeItem(KEY);
+      state = { done: {}, notes: {} };
+      cards.forEach(card => {
+        card.classList.remove("is-done");
+        card.querySelector(".design-notes").value = "";
+        card.querySelector('input[type="checkbox"]').checked = false;
+      });
+      updateProgress();
+    });
+    updateProgress();
+  })();
+  </script>
+</body>
+</html>
