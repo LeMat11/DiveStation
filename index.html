@@ -155,7 +155,7 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .kb-search kbd{position:absolute;right:11px;top:9px;border:1px solid #d9e0df;background:#f5f7f6;color:#718286;border-radius:6px;
   padding:2px 7px;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}
 .kb-head-actions{display:flex;align-items:center;gap:8px}
-.kb-iconbtn{height:36px;padding:0 11px;border:1px solid #d5dfdf;border-radius:10px;background:#fff;color:#455e63;font-size:12px}
+.kb-iconbtn{height:36px;padding:0 11px;border:1px solid #d5dfdf;border-radius:10px;background:#fff;color:#455e63;font-size:12px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
 .kb-iconbtn:hover{border-color:#6caaa3;color:#123f45}
 .kb-layout{display:grid;grid-template-columns:268px minmax(0,1fr);max-width:1520px;margin:0 auto}
 .kb-layout.home{grid-template-columns:minmax(0,1fr)}
@@ -193,6 +193,7 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .kb-project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:28px}
 .kb-project-card{position:relative;text-align:left;background:rgba(255,255,255,.86);border:1px solid #dce4e3;border-radius:16px;padding:21px;
   min-height:212px;overflow:hidden;box-shadow:0 9px 28px rgba(34,67,69,.055);transition:.2s ease}
+a.kb-project-card{display:block;color:inherit;text-decoration:none}
 .kb-project-card:hover{transform:translateY(-2px);border-color:#77ada7;box-shadow:0 13px 30px rgba(34,67,69,.1)}
 .kb-project-card:after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;right:-55px;top:-55px;background:var(--accent,#86cfc3);opacity:.22}
 .kb-project-no{font:700 11px ui-monospace,SFMono-Regular,Menlo,monospace;color:#19877c}
@@ -337,12 +338,13 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
     <main class="kb-main" style="max-width:1120px;margin:0 auto">
       <div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
       <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
-      <p class="kb-lead">围绕四个真实项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因。</p>
+      <p class="kb-lead">围绕五个真实机器人项目，系统复盘架构、算法、协议、实验验证和故障根因，并补齐机器人全栈基础与 Coding 训练。</p>
       <div class="kb-project-grid">
         <div class="kb-project-card"><span class="kb-project-no">01 · 水下仿生机器人</span><h3>MantaBot</h3><p>多速率控制、CAN 电机、双目视觉与整机安全。</p></div>
         <div class="kb-project-card"><span class="kb-project-no">02 · 流体实验执行平台</span><h3>VCA Bot</h3><p>ESP-NOW、H 桥、编码器、保护链和实验控制。</p></div>
-        <div class="kb-project-card"><span class="kb-project-no">03 · 稀疏传感流场重建</span><h3>Flow Sensing</h3><p>多模态融合、物理约束、数据泄漏与泛化。</p></div>
-        <div class="kb-project-card"><span class="kb-project-no">04 · 多模态运动分析</span><h3>ClearCoach</h3><p>音视频粗筛、LLM 精判、知识注入与生产部署。</p></div>
+        <a class="kb-project-card" href="cld.html"><span class="kb-project-no">03 · 被动阻抗整形</span><h3>CLD Swimmer</h3><p>复阻抗、力–速度相位、PIV、快速加速与 RL 延伸。</p></a>
+        <div class="kb-project-card"><span class="kb-project-no">04 · 稀疏传感流场重建</span><h3>Flow Sensing</h3><p>多模态融合、物理约束、数据泄漏与泛化。</p></div>
+        <div class="kb-project-card"><span class="kb-project-no">05 · 多模态运动分析</span><h3>ClearCoach</h3><p>音视频粗筛、LLM 精判、知识注入与生产部署。</p></div>
       </div>
     </main>
   </div>
@@ -2220,7 +2222,7 @@ const KB_PROJECTS={
     ]
   },
   flow:{
-    no:"03",name:"Flow Sensing",type:"稀疏传感流场重建",accent:"#7d91d7",
+    no:"04",name:"Flow Sensing",type:"稀疏传感流场重建",accent:"#7d91d7",
     tagline:"从 5 个稀疏传感器到稠密流场：多模态融合、物理约束、数据泄漏与泛化。",
     intro:"Flow Sensing 研究如何用 5 个局部压力/PIV 观测重建完整速度与涡量场。方法采用两阶段训练：先让 autoencoder decoder 学习流场结构，再学习稀疏传感器到隐空间/网格查询的映射；同时用 Fourier 位置编码、梯度损失、涡量加权和散度约束保留尖锐涡结构。",
     pitch:"这个项目的核心不是堆更大的模型，而是判断信息瓶颈在哪里。早期 cross-attention 只有 5 个 sensor token，输出秩被限制在 5 左右，涡量 SSIM 长期卡在约 0.13；继续调参不会解决结构性瓶颈。我加入 learnable spatial tokens，并重新审视 case-level split、phase oracle leakage 和自由来流像素主导指标的问题，确保模型学到的是可部署的泛化，而不是数据集捷径。",
@@ -2239,7 +2241,7 @@ const KB_PROJECTS={
     ]
   },
   coach:{
-    no:"04",name:"ClearCoach",type:"多模态运动分析应用",accent:"#d87562",
+    no:"05",name:"ClearCoach",type:"多模态运动分析应用",accent:"#d87562",
     tagline:"从长视频到可执行反馈：音视频粗筛、LLM 精判、知识注入与生产部署。",
     intro:"ClearCoach 是面向羽毛球训练的多模态分析应用。它先用音频 onset、帧差和物理时间约束从 30–90 分钟视频中定位候选击球，再把高信息密度的 contact sheet 交给视觉模型做动作阶段和技术问题分析，最后结合结构化中文教练知识生成可执行反馈。",
     pitch:"ClearCoach 的工程关键是让确定性计算和 LLM 各做擅长的部分。传统信号处理负责把搜索空间从长视频缩到 30 帧左右，LLM 只做需要语义理解的精判；Flash 做便宜的第一阶段，Pro 做少量高价值分析。上线时我又处理了大文件上传、长请求超时、输出 schema 不稳定和多用户文件隔离，避免原型在生产边界失效。",
@@ -2301,7 +2303,7 @@ function kbShell(){
         <span class="kb-mark">DS</span><span><strong>DIVE STATION</strong><small>项目面试知识库</small></span>
       </button>
       <div class="kb-search"><input id="kbSearch" type="search" placeholder="搜索项目、协议、零部件或故障…" autocomplete="off"><kbd>⌘ K</kbd></div>
-      <div class="kb-head-actions"><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
+      <div class="kb-head-actions"><a class="kb-iconbtn" href="cld.html">CLD</a><a class="kb-iconbtn" href="fundamentals.html">全栈基础</a><a class="kb-iconbtn" href="coding.html">Coding</a><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
     </header>
     <div class="kb-layout"><aside class="kb-side" id="kbSide"></aside><main class="kb-main" id="kbMain"></main></div>
     <div class="kb-scrim" id="kbScrim" aria-hidden="true"></div>
@@ -2358,12 +2360,12 @@ function kbRenderHome(main){
   const totalStar=DECK.filter(c=>KB_STATE.starred[c.id]).length;
   main.innerHTML=`<div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
     <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
-    <p class="kb-lead">围绕四个真实项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因。这里没有刷题任务，只有面试前真正需要反复回看的工程判断。</p>
-    <div class="kb-actions"><button class="kb-primary" data-open="mantabot">从 MantaBot 开始</button><button class="kb-secondary" data-review>查看 ${totalStar} 个待复习知识点</button></div>
-    <div class="kb-project-grid">${Object.entries(KB_PROJECTS).map(([k,p])=>`<button class="kb-project-card" data-project="${k}" style="--accent:${p.accent}">
+    <p class="kb-lead">围绕五个真实机器人项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因；再用全栈基础题和低负担 Coding 练习补齐项目之外的默认知识。</p>
+    <div class="kb-actions"><button class="kb-primary" data-open="mantabot">从 MantaBot 开始</button><a class="kb-secondary" href="cld.html" style="text-decoration:none">CLD 项目深潜</a><a class="kb-secondary" href="fundamentals.html" style="text-decoration:none">机器人全栈基础</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding 训练场</a><button class="kb-secondary" data-review>查看 ${totalStar} 个待复习知识点</button></div>
+    <div class="kb-project-grid">${Object.entries(KB_PROJECTS).map(([k,p])=>`<button class="kb-project-card" data-project="${k}" style="--accent:${p.accent};order:${p.no}">
       <span class="kb-project-no">${p.no} · ${p.type}</span><h3>${p.name}</h3><p>${p.tagline}</p>
       <span class="kb-project-meta"><span class="kb-pill">${kbProjectCards(k).length} 个知识点</span><span class="kb-pill">已掌握 ${kbKnownCount(k)}</span></span>
-    </button>`).join("")}</div>
+    </button>`).join("")}<a class="kb-project-card" href="cld.html" style="--accent:#8fa55b;order:3"><span class="kb-project-no">03 · 被动阻抗整形</span><h3>CLD Swimmer</h3><p>复阻抗、力–速度相位、PIV、快速加速与 RL 延伸。</p><span class="kb-project-meta"><span class="kb-pill">15 个高概率追问</span><span class="kb-pill">独立深潜页</span></span></a></div>
     <section class="kb-section"><div class="kb-section-head"><h2>建议复习顺序</h2><span class="kb-section-note">先建立系统图，再下钻细节</span></div>
       <div class="kb-path">
         <div class="kb-step"><b>STEP 01</b><strong>90 秒项目陈述</strong><p>问题、职责、系统、难点、结果。</p></div>

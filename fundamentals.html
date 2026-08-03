@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>机器人全栈基础 · Dive Station</title>
+  <meta name="description" content="机器人全栈工程师面试默认知识清单与高频问答。">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">DS</span><span><strong>DIVE STATION</strong><small>ROBOTICS INTERVIEW LAB</small></span></a>
+    <nav class="topnav" aria-label="知识库主导航">
+      <a href="index.html">项目库</a><a href="cld.html">CLD 深潜</a><a href="fundamentals.html" aria-current="page">全栈基础</a><a href="coding.html">Coding 训练场</a>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="side" aria-label="本页目录">
+      <div class="side-label">FULL-STACK MAP</div>
+      <a href="#map"><span>01</span>能力地图</a>
+      <a href="#software"><span>02</span>C++ / Python / 并发</a>
+      <a href="#linux"><span>03</span>Linux / ROS 2</a>
+      <a href="#embedded"><span>04</span>嵌入式与通信</a>
+      <a href="#control"><span>05</span>控制与状态估计</a>
+      <a href="#perception"><span>06</span>感知、规划与坐标</a>
+      <a href="#system"><span>07</span>安全、测试与系统设计</a>
+      <a href="#behavior"><span>08</span>项目表达与行为面</a>
+      <a href="#plan"><span>09</span>7 天冲刺计划</a>
+      <div class="side-note">优先级 A：能独立讲清并写伪代码。B：知道工程权衡。C：知道概念边界，不必深挖证明。</div>
+    </aside>
+
+    <main>
+      <div class="eyebrow">ROBOTICS FULL-STACK BASELINE</div>
+      <h1>项目之外，面试官默认<br>你知道什么</h1>
+      <p class="lead">全栈机器人岗位不会要求每个方向都做到专家，但会检查你能否沿着“传感器 → 时间戳 → 状态 → 控制 → 执行器 → 日志与安全”把整条链路讲通，并在接口处定位故障。</p>
+      <div class="hero-actions"><a class="button primary" href="#software">开始自测</a><a class="button" href="cld.html">CLD 项目题</a><a class="button" href="coding.html">Coding 题</a></div>
+
+      <section id="map">
+        <div class="section-head"><h2>面试能力地图</h2><p>广度优先：每块先做到“可用、可解释、可排错”</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>软件骨架</h3><p>数据所有权、线程/进程、生命周期、接口契约、错误处理、配置和可测试性。</p></div>
+          <div class="card"><h3>实时数据链</h3><p>采样率、时间戳、缓冲、丢包、watchdog、延迟预算、背压与降级。</p></div>
+          <div class="card"><h3>机器人算法</h3><p>坐标变换、标定、滤波、状态估计、反馈控制、轨迹与规划基础。</p></div>
+          <div class="card"><h3>系统工程</h3><p>安全状态、可观测性、测试金字塔、故障注入、部署、复现与现场调试。</p></div>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>回答模板</strong><p>先说输入/输出和更新频率，再说状态由谁拥有、通过什么接口传递；接着说正常路径、超时/异常路径和验证方法。这个模板能覆盖大多数系统题。</p></div>
+      </section>
+
+      <section id="software">
+        <div class="section-head"><h2>C++、Python 与并发</h2><p>不考语言冷知识，重点考资源、状态和边界</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">C++ 的 RAII 解决什么问题？机器人程序里哪里最需要？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>资源获取与对象生命周期绑定：构造成功后对象拥有资源，析构自动释放，异常和早退也不会泄漏。串口/CAN 文件描述符、互斥锁、线程、相机 buffer、GPU 内存最典型。优先用值语义、标准容器和 <code>unique_ptr</code>；共享所有权真的存在时才用 <code>shared_ptr</code>。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">什么时候用线程，什么时候用进程？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>线程共享地址空间、通信便宜，但数据竞争和崩溃传播更难控制；进程隔离故障和依赖，代价是序列化、复制和部署复杂度。高频控制与同进程硬件驱动可能用线程；相机、模型推理或不可信第三方组件常适合独立进程。选择依据是故障域、延迟、数据量和可观测性，不是“线程更快”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">什么是 data race？加一把大锁为什么通常不够？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>多个执行单元并发访问同一内存，至少一个写且没有正确同步，行为未定义。大锁能临时保证互斥，但可能扩大临界区、阻塞实时循环、形成锁顺序死锁。更好的做法是明确单写者/所有权、不可变快照、消息队列、小临界区和有界等待；共享状态要带时间戳和版本。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">Python 的 GIL 意味着不能做多线程吗？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>不是。GIL 限制单进程中 Python 字节码的 CPU 并行，但 I/O 等待期间会释放，NumPy/OpenCV 等原生扩展也可能释放。网络、串口、相机 I/O 可用线程；CPU 密集纯 Python 用多进程、原生扩展或向量化。还要考虑进程间复制和启动成本。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">如何设计一个线程安全的机器人 SharedState？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>每类数据有明确写入者；写入时更新值、单调时钟时间戳、序列号和有效标志；读者一次拿一致快照，不持锁做 I/O 或计算。控制循环按 age 判断 freshness，不把“最后一个值”默认当成“当前有效值”。高频场景可进一步用双缓冲、原子索引或单生产者/单消费者队列。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">异常、错误码和重试怎么选？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>可恢复、跨层传播的异常在非实时应用层适合用异常；实时/嵌入式热路径常用显式状态和错误码，避免不确定控制流。重试只适用于暂态且幂等的操作，必须有次数、退避和总超时；硬件故障或无效命令不能无限重试，应进入安全状态并保留根因。</p></div></details>
+        </div>
+      </section>
+
+      <section id="linux">
+        <div class="section-head"><h2>Linux、进程与 ROS 2</h2><p>你的项目未必使用 ROS 2，但机器人岗位通常会检查这些边界</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">一个机器人服务“启动了但没工作”，你怎么查？</span><span class="q-priority">A</span></summary><div class="q-answer"><ol><li>看服务状态、退出码和最近日志；确认实际执行文件、参数、用户和工作目录。</li><li>检查设备节点、权限、组、串口/CAN/相机是否存在且未被占用。</li><li>检查环境变量、配置文件、网络接口与依赖服务。</li><li>手动以前台同一用户启动，保留 stderr；再用最小硬件读写隔离。</li><li>最后才重启整机，因为重启会破坏现场证据。</li></ol></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">什么是单调时钟？为什么控制和超时不能只用系统时间？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>系统/墙上时钟会因 NTP、人工修改或时区变化跳变；单调时钟只向前，适合计算 dt、age、deadline 和 watchdog。墙上时钟适合跨设备日志关联和人类可读时间。工程上常同时记录 monotonic timestamp 与 epoch timestamp，并显式保存时钟映射质量。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">ROS 2 topic、service、action 怎么选？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>Topic 用于连续/异步数据流，如传感器和状态；service 用于短时请求—响应且调用者等待结果；action 用于长任务，需要进度、取消和最终结果。急停不应依赖可能排队的普通 action 路径，应有独立、高优先级、可验证的安全链。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">ROS 2 QoS 最少要理解哪些维度？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>Reliability（可靠/尽力而为）、history/depth（保留多少样本）、durability（晚加入订阅者是否拿历史）、deadline/liveliness（时序与存活契约）。相机通常宁可丢旧帧也不积压；低频配置或地图可能需要可靠与持久。发布/订阅 QoS 不兼容会出现“节点都在但收不到数据”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">ROS 2 executor 和 callback group 为什么会影响实时性？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>Executor 决定回调何时、在哪个线程执行；耗时回调会阻塞同一执行上下文。Callback group 控制回调能否并发。需要把高频控制、慢服务、日志/视觉分开，避免控制回调里做阻塞 I/O、内存大分配或不可界定的推理。多线程 executor 不是自动线程安全，仍要设计状态所有权。</p></div></details>
+        </div>
+      </section>
+
+      <section id="embedded">
+        <div class="section-head"><h2>嵌入式、总线与实时数据</h2><p>会接线不等于会设计协议和失效行为</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">CAN、I²C、UART、SPI 各适合什么场景？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>CAN：多节点、仲裁、差分抗干扰，适合分布式执行器；I²C：板级低速多从设备、两线，但地址与上拉敏感；UART：点对点简单异步流，需自定义 framing；SPI：板级高速、全双工、每从设备片选更多。选择要同时讲距离、带宽、节点数、可靠性、电气环境和软件生态。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">UDP 控制包为什么常加 sequence、timestamp 和 watchdog？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>UDP 低延迟但可能丢包、乱序、重复。sequence 用来检测乱序/缺失，timestamp 判断新鲜度，watchdog 在一定时间没收到有效包时进入安全状态。控制命令最好是幂等的绝对 setpoint；如果必须用增量命令，需要 ACK、去重或更可靠的协议。</p></div></details>
+          <details class="qa"><summary><span class="q-no">14</span><span class="q-title">如何估算一条实时链路的延迟预算？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>拆成采样等待、驱动/传输、排队、计算、调度、执行器响应和可能的显示延迟；分别测均值、P95/P99 与最坏情况。更新率不等于延迟：10 Hz 数据仅采样相位就可能带来 0–100 ms 等待。对控制更关心总延迟、抖动和 deadline miss，而不只是平均吞吐。</p></div></details>
+          <details class="qa"><summary><span class="q-no">15</span><span class="q-title">watchdog 应该监测“线程活着”还是“数据有效”？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>两者都要但含义不同。心跳能证明执行路径仍在推进，不能证明传感器值更新正确；数据时间戳、序列号、范围和一致性检查才能证明 freshness/validity。安全决策应基于任务需要的数据契约，例如“最近 50 ms 内有递增序列且数值有效”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">16</span><span class="q-title">MCU 中断服务函数里为什么不能做太多事？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>ISR 会打断普通任务，长时间执行会增加调度抖动、丢其他中断并破坏实时性。ISR 通常只读必要寄存器、记录时间戳/标志或推入有界队列，把解析、日志和复杂计算交给任务。共享变量要考虑原子性和内存可见性。</p></div></details>
+          <details class="qa"><summary><span class="q-no">17</span><span class="q-title">传感器与相机怎样同步？软件时间戳什么时候不够？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>最佳是共同硬件触发或同一硬件时钟；其次是设备时间戳配合 PTP/时钟同步与漂移估计；最后才是主机接收时间。USB/OS 接收时间包含排队与调度抖动，无法代表曝光或采样瞬间。你的压力–PIV 项目可用 Teensy TTL 边沿作为共同 t=0 的实例。</p></div></details>
+        </div>
+      </section>
+
+      <section id="control">
+        <div class="section-head"><h2>控制、滤波与状态估计</h2><p>每个算法都要知道假设和失效边界</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">18</span><span class="q-title">PID 三项各做什么？工程实现还有哪些细节？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>P 对当前误差，I 消除稳态偏差但会 windup，D 提供阻尼/预测趋势但放大噪声。工程上需要实际 dt、输出饱和、anti-windup、导数对测量而非 setpoint、导数低通、bumpless transfer、模式切换和限幅。先验证传感器符号、执行器极性和采样频率，再调参数。</p></div></details>
+          <details class="qa"><summary><span class="q-no">19</span><span class="q-title">低通滤波为什么会让控制变差？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>滤波降低高频噪声，同时引入相位滞后；截止频率太低会把真实动态也延迟，侵蚀相位裕度，控制器可能更振荡。滤波要围绕传感器噪声频谱、控制带宽和采样率联合设计，并通过 Bode/阶跃或至少延迟测量验证。</p></div></details>
+          <details class="qa"><summary><span class="q-no">20</span><span class="q-title">什么是 feedforward？为什么不能替代 feedback？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>Feedforward 根据模型或目标预先给出所需输入，例如重力补偿、摩擦/死区补偿；响应快且不必等误差出现，但对模型误差和扰动无能为力。Feedback 根据误差修正未知变化。常见组合是 feedforward 承担可预测负载，反馈做鲁棒修正。</p></div></details>
+          <details class="qa"><summary><span class="q-no">21</span><span class="q-title">互补滤波和 Kalman filter 的区别？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>互补滤波用频段互补的直觉融合，例如陀螺短期稳定、加速度计长期校正，简单易调；Kalman filter 用状态空间模型和噪声协方差递推最小方差估计，并能处理多状态、控制输入和不确定度。KF 并不自动正确：模型、时间同步、坐标和 Q/R 错误会让结果看似平滑但系统性偏差。</p></div></details>
+          <details class="qa"><summary><span class="q-no">22</span><span class="q-title">如何处理 actuator saturation、deadzone 和 hysteresis？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>饱和要限幅并做 anti-windup；deadzone 可通过标定 feedforward、最小有效命令或专门模型补偿；hysteresis 需要上下阈值不同的 Schmitt trigger，避免噪声附近抖振。所有补偿必须保留安全限位，并验证跨负载、方向和温度的一致性。</p></div></details>
+        </div>
+      </section>
+
+      <section id="perception">
+        <div class="section-head"><h2>感知、坐标变换与规划</h2><p>从像素和传感器值一直讲到机器人可用状态</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">23</span><span class="q-title">世界、机器人、传感器坐标系怎样组合？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>刚体变换属于 SE(3)，由旋转 R 和平移 t 组成；点从传感器到世界常写为 pᴡ = Tᴡʙ Tʙˢ pˢ。矩阵乘法顺序不可交换。必须明确变换的方向、坐标约定和时间戳；静态外参和动态位姿不能用不同时间的数据直接组合。</p></div></details>
+          <details class="qa"><summary><span class="q-no">24</span><span class="q-title">双目标定的 RMS 很小，为什么深度仍可能不准？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>重投影 RMS 只度量角点模型拟合，不等于全场 metric depth accuracy。误差还来自基线/焦距标定偏差、同步、镜头/温度变化、弱纹理、遮挡、匹配参数和距离平方放大。需要独立距离靶、不同深度/视场位置的验证，以及左右一致性和无效 disparity 过滤。</p></div></details>
+          <details class="qa"><summary><span class="q-no">25</span><span class="q-title">BFS、Dijkstra 和 A* 分别什么时候用？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>BFS 用于无权/等权图；Dijkstra 用于非负边权最短路；A* 在 Dijkstra 上加 admissible heuristic 引导搜索，若 h 不高估仍保证最优。机器人中地图分辨率、膨胀半径、动态障碍和重规划频率往往比背模板更重要。</p></div></details>
+          <details class="qa"><summary><span class="q-no">26</span><span class="q-title">全局规划和局部控制的职责怎么分？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>全局规划利用较完整地图给出长程可行/低成本路径；局部层根据当前状态、局部障碍和动力学产生短时轨迹或控制命令，并持续重算。接口应包含路径坐标系、时间/速度约束、可行性状态和失败恢复。pure pursuit 是路径跟踪器，不是动态避障规划器。</p></div></details>
+          <details class="qa"><summary><span class="q-no">27</span><span class="q-title">传感器 calibration 和 validation 有什么区别？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>Calibration 用已知参考估计模型参数；validation 用未参与拟合的独立数据检查泛化误差。三个点拟合 R² 很高不代表全范围绝对精度高；需要不同位置、方向、负载和温度的独立验证，并区分 precision、resolution、accuracy、repeatability。</p></div></details>
+        </div>
+      </section>
+
+      <section id="system">
+        <div class="section-head"><h2>安全、测试与系统设计</h2><p>机器人全栈最能拉开差距的一组题</p></div>
+        <div class="qa-list">
+          <details class="qa"><summary><span class="q-no">28</span><span class="q-title">设计一条 E-Stop 链路时，什么叫 fail-safe？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>单点故障、软件卡死或通信丢失时系统趋向可接受的安全状态，而不是依赖正常软件路径才能停。物理急停通常应直接切断/禁止危险能量，并有独立反馈；软件 E-Stop 负责协同停车、状态锁存和诊断。恢复必须显式、受控，不能通信一恢复就自动重新动作。</p></div></details>
+          <details class="qa"><summary><span class="q-no">29</span><span class="q-title">怎样测试一个涉及真实硬件的控制栈？</span><span class="q-priority">A</span></summary><div class="q-answer"><ol><li>纯函数/协议单元测试：限幅、状态机、编码解码。</li><li>仿真和 property/invariant 测试：任何输入下不越机械限位。</li><li>hardware abstraction + mock/replay：用录制数据复现。</li><li>HIL：真实控制器接模拟负载/安全夹具。</li><li>分阶段真机：低功率、无负载、固定装置、完整工况。</li><li>故障注入：断网、传感器冻结、乱序、过温、进程退出，并检查安全状态与日志。</li></ol></div></details>
+          <details class="qa"><summary><span class="q-no">30</span><span class="q-title">日志很多但故障仍难查，通常缺了什么？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>缺少共同时间基、请求/命令 ID、状态转换原因、数据年龄、配置版本和结构化字段。日志应记录“为什么改变状态”，而不只是“当前值”。高频数据用有界二进制/JSONL 记录与触发前后 ring buffer，普通日志做事件摘要；避免实时循环同步写磁盘。</p></div></details>
+          <details class="qa"><summary><span class="q-no">31</span><span class="q-title">如何设计“相机偶发卡顿但控制不能受影响”的系统？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>相机采集/编码与控制分离线程或进程，通过 latest-frame 有界队列传递；队列满时丢旧帧，不让背压进入控制。控制只消费带时间戳的感知结果并检查 freshness；卡顿时降级为无视觉模式或限制动作。独立监控帧率、age、队列深度、温度和重启次数。</p></div></details>
+          <details class="qa"><summary><span class="q-no">32</span><span class="q-title">系统设计题：做一个远程操控水下机器人，你怎样分层？</span><span class="q-priority">A</span></summary><div class="q-answer"><p>输入层产生带序号/时间戳的意图；网络层按命令和视频选择 UDP/WebSocket/可靠通道；机器人侧状态机做控制权仲裁和 watchdog；实时执行层独立频率运行并限幅；传感层各自采集并发布快照；安全层高优先级覆盖普通命令；观测层记录命令、状态、故障和时间同步质量。回答最后给延迟预算、掉线行为与渐进测试计划。</p></div></details>
+          <details class="qa"><summary><span class="q-no">33</span><span class="q-title">怎样避免“仿真很好，真机完全不行”？</span><span class="q-priority">B</span></summary><div class="q-answer"><p>先校准接口与基本物理量，再增加模型复杂度；把延迟、噪声、饱和、死区、摩擦、执行器带宽和传感器 dropout 纳入仿真；做参数随机化与灵敏度分析；使用相同控制接口和日志 schema；逐级 HIL/低风险真机验证。sim-to-real 不是单一算法，而是模型、软件接口和验证流程共同决定。</p></div></details>
+        </div>
+      </section>
+
+      <section id="behavior">
+        <div class="section-head"><h2>项目表达与行为面</h2><p>技术深度要通过具体决策和证据表现出来</p></div>
+        <div class="grid-3">
+          <div class="card"><h3>“介绍一个项目”</h3><p>90 秒只讲目标、你的职责、系统分层、一个难判断和量化结果。等追问再展开协议和算法。</p></div>
+          <div class="card"><h3>“最难的 bug”</h3><p>现象 → 观测证据 → 逐层隔离 → 根因 → 修复 → 防复发。不要把反复试错压缩成“最后发现是接线问题”。</p></div>
+          <div class="card"><h3>“为什么选这个方案”</h3><p>需求/约束 → 至少一个备选 → 权衡 → 最终选择 → 怎样验证。主动说出方案牺牲了什么。</p></div>
+          <div class="card"><h3>“如果重做”</h3><p>给具体的接口、测试、保护或制造改进，并解释当时没有做的资源与信息约束。</p></div>
+          <div class="card"><h3>“你和团队的分工”</h3><p>用“我负责…”说清个人边界，同时说明输入来自谁、交付给谁、如何对齐接口和验收。</p></div>
+          <div class="card"><h3>“结果不好怎么办”</h3><p>区分假设失败、实现失败和测量失败；先验证仪器与数据链，再做最小对照和消融，不用调参掩盖结构问题。</p></div>
+        </div>
+      </section>
+
+      <section id="plan">
+        <div class="section-head"><h2>7 天低负担冲刺计划</h2><p>每天 60–90 分钟，不追求一次学完</p></div>
+        <div class="week-plan">
+          <div class="day"><b>DAY 1</b><strong>项目主线</strong><p>练 MantaBot、VCA、CLD 三个 90 秒陈述。</p></div>
+          <div class="day"><b>DAY 2</b><strong>接口与实时</strong><p>并发、时钟、CAN/UDP、watchdog。</p></div>
+          <div class="day"><b>DAY 3</b><strong>控制基础</strong><p>PID、滤波、饱和、状态机。</p></div>
+          <div class="day"><b>DAY 4</b><strong>感知与坐标</strong><p>标定、同步、SE(3)、双目边界。</p></div>
+          <div class="day"><b>DAY 5</b><strong>系统设计</strong><p>安全、测试、日志、降级。</p></div>
+          <div class="day"><b>DAY 6</b><strong>Coding 4 题</strong><p>哈希、滑窗、队列、插值。</p></div>
+          <div class="day"><b>DAY 7</b><strong>模拟面试</strong><p>随机抽 12 题，答案录音并压到 2 分钟。</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

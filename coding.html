@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Coding 训练场 · Dive Station</title>
+  <meta name="description" content="面向机器人全栈工程师的低负担 Coding Test 训练题。">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">DS</span><span><strong>DIVE STATION</strong><small>ROBOTICS INTERVIEW LAB</small></span></a>
+    <nav class="topnav" aria-label="知识库主导航">
+      <a href="index.html">项目库</a><a href="cld.html">CLD 深潜</a><a href="fundamentals.html">全栈基础</a><a href="coding.html" aria-current="page">Coding 训练场</a>
+    </nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="side" aria-label="本页目录">
+      <div class="side-label">CODING TEST</div>
+      <a href="#routine"><span>01</span>做题流程</a>
+      <a href="#patterns"><span>02</span>最小模式库</a>
+      <a href="#problems"><span>03</span>核心 8 题</a>
+      <a href="#problems"><span>04</span>可选 4 题</a>
+      <a href="#debug"><span>05</span>Debug 检查表</a>
+      <div class="side-note">目标不是刷难题，而是能在 25–35 分钟内写出清晰、可测试、边界完整的代码。</div>
+    </aside>
+
+    <main>
+      <div class="eyebrow">EASY → LIGHT MEDIUM / PYTHON FIRST</div>
+      <h1>机器人全栈 Coding<br>低负担训练场</h1>
+      <p class="lead">题目围绕你做过的控制、时间同步、传感器标定、遥测、状态机和网页状态管理展开。每题都给识别信号、主解、替代思路、复杂度、常见错误和延伸知识；先完成 8 道核心题即可。</p>
+      <div class="hero-actions"><a class="button primary" href="#problems">开始核心题</a><button class="button" id="resetProgress" type="button">清空本页进度</button></div>
+      <div class="status-row"><span class="tag">核心 8 题</span><span class="tag gold">可选 4 题</span><span class="tag">Easy 6 / Light Medium 6</span><span class="tag" id="progressTag">已完成 0 / 12</span></div>
+
+      <section id="routine">
+        <div class="section-head"><h2>面试现场的 6 步流程</h2><p>比“马上开始敲代码”更稳</p></div>
+        <div class="pipeline" style="grid-template-columns:repeat(6,minmax(0,1fr))">
+          <div class="step"><b>01</b><strong>复述输入输出</strong><p>确认排序、重复、空输入和数值范围。</p></div>
+          <div class="step"><b>02</b><strong>手推样例</strong><p>主动补一个边界和一个反例。</p></div>
+          <div class="step"><b>03</b><strong>先说复杂度</strong><p>从暴力到目标解法，解释为什么。</p></div>
+          <div class="step"><b>04</b><strong>写清 invariant</strong><p>字典、窗口或队列在每一步代表什么。</p></div>
+          <div class="step"><b>05</b><strong>小函数实现</strong><p>名字清楚，避免过度抽象。</p></div>
+          <div class="step"><b>06</b><strong>跑边界</strong><p>空、单元素、重复、极端值、乱序。</p></div>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>推荐开场话术</strong><p>“我先确认一下：输入是否已经按时间排序？重复序号应该保留第一条还是最后一条？空输入返回空列表。暴力做法是 O(n²)，我可以用一个字典/双指针做到 O(n)；我先讲一下 invariant 再写。”</p></div>
+      </section>
+
+      <section id="patterns">
+        <div class="section-head"><h2>只需要熟练的 8 个模式</h2><p>足够覆盖大部分初中级 Coding Test</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>Hash map / set</h3><p>查重、计数、按 ID 找回、补数。典型复杂度 O(n) 时间、O(n) 空间。</p></div>
+          <div class="card"><h3>Two pointers</h3><p>两个有序流合并、从两端收缩、原地去重。关键是每步至少移动一个指针。</p></div>
+          <div class="card"><h3>Sliding window</h3><p>连续时间段的和、均值、最大/最短满足条件。明确窗口 [l, r] 的 invariant。</p></div>
+          <div class="card"><h3>Stack / queue</h3><p>嵌套结构、最近 N 项、BFS、生产者消费者。有界性比容器名字更重要。</p></div>
+          <div class="card"><h3>Binary search</h3><p>有序数据找位置，或对单调可行性搜索答案。先固定一种边界模板。</p></div>
+          <div class="card"><h3>State machine</h3><p>状态 + 事件 + 显式转换。动作与转换分开，非法事件行为可预测。</p></div>
+          <div class="card"><h3>Prefix / running state</h3><p>累计和、运行最值、上一次状态。流式数据常只需 O(1) 状态。</p></div>
+          <div class="card"><h3>BFS / graph basics</h3><p>无权最短步数、多源距离、依赖关系。用 visited 保证每个节点只处理一次。</p></div>
+        </div>
+      </section>
+
+      <section id="problems">
+        <div class="section-head"><h2>练习题</h2><p>草稿和完成状态只保存在当前浏览器</p></div>
+        <div class="tabs" role="group" aria-label="题目筛选">
+          <button class="filter on" data-filter="all" type="button">全部 12</button>
+          <button class="filter" data-filter="core" type="button">核心 8</button>
+          <button class="filter" data-filter="easy" type="button">Easy</button>
+          <button class="filter" data-filter="medium" type="button">Light Medium</button>
+          <button class="filter" data-filter="robot" type="button">机器人场景</button>
+          <button class="filter" data-filter="debug" type="button">Debug</button>
+        </div>
+
+        <article class="card problem" data-id="two-sum" data-tags="core easy">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 01</span><span class="tag">Easy</span><span class="tag">Hash map</span></div><h3>Two Sum：补数查找</h3></div><span class="q-priority">建议 15 分钟</span></div>
+          <p class="prompt">给定整数数组 <code>nums</code> 和目标值 <code>target</code>，返回两个不同元素的索引，使它们之和等于 target。保证恰好有一个答案。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def two_sum(nums, target):&#10;    # 在这里手写"></textarea>
+          <details><summary>展开思路、边界与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>识别信号</b><p>找一对元素满足精确和；未排序；目标 O(n)。站在当前 x 上，需要找的是 target - x。</p></div><div class="knowledge"><b>Invariant</b><p><code>seen</code> 只保存当前位置之前出现过的值到索引的映射，因此不会重复使用同一元素。</p></div><div class="knowledge"><b>替代思路</b><p>暴力双循环 O(n²)；排序 + 双指针 O(n log n)，但必须保留原索引。</p></div><div class="knowledge"><b>常见错误</b><p>先插入再检查会让元素与自己匹配；重复数字如 [3,3] 是必测边界。</p></div></div>
+            <pre><code>def two_sum(nums, target):
+    seen = {}
+    for i, x in enumerate(nums):
+        need = target - x
+        if need in seen:
+            return [seen[need], i]
+        seen[x] = i
+    return []
+
+# Time O(n), space O(n)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 我能在 15 分钟内独立写出并解释</label></div>
+        </article>
+
+        <article class="card problem" data-id="dedupe-packets" data-tags="core easy robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 02</span><span class="tag">Easy</span><span class="tag">Set / protocol</span></div><h3>控制包去重：保留每个序号的第一包</h3></div><span class="q-priority">建议 15 分钟</span></div>
+          <p class="prompt">输入按到达顺序排列的包 <code>[(seq, command), ...]</code>。网络可能重复投递；返回去重后的列表，保留每个 seq 第一次出现的包，并保持原到达顺序。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def dedupe_packets(packets):"></textarea>
+          <details><summary>展开思路、协议语义与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>主解</b><p>用 set 记录已经接受的 seq；第一次出现才 append。稳定去重是一遍扫描。</p></div><div class="knowledge"><b>复杂度</b><p>平均 O(n) 时间，O(u) 空间，u 为唯一序号数。</p></div><div class="knowledge"><b>协议延伸</b><p>真实序号可能回绕，不能让 set 永久增长；常用滑动窗口/最大已确认序号和模运算。</p></div><div class="knowledge"><b>先问清</b><p>重复 seq 但 command 不同是保留第一条、最后一条还是报协议错误？题目指定第一条。</p></div></div>
+            <pre><code>def dedupe_packets(packets):
+    seen = set()
+    out = []
+    for seq, command in packets:
+        if seq in seen:
+            continue
+        seen.add(seq)
+        out.append((seq, command))
+    return out
+
+# Time O(n), space O(u)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 已掌握稳定去重和协议边界</label></div>
+        </article>
+
+        <article class="card problem" data-id="rising-edges" data-tags="core easy robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 03</span><span class="tag">Easy</span><span class="tag">Running state</span></div><h3>按钮上升沿：按住只触发一次</h3></div><span class="q-priority">建议 12 分钟</span></div>
+          <p class="prompt">给定每个控制周期采样的布尔列表，例如 <code>[False, True, True, False, True]</code>，返回发生 0→1 上升沿的索引。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def rising_edges(samples):"></textarea>
+          <details><summary>展开思路、状态机联系与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>Invariant</b><p><code>prev</code> 始终代表前一个采样；当前为 True 且 prev 为 False 才触发。</p></div><div class="knowledge"><b>边界</b><p>第一个样本为 True 是否算按下？通常以初始未按下 False 为基准，因此算。</p></div><div class="knowledge"><b>工程延伸</b><p>机械按钮还需要 debounce；网络按键还要处理丢包和长时间冻结。</p></div><div class="knowledge"><b>项目联系</b><p>巡航切换、E-Stop reset、录制开关都不应在 50 Hz 按住时重复触发。</p></div></div>
+            <pre><code>def rising_edges(samples):
+    out = []
+    prev = False
+    for i, current in enumerate(samples):
+        if current and not prev:
+            out.append(i)
+        prev = current
+    return out
+
+# Time O(n), extra space O(1) excluding output</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 已掌握 prev/current 流式状态</label></div>
+        </article>
+
+        <article class="card problem" data-id="moving-average" data-tags="core easy robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 04</span><span class="tag">Easy</span><span class="tag">Sliding window</span></div><h3>传感器滑动平均</h3></div><span class="q-priority">建议 18 分钟</span></div>
+          <p class="prompt">给定数值列表和窗口大小 k，返回每个长度为 k 的连续窗口平均值。若 k 无效抛出 <code>ValueError</code>。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def moving_average(values, k):"></textarea>
+          <details><summary>展开思路、数值边界与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>主解</b><p>先求第一个窗口和，之后每步加新值、减旧值；避免每个窗口重新 sum。</p></div><div class="knowledge"><b>复杂度</b><p>O(n) 时间；除输出外 O(1) 空间。</p></div><div class="knowledge"><b>边界</b><p>k ≤ 0、k &gt; n；k = 1；空数组。返回 [] 还是异常必须先约定。</p></div><div class="knowledge"><b>控制提醒</b><p>移动平均引入约 (k−1)/2 个采样的群延迟；不能只谈降噪，不谈相位。</p></div></div>
+            <pre><code>def moving_average(values, k):
+    if k &lt;= 0 or k &gt; len(values):
+        raise ValueError("invalid window size")
+    total = sum(values[:k])
+    out = [total / k]
+    for right in range(k, len(values)):
+        total += values[right] - values[right - k]
+        out.append(total / k)
+    return out
+
+# Time O(n), extra space O(1)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 已掌握固定长度滑窗</label></div>
+        </article>
+
+        <article class="card problem" data-id="ring-buffer" data-tags="core medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 05</span><span class="tag gold">Light Medium</span><span class="tag">Queue / design</span></div><h3>有界遥测 Ring Buffer</h3></div><span class="q-priority">建议 25 分钟</span></div>
+          <p class="prompt">实现 <code>RingBuffer(capacity)</code>，支持 <code>append(x)</code> 和 <code>items()</code>；只保留最近 capacity 项，并按从旧到新返回。capacity 必须为正。</p>
+          <textarea class="practice" spellcheck="false" placeholder="class RingBuffer:&#10;    def __init__(self, capacity):"></textarea>
+          <details><summary>展开思路、替代方案与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>最实用主解</b><p>Python 直接使用 <code>collections.deque(maxlen=capacity)</code>，标准库已正确实现淘汰。</p></div><div class="knowledge"><b>手写版本</b><p>固定数组 + next write index + size；返回时从最老位置绕回。面试官若要求底层再写。</p></div><div class="knowledge"><b>复杂度</b><p>append 均摊 O(1)；items O(k)，k 为当前长度；内存 O(capacity)。</p></div><div class="knowledge"><b>并发边界</b><p>deque 的单次操作不等于复合读取是事务；跨线程一致快照仍需锁或单写者设计。</p></div></div>
+            <pre><code>from collections import deque
+
+class RingBuffer:
+    def __init__(self, capacity):
+        if capacity &lt;= 0:
+            raise ValueError("capacity must be positive")
+        self._data = deque(maxlen=capacity)
+
+    def append(self, value):
+        self._data.append(value)
+
+    def items(self):
+        return list(self._data)
+
+# append O(1), items O(k), memory O(capacity)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能解释有界性、顺序和并发边界</label></div>
+        </article>
+
+        <article class="card problem" data-id="calibration" data-tags="core medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 06</span><span class="tag gold">Light Medium</span><span class="tag">Binary search</span></div><h3>标定表线性插值</h3></div><span class="q-priority">建议 25 分钟</span></div>
+          <p class="prompt"><code>table</code> 是按 raw 升序排列的 <code>[(raw, value), ...]</code>。给定 x，在相邻点间线性插值；超出范围时 clamp 到端点。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def calibration_lookup(table, x):"></textarea>
+          <details><summary>展开思路、二分边界与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>主解</b><p>先 clamp，再用 <code>bisect_right</code> 找第一个大于 x 的位置 hi，lo = hi - 1。</p></div><div class="knowledge"><b>Invariant</b><p>经过 clamp 后一定有 <code>raw[lo] ≤ x &lt; raw[hi]</code>，因此分母不应为零。</p></div><div class="knowledge"><b>复杂度</b><p>若 raw 列表预先缓存，单次查询 O(log n)；现场每次提取 raws 会额外 O(n)。</p></div><div class="knowledge"><b>工程边界</b><p>表内 raw 必须严格递增；外推通常比 clamp 风险大；标定 interpolation 不等于验证 accuracy。</p></div></div>
+            <pre><code>from bisect import bisect_right
+
+def calibration_lookup(table, x):
+    if not table:
+        raise ValueError("empty table")
+    if x &lt;= table[0][0]:
+        return table[0][1]
+    if x &gt;= table[-1][0]:
+        return table[-1][1]
+
+    raws = [raw for raw, _ in table]
+    hi = bisect_right(raws, x)
+    r0, v0 = table[hi - 1]
+    r1, v1 = table[hi]
+    t = (x - r0) / (r1 - r0)
+    return v0 + t * (v1 - v0)
+
+# Query O(log n) after raws are cached</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能写对 clamp、bracket 和 lerp</label></div>
+        </article>
+
+        <article class="card problem" data-id="merge-streams" data-tags="core medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 07</span><span class="tag gold">Light Medium</span><span class="tag">Two pointers</span></div><h3>合并两个有序事件流</h3></div><span class="q-priority">建议 22 分钟</span></div>
+          <p class="prompt">两个列表 <code>a</code> 和 <code>b</code> 都由 <code>(timestamp, source, value)</code> 构成并按 timestamp 升序。返回稳定合并后的单一时间线；时间相同时 a 中的事件在前。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def merge_events(a, b):"></textarea>
+          <details><summary>展开思路、同步联系与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>主解</b><p>两个指针比较当前时间戳，取较小者；相等时用 ≤ 保证 a 在前。最后追加剩余尾部。</p></div><div class="knowledge"><b>Invariant</b><p><code>out</code> 始终有序；a[:i] 与 b[:j] 已全部放入，剩余元素不可能比 out 最后更早。</p></div><div class="knowledge"><b>复杂度</b><p>O(n+m) 时间；输出 O(n+m)。直接 concat + sort 是 O((n+m)log(n+m))。</p></div><div class="knowledge"><b>机器人联系</b><p>合并不等于时间同步。不同设备时钟必须先映射到共同时间基，之后才能按 timestamp 合并。</p></div></div>
+            <pre><code>def merge_events(a, b):
+    i = j = 0
+    out = []
+    while i &lt; len(a) and j &lt; len(b):
+        if a[i][0] &lt;= b[j][0]:
+            out.append(a[i])
+            i += 1
+        else:
+            out.append(b[j])
+            j += 1
+    out.extend(a[i:])
+    out.extend(b[j:])
+    return out
+
+# Time O(n + m), output space O(n + m)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 已掌握有序流稳定合并</label></div>
+        </article>
+
+        <article class="card problem" data-id="watchdog" data-tags="core medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag">CORE 08</span><span class="tag gold">Light Medium</span><span class="tag">State / safety</span></div><h3>Watchdog：判断最新有效命令</h3></div><span class="q-priority">建议 25 分钟</span></div>
+          <p class="prompt">包为 <code>(seq, timestamp, command)</code>。给定到达顺序的 packets、当前单调时间 now 和 timeout，返回“序号严格递增且未超时”的最后一条有效 command；否则返回 <code>"STOP"</code>。忽略旧序号和未来时间戳。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def latest_safe_command(packets, now, timeout):"></textarea>
+          <details><summary>展开思路、安全语义与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>拆条件</b><p>序号比上次接受的大；时间不在未来；最后接受包的 age ≤ timeout。值存在不代表值新鲜。</p></div><div class="knowledge"><b>复杂度</b><p>一遍扫描 O(n)，O(1) 额外空间。</p></div><div class="knowledge"><b>先问清</b><p>序号是否会回绕？timestamp 与 now 是否同一单调时钟？超时边界用 &lt; 还是 ≤？</p></div><div class="knowledge"><b>安全延伸</b><p>STOP 是示意；真实系统还需 armed latch、明确恢复流程和执行器级独立保护。</p></div></div>
+            <pre><code>def latest_safe_command(packets, now, timeout):
+    best_seq = None
+    best_time = None
+    best_command = None
+
+    for seq, timestamp, command in packets:
+        if timestamp &gt; now:
+            continue
+        if best_seq is None or seq &gt; best_seq:
+            best_seq = seq
+            best_time = timestamp
+            best_command = command
+
+    if best_time is None or now - best_time &gt; timeout:
+        return "STOP"
+    return best_command
+
+# Time O(n), extra space O(1)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能解释 freshness、sequence 与 fail-safe</label></div>
+        </article>
+
+        <article class="card problem" data-id="top-k-faults" data-tags="optional easy robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 09</span><span class="tag">Easy</span><span class="tag">Counting</span></div><h3>最高频故障码 Top K</h3></div><span class="q-priority">建议 18 分钟</span></div>
+          <p class="prompt">给定故障码列表和 k，返回出现次数最多的 k 个故障码；次数相同时按故障码字典序升序。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def top_k_faults(codes, k):"></textarea>
+          <details><summary>展开思路、确定性排序与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>主解</b><p>字典计数，再按 <code>(-count, code)</code> 排序，取前 k。</p></div><div class="knowledge"><b>为什么加 tie-break</b><p>确定性输出让测试、日志和 UI 稳定；“任意顺序”与生产代码要求不同。</p></div><div class="knowledge"><b>升级</b><p>大量唯一元素且 k 很小时用 heap O(u log k)；在线流可用近似 heavy-hitter。</p></div><div class="knowledge"><b>复杂度</b><p>简单版本 O(n + u log u)，空间 O(u)。</p></div></div>
+            <pre><code>def top_k_faults(codes, k):
+    counts = {}
+    for code in codes:
+        counts[code] = counts.get(code, 0) + 1
+    ordered = sorted(counts, key=lambda c: (-counts[c], c))
+    return ordered[:k]</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 已掌握计数 + 自定义排序</label></div>
+        </article>
+
+        <article class="card problem" data-id="distance-field" data-tags="optional medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 10</span><span class="tag gold">Light Medium</span><span class="tag">Multi-source BFS</span></div><h3>障碍物距离场</h3></div><span class="q-priority">建议 30 分钟</span></div>
+          <p class="prompt">网格中 1 为障碍、0 为自由。返回每个格子到最近障碍的四连通步数；保证至少一个障碍。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def obstacle_distance(grid):"></textarea>
+          <details><summary>展开思路、为什么是多源 BFS 与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>关键转化</b><p>不是从每个空格做 BFS，而是把所有障碍同时作为距离 0 的起点，一次向外扩散。</p></div><div class="knowledge"><b>Invariant</b><p>BFS 首次到达某格时，路径步数最短；dist = -1 同时充当未访问标志。</p></div><div class="knowledge"><b>复杂度</b><p>每格最多入队一次，O(RC) 时间和 O(RC) 空间。</p></div><div class="knowledge"><b>常见坑</b><p><code>[[-1] * cols] * rows</code> 会让所有行引用同一列表；必须列表推导。</p></div></div>
+            <pre><code>from collections import deque
+
+def obstacle_distance(grid):
+    rows, cols = len(grid), len(grid[0])
+    dist = [[-1] * cols for _ in range(rows)]
+    q = deque()
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == 1:
+                dist[r][c] = 0
+                q.append((r, c))
+
+    while q:
+        r, c = q.popleft()
+        for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nr, nc = r + dr, c + dc
+            if 0 &lt;= nr &lt; rows and 0 &lt;= nc &lt; cols and dist[nr][nc] == -1:
+                dist[nr][nc] = dist[r][c] + 1
+                q.append((nr, nc))
+    return dist</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能识别“所有点到最近源”为多源 BFS</label></div>
+        </article>
+
+        <article class="card problem" data-id="state-machine" data-tags="optional medium robot">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 11</span><span class="tag gold">Light Medium</span><span class="tag">State machine</span></div><h3>控制权仲裁状态机</h3></div><span class="q-priority">建议 30 分钟</span></div>
+          <p class="prompt">实现 <code>next_state(state, event)</code>。状态：DISARMED、MANUAL、CRUISE、ESTOP。事件：ARM、DISARM、LOCK、OVERRIDE、ESTOP、RESET。ESTOP 从任何状态进入；只有 ESTOP + RESET 回到 DISARMED；非法组合保持原状态。</p>
+          <textarea class="practice" spellcheck="false" placeholder="def next_state(state, event):"></textarea>
+          <details><summary>展开思路、优先级与参考实现</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>先处理全局高优先级</b><p>ESTOP 事件覆盖所有普通转换；当前 ESTOP 时只接受 RESET。</p></div><div class="knowledge"><b>转换表优点</b><p>合法转换是数据，容易审查和单元测试；比层层 if/else 更不容易漏。</p></div><div class="knowledge"><b>测试策略</b><p>枚举所有 state × event，检查 ESTOP invariant、RESET 边界和非法事件幂等。</p></div><div class="knowledge"><b>真实系统</b><p>状态转换和 entry/exit action 应分离；恢复前还需硬件安全条件和显式 re-arm。</p></div></div>
+            <pre><code>def next_state(state, event):
+    if event == "ESTOP":
+        return "ESTOP"
+    if state == "ESTOP":
+        return "DISARMED" if event == "RESET" else "ESTOP"
+
+    transitions = {
+        ("DISARMED", "ARM"): "MANUAL",
+        ("MANUAL", "LOCK"): "CRUISE",
+        ("CRUISE", "OVERRIDE"): "MANUAL",
+        ("MANUAL", "DISARM"): "DISARMED",
+        ("CRUISE", "DISARM"): "DISARMED",
+    }
+    return transitions.get((state, event), state)</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能写转换表并枚举测试</label></div>
+        </article>
+
+        <article class="card problem" data-id="mutable-default" data-tags="optional easy debug">
+          <div class="problem-head"><div><div class="problem-meta"><span class="tag gold">OPTIONAL 12</span><span class="tag red">Debug</span><span class="tag">Python</span></div><h3>为什么函数“记住了”上一次数据？</h3></div><span class="q-priority">建议 12 分钟</span></div>
+          <p class="prompt">下面函数连续调用会共享同一个列表。解释根因并修复：<code>def add_sample(x, samples=[]): samples.append(x); return samples</code>。</p>
+          <textarea class="practice" spellcheck="false" placeholder="# 写出解释和修复版本"></textarea>
+          <details><summary>展开根因、正确修复与相关陷阱</summary>
+            <div class="knowledge-grid"><div class="knowledge"><b>根因</b><p>默认参数在函数定义时求值一次，不是每次调用重新创建；可变列表因此跨调用共享。</p></div><div class="knowledge"><b>修复</b><p>使用 None sentinel，在函数体内创建新列表。若本来就需要累积，应显式放到对象状态里。</p></div><div class="knowledge"><b>相邻陷阱</b><p>二维数组别写 <code>[[0]*m]*n</code>；dataclass 可变字段用 <code>default_factory</code>。</p></div><div class="knowledge"><b>测试</b><p>连续两次不传 samples 调用，第二次结果必须只包含第二个值。</p></div></div>
+            <pre><code>def add_sample(x, samples=None):
+    if samples is None:
+        samples = []
+    samples.append(x)
+    return samples</code></pre>
+          </details>
+          <div class="check-row"><label class="done-check"><input type="checkbox"> 能解释“定义时求值”而不只背修复</label></div>
+        </article>
+
+        <div class="empty" id="emptyState">当前筛选下没有题目。</div>
+      </section>
+
+      <section id="debug">
+        <div class="section-head"><h2>写完代码后的 90 秒 Debug 检查表</h2><p>优先查最常见、最便宜的问题</p></div>
+        <div class="grid-3">
+          <div class="card"><h3>输入与边界</h3><ul><li>空输入、单元素、重复值</li><li>k = 0 / k &gt; n</li><li>排序假设是否真的成立</li><li>相等边界用 &lt; 还是 ≤</li></ul></div>
+          <div class="card"><h3>状态与容器</h3><ul><li>先检查还是先插入</li><li>索引和数值是否混用</li><li>共享可变默认参数</li><li>队列是否可能无限增长</li></ul></div>
+          <div class="card"><h3>机器人特有</h3><ul><li>时间戳是否同一时钟</li><li>旧数据是否被当作当前数据</li><li>序号回绕、丢包、乱序</li><li>异常是否进入安全状态</li></ul></div>
+        </div>
+        <div class="callout success" style="margin-top:13px"><strong>准备到什么程度就够了</strong><p>核心 8 题能不看答案独立完成；每题会说一个替代解法、复杂度和两个边界。可选题只需看懂并能口述。没有必要在这轮准备里投入困难 DP、复杂图论或冷门数据结构。</p></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+  (() => {
+    const KEY = "divestation_coding_v1";
+    let state = { done: {}, drafts: {} };
+    try { state = { ...state, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch (_) {}
+    const save = () => localStorage.setItem(KEY, JSON.stringify(state));
+    const problems = [...document.querySelectorAll(".problem")];
+
+    function updateProgress() {
+      const count = problems.filter(p => state.done[p.dataset.id]).length;
+      document.getElementById("progressTag").textContent = `已完成 ${count} / ${problems.length}`;
+    }
+
+    problems.forEach(problem => {
+      const id = problem.dataset.id;
+      const textarea = problem.querySelector(".practice");
+      const checkbox = problem.querySelector('input[type="checkbox"]');
+      textarea.value = state.drafts[id] || "";
+      checkbox.checked = Boolean(state.done[id]);
+      problem.classList.toggle("is-done", checkbox.checked);
+      textarea.addEventListener("input", () => { state.drafts[id] = textarea.value; save(); });
+      checkbox.addEventListener("change", () => {
+        if (checkbox.checked) state.done[id] = true; else delete state.done[id];
+        problem.classList.toggle("is-done", checkbox.checked);
+        save(); updateProgress();
+      });
+    });
+
+    document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => {
+      document.querySelectorAll(".filter").forEach(x => x.classList.remove("on"));
+      button.classList.add("on");
+      const filter = button.dataset.filter;
+      let visible = 0;
+      problems.forEach(problem => {
+        const show = filter === "all" || problem.dataset.tags.split(" ").includes(filter);
+        problem.classList.toggle("hidden", !show);
+        if (show) visible += 1;
+      });
+      document.getElementById("emptyState").style.display = visible ? "none" : "block";
+    }));
+
+    document.getElementById("resetProgress").addEventListener("click", () => {
+      if (!confirm("清空本页的完成状态和所有代码草稿？")) return;
+      localStorage.removeItem(KEY);
+      state = { done: {}, drafts: {} };
+      problems.forEach(problem => {
+        problem.classList.remove("is-done");
+        problem.querySelector(".practice").value = "";
+        problem.querySelector('input[type="checkbox"]').checked = false;
+      });
+      updateProgress();
+    });
+    updateProgress();
+  })();
+  </script>
+</body>
+</html>
