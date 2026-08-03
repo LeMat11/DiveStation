@@ -27,6 +27,10 @@ body {
 a { color: inherit; }
 button, input, textarea { font: inherit; }
 button { color: inherit; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(25, 127, 117, 0.28);
+  outline-offset: 3px;
+}
 code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 code {
   border: 1px solid #d7e2df;

@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>机器人全栈面试知识大全 · Dive Station</title>
+  <meta name="description" content="覆盖项目细节、机器人全栈基础、抽查问答、系统设计与 Coding Test 的面试知识大全。">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">DS</span><span><strong>DIVE STATION</strong><small>INTERVIEW HANDBOOK</small></span></a>
+    <nav class="topnav" aria-label="知识库主导航"><a href="handbook.html" aria-current="page">知识大全</a><a href="index.html#cards">知识卡片</a><a href="projects.html">项目抽查</a><a href="system-design.html">系统设计</a><a href="fundamentals.html">全栈基础</a><a href="coding.html">Coding</a></nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="side" aria-label="本页目录">
+      <div class="side-label">KNOWLEDGE HANDBOOK</div>
+      <a href="#route"><span>00</span>复习路线</a>
+      <a href="#mantabot"><span>01</span>MantaBot</a>
+      <a href="#vca"><span>02</span>VCA Joint</a>
+      <a href="#cld"><span>03</span>CLD Swimmer</a>
+      <a href="#flow"><span>04</span>Flow Sensing</a>
+      <a href="#coach"><span>05</span>ClearCoach</a>
+      <a href="#common"><span>06</span>机器人共通知识</a>
+      <a href="#practice"><span>07</span>抽查与 Coding</a>
+      <div class="side-note">正文用于系统学习；项目抽查题用于闭卷检验；开放问题用于补证据；Coding 页用于短时手写训练。</div>
+    </aside>
+
+    <main>
+      <div class="eyebrow">233 KNOWLEDGE CARDS + FULL-STACK CORE</div>
+      <h1>机器人全栈工程师<br>面试知识大全</h1>
+      <p class="lead">这是主教材，不是题库。每章先给系统事实和数据流，再展开数据结构、协议、算法、硬件、实验、故障与验证；章末才连接抽查题和延伸问题。</p>
+      <div class="hero-actions"><a class="button primary" href="#mantabot">从 MantaBot 开始</a><a class="button" href="index.html#cards">知识卡片中心</a><a class="button" href="projects.html">项目抽查题</a><a class="button" href="system-design.html">系统设计题</a><a class="button" href="coding.html">Coding Test</a></div>
+      <div class="status-row"><span class="tag">项目知识正文</span><span class="tag">具体数字与接口</span><span class="tag">实现方法与数据结构</span><span class="tag gold">未知硬件事实不编造</span></div>
+
+      <section id="route">
+        <div class="section-head"><h2>项目优先级</h2><p>不平均分配时间；先把最能代表机器人全栈能力的项目讲透</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>P0 · MantaBot｜45%</h3><p>最重要主线。完整学习控制、软件、硬件、通信、双目、部署、安全与故障复盘。</p></div>
+          <div class="card"><h3>P1 · VCA｜25%</h3><p>重点掌握嵌入式闭环、Hall 标定、功率驱动、无线语义和保护链。</p></div>
+          <div class="card"><h3>P1 · CLD｜20%</h3><p>重点掌握材料—结构—流体—任务性能证据链和研究边界。</p></div>
+          <div class="card"><h3>P2 · 其他｜10%</h3><p>Flow Sensing 与 ClearCoach 作为交叉能力补充，按岗位追问选择性复习。</p></div>
+        </div>
+        <div class="section-head" style="margin-top:28px"><h2>四层学习方法</h2><p>先建立知识，再用问题检验；不要倒过来只背答案</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>第一层：事实骨架</h3><p>项目目标、系统组成、输入输出、频率、型号、协议和量化结果。</p></div>
+          <div class="card"><h3>第二层：实现机制</h3><p>线程、队列、dataclass、状态机、滤波、标定、损失函数和部署方法。</p></div>
+          <div class="card"><h3>第三层：失败与边界</h3><p>故障现象、根因、保护、测试，以及指标不能证明的内容。</p></div>
+          <div class="card"><h3>第四层：闭卷检验</h3><p>项目抽查、开放硬件题、系统设计和 Coding Test。</p></div>
+        </div>
+      </section>
+
+      <section id="mantabot">
+        <div class="eyebrow">01 · MARIS / MANTABOT</div>
+        <div class="section-head"><h2>水下仿生机器人完整知识</h2><p>控制、执行器、传感、双目、通信、UI、记录、安全</p></div>
+        <div class="pipeline">
+          <div class="step"><b>INPUT</b><strong>Steam Deck</strong><p>evdev/gamepad/gyro；50 Hz UDP 意图。</p></div>
+          <div class="step"><b>SUPERVISE</b><strong>Pi 5 · 50 Hz</strong><p>状态机、mixer、优先级、限幅。</p></div>
+          <div class="step"><b>ACTUATE</b><strong>Motor · 200 Hz</strong><p>相位轨迹、1 Mbps CAN/MIT、双翼。</p></div>
+          <div class="step"><b>SENSE</b><strong>100/10/15 Hz</strong><p>IMU、MS5837、双 IMX219。</p></div>
+          <div class="step"><b>OBSERVE</b><strong>10/20 Hz</strong><p>WebSocket、QML、记录/回放。</p></div>
+        </div>
+
+        <div class="grid-4" style="margin-top:14px">
+          <div class="card metric"><strong>50 / 200 Hz</strong><span>整机 supervisory loop / 双翼位置命令</span></div>
+          <div class="card metric"><strong>0–3 Hz</strong><span>正常扑动频率；巡航调试 ceiling 6 Hz</span></div>
+          <div class="card metric"><strong>±70°</strong><span>相对上电 neutral 的最终电机位置限位</span></div>
+          <div class="card metric"><strong>500 ms</strong><span>游戏手柄 UDP 失联 watchdog</span></div>
+        </div>
+
+        <details class="qa" open><summary><span class="q-no">A</span><span class="q-title">控制算法、状态机与数据结构</span><span class="q-priority">11 points</span></summary><div class="q-answer">
+          <ul>
+            <li><b>Finite state machine</b>：DISENGAGED / LOCKED / OVERRIDE / RAMPING 等显式状态解决摇杆、巡航和自动过渡争夺控制权的问题；状态转换与执行器输出分离。</li>
+            <li><b>Rising-edge detector</b>：保存上一帧按钮状态，只在 0→1 时触发，避免 50 Hz 轮询下按住按钮重复切换。</li>
+            <li><b>Hysteresis</b>：巡航接管使用不同进入/退出阈值；热管理为 65/70/75/80°C 分级并设置恢复带，避免阈值附近抖振。</li>
+            <li><b>Linear interpolation ramp</b>：人工接管释放后 0.3 s 回到 cruise snapshot；退出巡航 2 s 降到安全状态，防止 command discontinuity。</li>
+            <li><b>Phase accumulator</b>：<code>phase += 2πf·dt</code>；运行中改频率只改变相位推进速度，不改变当前位置。</li>
+            <li><b>统一 offset 方程</b>：<code>position = neutral + sign·(amplitude·sin phase + offset)</code>；amplitude=0 时自然退化为静态 hold，不另建模式。</li>
+            <li><b>Snapshot-and-restore</b>：巡航锁定保存 setpoint snapshot；人工 override 暂时接管，释放后回到保存目标。</li>
+            <li><b>Ring buffer</b>：Web 日志只保留最近 INFO+ 事件，内存固定，不让长时间运行无限增长。</li>
+            <li><b>Mixer</b>：把 forward/turn/pitch/yaw 意图映射为左右 motor frequency/amplitude 和镜像 servo angle；共同分量用 sum，对称差动用 difference。</li>
+            <li><b>Depth-hold 规划</b>：慢速外环 depth error → vertical-velocity target，快速内环 velocity → pitch/actuation；当前未实现，不能当完成能力。</li>
+            <li><b>Priority chain</b>：E-Stop → armed gate → source ownership → cruise/manual → limit/slew；安全层不能被普通 source mutual exclusion 阻挡。</li>
+          </ul>
+        </div></details>
+
+        <details class="qa" open><summary><span class="q-no">B</span><span class="q-title">软件模块、线程模型与接口</span><span class="q-priority">8 points</span></summary><div class="q-answer">
+          <ul>
+            <li><b>Multi-rate threading</b>：motor、controller、CAN receive、IMU、pressure、camera、network、recorder 各按自身周期运行；慢 I/O 不进入 5 ms motor deadline。</li>
+            <li><b>SharedState + RLock</b>：每个 producer 只写自己的数据块；值与 monotonic timestamp、sequence、valid/error 同步更新；consumer 只在锁内复制 snapshot。</li>
+            <li><b>Dataclass command structs</b>：命令结构显式包含 motor/servo values、source、timestamp 和 mode，便于追踪“哪个层覆盖了值”。</li>
+            <li><b>Qt signal/slot</b>：后台线程不直接改 QML；用 signal 把数据 marshal 到 GUI thread。</li>
+            <li><b>QObject property bridge</b>：Python backend 暴露属性/通知信号，QML 只负责声明式呈现与用户事件。</li>
+            <li><b>asyncio + FastAPI</b>：REST 做监督/诊断，WebSocket 10 Hz 推送状态；异步连接避免每客户端一个 OS thread。</li>
+            <li><b>Transport abstraction + callback hook</b>：视频编码/传输实现可替换；capture loop 通过 callback 扩展记录、流式或处理而不硬编码消费者。</li>
+            <li><b>Config single source of truth</b>：频率、限位、网络、相机和热阈值集中配置；记录时保存配置版本，避免代码中散落 magic number。</li>
+          </ul>
+        </div></details>
+
+        <details class="qa" open><summary><span class="q-no">C</span><span class="q-title">硬件、协议与具体实现</span><span class="q-priority">9 points</span></summary><div class="q-answer">
+          <table><thead><tr><th>部件 / 协议</th><th>项目实现</th><th>必须理解</th></tr></thead><tbody>
+            <tr><td>AK45-10 + CAN/MIT</td><td>1 Mbps SocketCAN；200 Hz 位置/速度命令；解析 position、velocity、torque、temperature、fault。</td><td>MIT 帧字段量化、ID、反馈解析、总线负载；入模式前读当前位置并 command hold，避免跳零。</td></tr>
+            <tr><td>CAN logical addressing</td><td>物理电机与逻辑 left/right 映射分离；一侧机构反装由 sign/config 处理。</td><td>硬件返工时只改映射，不让 polarity 补偿泄漏到控制逻辑。</td></tr>
+            <tr><td>Pi 5 RP1 sysfs PWM</td><td>50 Hz servo、1 kHz LED；用户空间写 period/duty/enable。</td><td><code>dtoverlay</code> 和 config section 必须正确；sysfs 写成功不代表 RP1 引脚真的输出。</td></tr>
+            <tr><td>Servo slew limit</td><td>40°/s，减少堵转/快速换向的电流尖峰和 Pi brownout 风险。</td><td>最终仍需独立电源完整性验证，软件限速不是保险丝。</td></tr>
+            <tr><td>MS5837-30BA / I²C</td><td>10 Hz pressure、temperature、seawater depth。</td><td>地址、上拉、电平、conversion timing、bus lock；depth 不能直接当 vertical velocity。</td></tr>
+            <tr><td>YbImu / serial</td><td>100 Hz accel、gyro、mag、quaternion、Euler。</td><td>电机磁场污染 magnetometer；无外部航向参考时 yaw 会漂移。</td></tr>
+            <tr><td>UDP / WebSocket</td><td>Deck→Pi 50 Hz JSON UDP；Pi→Deck 10 Hz full-state WebSocket。</td><td>UDP 需 sequence/timestamp/watchdog；WebSocket 慢客户端需背压和断线清理。</td></tr>
+            <tr><td>MJPEG / H.264</td><td>双路合为 2560×720 side-by-side；on-demand encoder；latest-frame queue。</td><td>Pi 5 没有预期的硬件 H.264 encoder；软件编码受 CPU/热预算限制。</td></tr>
+            <tr><td>Dual-interface Wi‑Fi</td><td>现场 hotspot 与互联网/校园网并存，由 NetworkManager profile 管理。</td><td>wlan0/wlan1 名称可能重启漂移；profile 应绑定稳定 MAC/interface identity。</td></tr>
+          </tbody></table>
+        </div></details>
+
+        <details class="qa" open><summary><span class="q-no">D</span><span class="q-title">双目几何、数学与信号处理</span><span class="q-priority">8 points</span></summary><div class="q-answer">
+          <ul>
+            <li><b>Calibration pipeline</b>：capture checkerboard pairs → sub-pixel corners → monocular calibration → stereo solve → per-pair error → reject outlier → re-solve → export K/D/R/T/P/Q/maps。</li>
+            <li><b>质量数字</b>：25 对检测、24 对接受；left RMS 0.196 px、right 0.187 px、stereo 0.246 px、epipolar 0.146 px、baseline 60.566 mm；outlier rejection 使 stereo RMS 从 0.595 降 58.7% 到 0.246。</li>
+            <li><b>Reprojection error</b> 是角点模型拟合 gate，不是深度 accuracy；<b>epipolar verification</b> 检查 rectified 对应点纵向偏差。</li>
+            <li><b>StereoSGBM</b> 输出 fixed-point disparity；先做 sign/range validity，再用 Q matrix reproject 到米制 3D。</li>
+            <li><b>Neighborhood median</b> 比单像素稳定；中心 ROI 至少 64 个 valid pixel 才给 proximity 判断。</li>
+            <li><b>Proximity hysteresis</b>：0.20 m 警告，0.25 m 清除；只是 operator aid。</li>
+            <li><b>Phase resynchronization</b>：差动转向造成累计 phase offset，恢复直行时平滑收敛，不瞬间 reset。</li>
+            <li><b>Deadzone + clamp chain</b>：输入层去 stick noise；mixer 层限制命令；driver 层相对 neutral ±70° 最终机械保护。</li>
+          </ul>
+        </div></details>
+
+        <details class="qa" open><summary><span class="q-no">E</span><span class="q-title">典型故障、根因和防复发</span><span class="q-priority">14 points</span></summary><div class="q-answer">
+          <ul>
+            <li><b>IMX219 FOV 随 sensor mode/分辨率改变</b>：标定与运行 crop 不同会使 stereo geometry 失效；calibration 必须绑定 resolution + mode。</li>
+            <li><b>Cruise deadzone stutter</b>：摇杆回到 deadzone 时从 live command 突然跳回 snapshot；用 override state + ramp。</li>
+            <li><b>dtoverlay 静默失败</b>：config.txt section 错导致“zombie PWM”；验证实际 pin waveform，不只看 sysfs 无报错。</li>
+            <li><b>Zombie systemd service</b>：旧 unit 删除后仍可能残留 enable/alias；检查 <code>systemctl list-unit-files</code>、symlink 和实际 ExecStart。</li>
+            <li><b>Motor startup jump</b>：MIT command zero ≠ physical neutral；入模式前捕获并保持 current position。</li>
+            <li><b>Motor phase drift</b>：差动频率与独立 idle reset 让两侧累积偏差；共享时间/显式 re-sync。</li>
+            <li><b>Motor 磁场污染 compass</b>：mag yaw 不可信；用 gyro integration + 外部参考，或降低对绝对 yaw 的依赖。</li>
+            <li><b>Pi 5 H.264 假设错误</b>：不存在期望硬编；使用 MJPEG/软件编码并按热状态降级。</li>
+            <li><b>Wi‑Fi interface name drift</b>：profile 绑定稳定 identity，不依赖 wlan index。</li>
+            <li><b>Trigger double normalization</b>：客户端已经归一化，服务端再次转换导致范围错误；接口 schema 写清 raw/normalized。</li>
+            <li><b>RGB/BGR channel flip</b>：Picamera2 RGB888 与 PIL 已是 RGB，不要沿用 OpenCV BGR 假设。</li>
+            <li><b>GUI E-Stop 路径不完整</b>：GUI 与 gamepad 必须调用同一安全 action，而不是复制两套 reset 逻辑。</li>
+            <li><b>校园 Wi‑Fi session 过期</b>：无头长期运行需要 local AP/可靠链路，不把开放网认证当控制依赖。</li>
+            <li><b>ARM64 native extension SIGSEGV</b>：第三方 IDE 扩展崩溃与机器人程序分离；生产系统不依赖开发工具进程。</li>
+          </ul>
+        </div></details>
+        <div class="hero-actions"><a class="button primary" href="projects.html#mantabot">闭卷抽查 MantaBot</a><a class="button" href="system-design.html#questions">做端到端系统设计题</a></div>
+      </section>
+
+      <section id="vca">
+        <div class="eyebrow">02 · VCA JOINT</div>
+        <div class="section-head"><h2>拮抗式 VCA 关节完整知识</h2><p>机构、Hall 标定、500 Hz PID、ESP-NOW、功率级、安全调参</p></div>
+        <div class="grid-4">
+          <div class="card metric"><strong>500 Hz</strong><span>Driver 本地 PID；使用实测 dt</span></div>
+          <div class="card metric"><strong>20 kHz</strong><span>默认 PWM；fast/slow decay 可选</span></div>
+          <div class="card metric"><strong>±45°</strong><span>标定与机械控制范围</span></div>
+          <div class="card metric"><strong>50 Hz</strong><span>embedded telemetry；browser 目标 10 Hz</span></div>
+        </div>
+
+        <details class="qa" open><summary><span class="q-no">A</span><span class="q-title">控制模式、算法与数据结构</span><span class="q-priority">8 points</span></summary><div class="q-answer"><ul>
+          <li><b>Latched state machine</b>：MANUAL、STATIC_PID、TRACKING 和 fault/STOP 状态显式锁存；噪声传感器不直接触发模式翻转。</li>
+          <li><b>500 Hz PID</b>：P on error、clamped integral anti-windup、derivative on measurement + 50 Hz 一阶低通；default Kp=4.8、Ki=0.01、Kd=0。</li>
+          <li><b>Quiet-hold Schmitt trigger</b>：误差 &lt;2° coast，&gt;3° 恢复；减少噪声导致的 chatter/limit cycle。</li>
+          <li><b>Dead-zone feedforward</b>：默认 5-count 补偿最小有效输出；不让 integral 单独穿越死区。</li>
+          <li><b>Watchdog</b>：browser、serial、wireless、sensor 分层 timeout；失联转 coasted manual，通信恢复不自动 re-arm。</li>
+          <li><b>Priority queue</b>：STOP 高于 telemetry poll、sine streaming 和普通命令；bounded FreeRTOS queue 防止 stale motion 累积。</li>
+          <li><b>Metronome/keep-alive</b>：长时间运动按固定周期刷新，既满足 watchdog 又不修改固件安全语义。</li>
+          <li><b>Polarity abstraction + slew/co-activation</b>：物理接线反向只在 driver config 处理；上下游统一使用 signed joint command。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">B</span><span class="q-title">Hall 传感、标定与角度数学</span><span class="q-priority">implementation</span></summary><div class="q-answer"><ul>
+          <li>AS5600L：12-bit、400 kHz I²C、地址 0x40（不要与 AS5600 的 0x36 混淆）。</li>
+          <li>标定工具：5 s 静止噪声；neutral/+45/−45° 各 20 次；circular averaging 与 0/4095 unwrap；linear regression angle(raw)。</li>
+          <li>结果：zero 4088.65 counts；scale −0.0907288°/count；R² 0.9999326；三点最大残差 0.43°；noise σ=2.18 counts → 约 0.20° noise-derived resolution。</li>
+          <li><b>Modular arithmetic</b>：raw 跨 4095→0 时计算最短 circular difference；不能用普通减法制造巨大角度跳变。</li>
+          <li><b>Dataclass + JSON</b>：保存 zero、scale、direction、noise、fit metrics 和版本；加载时验证字段与范围。</li>
+          <li><b>Zero-point averaging</b>：多次样本平均降低随机噪声，但不能消除磁铁偏心/非线性等系统误差。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">C</span><span class="q-title">双 MCU、协议与软件实现</span><span class="q-priority">6 points</span></summary><div class="q-answer"><ul>
+          <li><b>Commander/Driver topology</b>：Commander 接 host serial/browser；Driver 直接接 AS5600L/H-bridge 并保留 500 Hz feedback loop。</li>
+          <li><b>Packed struct</b>：二进制消息包含 version、type、message_id、mode、payload；双方固定宽度类型、packing 与 endian；用 size/static assertions 防 drift。</li>
+          <li><b>ACK matching</b>：Commander 按 message_id 等待 Driver 应用层确认；无线 send callback 不等于命令已执行。</li>
+          <li><b>asyncio + aiohttp/WebSocket</b>：同一 host process 并发 serial、HTTP 与 10–20 Hz browser telemetry；慢客户端不能阻塞 serial reader。</li>
+          <li><b>pyserial timeout + regex filter</b>：串口读取有限等待，从混合 telemetry/ACK 流筛选对应 reply，绝不无限 block。</li>
+          <li><b>CONFIG block</b>：实验频率、gains、range、timeout 集中；20 Hz sine setpoint 共享同一 phase，两个拮抗通道 anti-phase。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">D</span><span class="q-title">功率硬件、协议和保护链</span><span class="q-priority">8 points</span></summary><div class="q-answer"><table><thead><tr><th>项目</th><th>实现与关键点</th></tr></thead><tbody>
+          <tr><td>LEDC PWM</td><td>ESP32 Arduino Core v3.x API；20 kHz 默认；输出 pin 在 peripheral setup 前先拉 LOW，避免 boot glitch。</td></tr>
+          <tr><td>DRV8871/8874</td><td>理解 truth table、coast/brake、fast/slow decay；decay 会影响低 PWM 电流建立与阈值。</td></tr>
+          <tr><td>IPROPI</td><td>DRV8874 current mirror 经 resistor 转 ADC voltage；电阻必须从最大电流和 3.3 V ADC 上限反算，10 kΩ 复制值会过压。</td></tr>
+          <tr><td>MP2338 buck</td><td>按 datasheet 设计反馈、电感、输入/输出电容与 layout；替代不明确的模块级电源。</td></tr>
+          <tr><td>Decoupling</td><td>每 IC 近端 ceramic 处理高频；shared rail bulk capacitor 处理 actuator transient；两者功能不同。</td></tr>
+          <tr><td>Protection</td><td>启动不安全电平、back-EMF、USB/VBUS backfeed 是三种独立故障路径，需分别处理；不能只加一个二极管概括。</td></tr>
+          <tr><td>Directional limit</td><td>到 ±45° 只禁止继续向外的输出，允许向内恢复；encoder fault 立即 coast 并 latch。</td></tr>
+          <tr><td>Power result</td><td>简历记录单模块峰值 &gt;30 W；连续额定、热时间常数和电流证据仍需补充。</td></tr>
+        </tbody></table></div></details>
+
+        <details class="qa" open><summary><span class="q-no">E</span><span class="q-title">实验数学、自动调参与 PIV 关联</span><span class="q-priority">7 points</span></summary><div class="q-answer"><ul>
+          <li><b>Strouhal</b>：<code>St=fA/U</code>，明确 A 是 peak-to-peak 还是单边幅值；不能省略定义。</li>
+          <li><b>Empirical A(f)</b>：若执行器振幅随频率变化，用实验曲线与迭代求解选择 command，不能把 A 当常数。</li>
+          <li><b>Phase averaging</b>：按驱动相位对多个周期 bin/average，提取 coherent PIV structure。</li>
+          <li><b>Post-hoc phase recovery</b>：没有可靠 trigger-in 时可从图像运动恢复相位，但精度和 failure mode 必须验证。</li>
+          <li><b>Lock-in criterion</b>：用响应与驱动的 relative phase 是否稳定定量判定 lock-in。</li>
+          <li><b>Autotune</b>：polarity/noise preflight → 可选 Tyreus-Luyben seed → coordinate twiddle Kp/Ki/Kd/deadband → 两次 0→+10→−10→0°。</li>
+          <li><b>Score</b>：ITAE、overshoot、settling、steady-state error、limit-cycle、saturation；36 candidates / 72 sequences，cost 183.43→112.89（−38.5%），winning trial saturation 0%。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">F</span><span class="q-title">典型硬件故障与工程教训</span><span class="q-priority">11 points</span></summary><div class="q-answer"><ul>
+          <li>GPIO3/D3 受 JTAG/boot 功能污染，产生伪 brake voltage；选安全 pin 并上电测波形。</li>
+          <li>boot-state glitch 在 <code>setup()</code> 前使 H-bridge energize；外部 pull-down/enable gate + firmware early LOW。</li>
+          <li>board kill 不是单因：启动高、back-EMF、USB backfeed 分别隔离验证。</li>
+          <li>reversed actuator wiring：polarity 只在 driver abstraction 修正。</li>
+          <li>open-loop lookup 无法修复 bang-bang plant；先承认没有稳定中间点，再改变控制/轨迹。</li>
+          <li>IPROPI resistor 未按 ADC 上限计算会损坏 ADC。</li>
+          <li>AS5600L 地址与 AS5600 不同；按实际 part number 查 datasheet。</li>
+          <li>长 calibration hold 会超过 watchdog；keep-alive 或专用校准模式，但不关闭 safety。</li>
+          <li>XIAO 的 VBUS 不是任意 BAT input；按板卡 power-path 连接。</li>
+          <li>无线且无 trigger-in 不适合精密电子 PIV sync；使用硬件触发或 post-hoc 方法并报告误差。</li>
+          <li>KiCad 工程不能只复制若干文件；用 project archive/rename，检查 symbol-footprint-net linkage。</li>
+        </ul></div></details>
+        <div class="hero-actions"><a class="button primary" href="projects.html#vca">闭卷抽查 VCA</a><a class="button" href="system-design.html#questions">做双 MCU 系统设计题</a></div>
+      </section>
+
+      <section id="cld">
+        <div class="eyebrow">03 · CLD SOFT PROPULSOR</div>
+        <div class="section-head"><h2>被动阻抗整形完整知识</h2><p>材料 → 复阻抗 → 相位 → 涡结构 → 推力 → 加速</p></div>
+        <div class="grid-4">
+          <div class="card metric"><strong>K*=K′+iK″</strong><span>K′ 储能；K″ 损耗；0–5 Hz 内 K″ 随频率增长</span></div>
+          <div class="card metric"><strong>0.51 N</strong><span>St=0.8 design c；baseline 0.16 N</span></div>
+          <div class="card metric"><strong>0.191 m/s²</strong><span>3 kg virtual mass peak acceleration；baseline 0.039</span></div>
+          <div class="card metric"><strong>0.291 m/s</strong><span>3.8 s terminal velocity；baseline 0.105</span></div>
+        </div>
+        <details class="qa" open><summary><span class="q-no">A</span><span class="q-title">材料、结构和复阻抗</span><span class="q-priority">core</span></summary><div class="q-answer"><ul>
+          <li>对称 sandwich：0.5 mm PLA base + 两侧 1 mm closed-cell acrylic foam VE core + 0.3 mm PET constraining layer；模块 100×76.5 mm。</li>
+          <li>弯曲时 PET 限制 VE 自由伸缩，把 flexure 转为 core shear；rate-dependent shear 使每周期耗散随频率增加。</li>
+          <li>单频 lock-in regression 从 θ(t)、T(t) 得到复幅值，<code>K*=T̂/θ̂</code>；实部 K′、虚部 K″。</li>
+          <li>elastic/dissipative fractions：<code>K′/(K′+K″)</code> 与 <code>K″/(K′+K″)</code>，用于比较组成而非只看总刚度。</li>
+          <li>干态测试：±9°、0–5 Hz、ClearPath + ATI Mini-40、200 Hz DAQ；K′ 近似稳定，K″ 单调增长，hysteresis loop area 扩大。</li>
+        </ul></div></details>
+        <details class="qa" open><summary><span class="q-no">B</span><span class="q-title">水洞、PIV 与任务级验证</span><span class="q-priority">experiment</span></summary><div class="q-answer"><ul>
+          <li>四种 coverage：0%、16.7%、33.3%、66.7%；U=0.2 m/s，heave ±0.04 m，f=0.5–2 Hz（0.25 Hz step），St=0.2–0.8；每条件 3 次。</li>
+          <li>hydrodynamic load 200 Hz；NI/Simulink real-time heave command 4000 Hz；ATI Mini-40 测力。</li>
+          <li>低 St 各构型推力接近；St&gt;0.4 后分化；St=0.8 design c 0.51 N vs baseline 0.16 N（&gt;200%）。</li>
+          <li>baseline efficiency 在 St≈0.3 约 20% 后下降；design c 约 10% plateau，并在 St&gt;0.7 超过 baseline。</li>
+          <li>phase-resolved PIV：Photron Nova R3 + DaVis；0.5π design c 有更 coherent attached LEV 和 streamwise TEV；1.1π reversal 保持 chordwise vorticity continuity。</li>
+          <li>virtual mass：3 kg、St=0.8、3.8 s；design c displacement 0.617 m vs 0.213 m；peak acceleration 0.191 vs 0.039；terminal 0.291 vs 0.105 m/s。</li>
+          <li>mechanical low-pass：损耗抑制 higher-order parasitic bending，使 trailing edge 从 square-like distortion 回到 near-sinusoidal。</li>
+        </ul></div></details>
+        <details class="qa" open><summary><span class="q-no">C</span><span class="q-title">论文边界与 RL 延伸</span><span class="q-priority">boundary</span></summary><div class="q-answer"><ul>
+          <li>相位滞后在这里允许 stroke reversal 更平滑、改善 vortex timing；不能推广成“延迟越多越好”。</li>
+          <li>仅单自由度 passive fin；virtual mass 是一维 carriage，不是物理自由游动；coverage 只有四级，未证明最优分布/厚度。</li>
+          <li>RL 设计：MuJoCo multi-segment fish，K(f)/B(f) 查表，Morison hydrodynamics，action=[frequency, amplitude]，6D state，λ-conditioned reward，SAC + curriculum。</li>
+          <li>计划实验：CLD vs rigid convergence、Pareto frontier、±30% hydro error robustness、frequency schedule、sim-to-real；当前是设计/搭建，不是已验证结果。</li>
+        </ul></div></details>
+        <div class="hero-actions"><a class="button primary" href="projects.html#cld">闭卷抽查 CLD</a><a class="button" href="system-design.html#questions">做水下推进系统设计题</a></div>
+      </section>
+
+      <section id="flow">
+        <div class="eyebrow">04 · FLOW SENSING</div>
+        <div class="section-head"><h2>同步流动感知与重建完整知识</h2><p>硬件共同时间基、异构输入、物理损失、泛化与泄漏</p></div>
+        <div class="grid-4">
+          <div class="card metric"><strong>5 channels</strong><span>MS5803 + TCA9548A，400 kHz I²C</span></div>
+          <div class="card metric"><strong>80 Hz</strong><span>Teensy deterministic pressure schedule</span></div>
+          <div class="card metric"><strong>1 ms</strong><span>3.3 V TTL to PIV/PTU-X</span></div>
+          <div class="card metric"><strong>54 cases</strong><span>不同流动与几何工况的数据集</span></div>
+        </div>
+
+        <details class="qa" open><summary><span class="q-no">A</span><span class="q-title">硬件采集、时间同步与校准</span><span class="q-priority">hardware</span></summary><div class="q-answer"><ul>
+          <li>五个同地址 MS5803 通过 TCA9548A channel isolation；Teensy 负责 init、channel select、conversion schedule、TTL 和 serial。</li>
+          <li>先跨五通道 start conversion，再逐通道 read，减少完全串行 conversion/read 的 channel skew。</li>
+          <li>80 Hz = 12.5 ms period；用 Teensy <code>micros()</code> absolute schedule；记录 sequence、jitter、missed sample。</li>
+          <li>TTL rising edge 是共享 t=0；sample 0 已知安排在 12.5 ms；配对用 measured TTL-relative time，不用 keyboard/USB receive time。</li>
+          <li>Host–Teensy mapping 用 repeated round-trip minimum-RTT midpoint，只用于 absolute log metadata；不替代硬件同步。</li>
+          <li>逐通道 baseline：<code>Δpᵢ(t)=pᵢ(t)−mean baselineᵢ</code>；common-mode subtraction 只在物理目标允许删除全局变化时使用。</li>
+          <li>Miniature PIV 采用 OV9281 global shutter 1280×800，避免快速粒子 rolling-shutter distortion；mini-camera FOV 必须映射到 NOVA R3 vector cells。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">B</span><span class="q-title">模型架构、张量与软件实现</span><span class="q-priority">14 points</span></summary><div class="q-answer"><ul>
+          <li><b>Two-stage training</b>：先 full-field autoencoder 学 flow manifold，再冻结/微调 decoder 学 sparse sensors→latent/dense field；两阶段 split 必须一致。</li>
+          <li><b>Cross-attention</b>：每个 grid query 从 sensor tokens 选择相关信息；仅 5 tokens 会产生 rank≤5 bottleneck。</li>
+          <li><b>Learnable spatial tokens</b>：作为额外 K/V 提高输出表示 rank，缓解 vorticity SSIM 卡在约 0.13 的结构瓶颈。</li>
+          <li><b>Sensor self-attention</b>：先让不同传感器交换空间/相位信息，再供 grid query 读取。</li>
+          <li><b>Dual pathway</b>：PIV patches 与 scalar pressure 各自 encoder，再 cross-modal fuse，避免异构尺度互相污染。</li>
+          <li><b>Shared-weight encoder</b>：五个同类型 patch/sensor 复用权重，减少参数并保持 permutation consistency。</li>
+          <li><b>Temporal channel stacking</b>：把多个 time steps 堆为 channels，让 2D CNN 获取短时上下文，不引入 LSTM。</li>
+          <li><b>Ensemble heads</b>：不同 decoder/model 预测分歧形成 uncertainty map，为 active learning 选 case。</li>
+          <li><b>Config flags + W&B</b>：同一代码运行 pretrained/e2e 2×2 ablation；run name、seed、dataset version、config 可查询。</li>
+          <li><b>einsum / reshape</b>：处理 batch×sensor×time×channel×height×width，不用 Python nested loop；每次 reshape 明确维度语义。</li>
+          <li><b>Frozen perceptual module</b>：用预训练 encoder feature 做 loss，但 requires_grad=False 且 eval mode。</li>
+          <li><b>.mat I/O</b>：scipy 读取后显式检查 MATLAB column-major / dimension order / transpose / units。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">C</span><span class="q-title">物理量、损失与评估</span><span class="q-priority">10 points</span></summary><div class="q-answer"><ul>
+          <li><b>Vorticity</b>：<code>ω=∂v/∂x−∂u/∂y</code>，有限差分必须带实际 dx/dy 与坐标方向。</li>
+          <li><b>Fourier position encoding</b>：multi-frequency sin/cos 帮助网络表示尖锐 vortex boundary，缓解 MLP spectral bias。</li>
+          <li><b>Sobel gradient loss</b>：惩罚边缘/剪切层模糊；<b>vorticity-weighted MSE</b> 用 |ω| 让 vortex core 而非 freestream 主导。</li>
+          <li><b>Divergence penalty</b>：<code>∂u/∂x+∂v/∂y≈0</code> 作为 incompressibility regularizer；边界/噪声区域需 mask。</li>
+          <li><b>SSIM</b> 衡量局部结构，不代替量纲误差；同时报告 velocity、vorticity、peak/core metrics。</li>
+          <li><b>Phase average</b>：去掉第一周期 transient，使用后两周期提取 coherent target。</li>
+          <li><b>Reynolds decomposition</b>：预测 fluctuation 而非让模型容量浪费在 static mean；输出再加回 mean。</li>
+          <li><b>Non-dimensionalization</b>：u/U、Cp、x/c 使不同 St/geometry 可比较；train statistics 不能用 test。</li>
+          <li><b>POD</b> 只作 diagnostic：比较预测与真实 modal energy spectrum，不作为主重建方法。</li>
+          <li><b>Active learning</b>：Latin Hypercube 初始覆盖 St/spacing/chord；ensemble uncertainty 选下一批昂贵实验。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">D</span><span class="q-title">数据泄漏与失败模式</span><span class="q-priority">9 points</span></summary><div class="q-answer"><ul>
+          <li>autoencoder pretrain 若包含 test flow，Stage 2 会变成 lookup；两阶段都必须 case-level 隔离。</li>
+          <li>5-token cross-attention rank bottleneck 是结构问题，继续调 learning rate 无法解决。</li>
+          <li>full-field encoder 与 patch encoder shape 不兼容，不能声称直接 transfer weights。</li>
+          <li>T=1 loader 曾静默变成 6 channels 而非预期 3；assert tensor shape 与 config。</li>
+          <li>约 40 个 phase-averaged sample 使用 batch 32 接近 full-batch，随机性低且易 overfit。</li>
+          <li>phase angle 若真实机器人不可观测，就是 oracle leakage；训练/部署输入必须一致。</li>
+          <li>第一振荡周期含 startup transient，不能混入 steady phase average。</li>
+          <li>单一 constant-St wake 自相似，随机 frame split 会制造虚假泛化。</li>
+          <li>freestream pixel 占多数会抬高全场指标；按 vortex/ROI/case 分层报告。</li>
+        </ul></div></details>
+        <div class="hero-actions"><a class="button primary" href="projects.html#flow">闭卷抽查 Flow Sensing</a><a class="button" href="system-design.html#questions">做同步采集系统设计题</a></div>
+      </section>
+
+      <section id="coach">
+        <div class="eyebrow">05 · CLEARCOACH</div>
+        <div class="section-head"><h2>多模态运动分析完整知识</h2><p>视频压缩、视觉推理、知识注入、后端、生产与测试</p></div>
+        <div class="pipeline">
+          <div class="step"><b>QUALITY</b><strong>输入 gate</strong><p>时长、清晰度、亮度、人物可见。</p></div>
+          <div class="step"><b>SEARCH</b><strong>确定性粗筛</strong><p>audio onset、frame diff、clip。</p></div>
+          <div class="step"><b>VISION</b><strong>动作阶段</strong><p>contact sheet、关键帧、证据。</p></div>
+          <div class="step"><b>REASON</b><strong>知识约束</strong><p>错误、根因、单一优先目标。</p></div>
+          <div class="step"><b>PRODUCT</b><strong>异步与持久化</strong><p>auth、job、history、PWA、tests。</p></div>
+        </div>
+
+        <details class="qa" open><summary><span class="q-no">A</span><span class="q-title">视频定位与多模态算法</span><span class="q-priority">12 points</span></summary><div class="q-answer"><ul>
+          <li><b>Contact sheet</b>：把完整动作时序排在一张图中，减少数十次单帧调用；frame number/phase label 保持可追溯。</li>
+          <li><b>Frame difference</b>：灰度/裁剪后相邻帧绝对差得到 motion score；Gaussian smoothing 合并噪声峰。</li>
+          <li><b>Audio onset</b>：16 kHz mono waveform，spectral onset strength + bandpass 定位击球 transient。</li>
+          <li><b>Multi-signal fusion</b>：audio peak 必须在相近时间有视觉 motion 支持，过滤评论、掌声、邻场。</li>
+          <li><b>Minimum inter-peak gap</b>：利用单次击球的物理最短间隔抑制回声/双检。</li>
+          <li><b>Coarse-to-fine</b>：计算先从 30–90 min 缩到 clip/30-frame window，LLM 只做语义精判。</li>
+          <li><b>Model tiering</b>：便宜模型先分类/粗判，昂贵推理模型只处理少量高价值候选；成本差是配置事实，不能永久硬编码某型号。</li>
+          <li><b>Fixed-phase FSM</b>：准备→引拍→击球→随挥严格单调；LLM 非单调 frame 经过 validation/reorder/reject。</li>
+          <li><b>Weighted sampling</b>：contact 附近与阶段边界采样密，静止区稀疏；有限 frame budget 不均匀浪费。</li>
+          <li><b>RAG-style injection</b>：按阶段/错误检索教练知识；模型必须用视频 evidence，再选择根因与 drill。</li>
+          <li><b>Three-stage extraction</b>：中文教练视频 → Whisper/SRT transcript → segment/topic extraction → 结构化动作知识。</li>
+          <li><b>Classification hierarchy + sanity check</b>：shot type→phase→error；输出前检查 frame range、顺序、字段和 evidence consistency。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">B</span><span class="q-title">后端、数据结构与实现方法</span><span class="q-priority">14 points</span></summary><div class="q-answer"><ul>
+          <li>现行资料：FastAPI + SQLAlchemy + PostgreSQL/SQLite + JWT；旧 Deck 含 Flask 原型知识。面试时按当前版本说，原型迁移可作为演进故事。</li>
+          <li><b>Modular backend</b>：route/controller、auth、service、model client、repository 与 app initialization 分离。</li>
+          <li><b>Central API client singleton/factory</b>：认证、timeout、retry、model ID 和 backend switching 集中；不在各模块硬编码。</li>
+          <li><b>Environment-variable switching</b>：dev/prod 使用同一代码，通过 config 选择 provider/database/storage；secret 不入库。</li>
+          <li><b>SDK migration</b>：adapter 保留 prompt/schema 逻辑，更换 provider client；全仓搜索旧 import/model string。</li>
+          <li><b>Pydantic schema</b>：API/LLM response 先 validate，再 <code>model_dump()</code> 给下游；frontend/backend 共用版本化字段契约。</li>
+          <li><b>Fence stripping</b>：兼容 LLM 把 JSON 包在 Markdown fence；仍必须 schema validation，不能只 <code>json.loads</code>。</li>
+          <li><b>OpenCV frame-exact extraction</b>：按 native fps 与 frame index seek/verify，避免转码后编号与播放器时间轴不一致。</li>
+          <li><b>ffmpeg subprocess</b>：<code>subprocess.run(..., check=True, capture_output=True)</code> 抽 16 kHz mono audio 与 2.5 s clip；保存 stderr。</li>
+          <li><b>Whisper local</b>：教练知识转录可本地完成，避免把私有素材发外部。</li>
+          <li><b>UUID job/session</b>：每用户/每分析独立目录与记录，避免并发文件名冲突；cleanup 按 owner/job scope。</li>
+          <li><b>dotenv relative path</b>：从明确 project/config path 加载，不依赖启动 cwd。</li>
+          <li><b>Wizard UI / PWA</b>：多阶段桌面工具可用 PyQt wizard；产品前端用 responsive PWA、manifest、service worker。</li>
+          <li><b>Headless server</b>：使用 <code>opencv-python-headless</code> 避免 X11/Qt import；production workers 处理并发，但长任务应转 job queue。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">C</span><span class="q-title">部署、存储与产品系统</span><span class="q-priority">6 points</span></summary><div class="q-answer"><table><thead><tr><th>组件</th><th>知识要点</th></tr></thead><tbody>
+          <tr><td>Nginx</td><td>SSL/reverse proxy；显式设置 <code>client_max_body_size</code> 支持 50–500 MB；长请求 <code>proxy_read_timeout</code> 不是最终解法，异步 job 才是。</td></tr>
+          <tr><td>PostgreSQL</td><td>user、profile、video、analysis、goal、chat 的 foreign keys；查询同时验证 owner；migration、index 和 delete cascade 策略明确。</td></tr>
+          <tr><td>Object/file storage</td><td>原视频、clip、keyframe、result 分层；UUID path；权限检查、retention 和用户彻底删除。</td></tr>
+          <tr><td>PWA</td><td>mobile capture/upload、manifest、service worker；缓存版本更新和敏感分析离线边界明确。</td></tr>
+          <tr><td>ffmpeg/SRT</td><td>clip cutting 不重新发明 codec；SRT 让 Apple TV/播放器显示 transcript 而无需 burn-in/re-encode。</td></tr>
+          <tr><td>Deploy workflow</td><td>简单项目可 git deploy，但 production 至少要 pinned dependency、migration、health check、rollback 和 config version。</td></tr>
+        </tbody></table></div></details>
+
+        <details class="qa" open><summary><span class="q-no">D</span><span class="q-title">数学与信号处理细节</span><span class="q-priority">7 points</span></summary><div class="q-answer"><ul>
+          <li>Inter-frame absolute difference 量化运动量，不等于 pose/biomechanics；ROI、光照变化和 camera motion 会干扰。</li>
+          <li>Gaussian smoothing 在 motion score 上合并同一次动作附近多个噪声峰；kernel/σ 决定时间分辨率。</li>
+          <li>Spectral onset strength 找音频 transient；bandpass 隔离击球频段但需真实数据验证。</li>
+          <li>Minimum peak distance 注入击球物理约束，抑制 echo/double detection。</li>
+          <li>Contact sheet resolution：<code>sheet pixels / grid</code> 决定每帧细节；40×300 px 太小，20×600 px 更清晰但请求增加。</li>
+          <li>Asymmetric clip window：击球点不必居中；pre-contact 需要覆盖准备/引拍，post-contact 覆盖随挥。</li>
+          <li>评估分层：phase/evidence accuracy、error 与 coach agreement、用户训练后 improvement；功能测试不等于教学有效性。</li>
+        </ul></div></details>
+
+        <details class="qa" open><summary><span class="q-no">E</span><span class="q-title">生产故障与模型陷阱</span><span class="q-priority">13 points</span></summary><div class="q-answer"><ul>
+          <li>LLM hitting-frame bias 偏早：dramatic arm pose 不等于 contact；用 audio/motion anchor 和局部 window。</li>
+          <li>让同一 LLM 自我验证会 confirmation bias；用独立规则/不同模型/人工标注评估。</li>
+          <li>dead helper function 不代表 feature 运行；从 entrypoint/call graph/测试证明路径被调用。</li>
+          <li>fps resampling 后 frame number mismatch；统一 native timeline 或保存 source↔derived mapping。</li>
+          <li>LLM JSON fence/额外文本导致解析失败；extract + schema validate + bounded retry。</li>
+          <li>adjacent-court audio bleed；audio peak 必须与目标 ROI motion 交叉验证。</li>
+          <li>Nginx timeout 杀死多分钟请求；异步 job、progress 和 resume。</li>
+          <li>1 MB default upload 产生 413；proxy/app 两层 limit 都配置并给用户明确错误。</li>
+          <li>model name scatter 导致 SDK migration 后行为不一致；central config + startup validation。</li>
+          <li>frontend 期待 <code>analysis_result</code>、backend 返回 <code>comparison_result</code>；共享 schema/contract test。</li>
+          <li>segmenter 未 reset 造成旧 <code>labels.json</code>/clips 混入；每 run 独立 UUID workspace，状态机显式清理。</li>
+          <li>deprecated SDK 仍能 import 不代表可长期使用；跟踪 EOL、adapter migration、zero old import check。</li>
+          <li>contact sheet frame 数与分辨率必须共同调，不能只优化 token 或只优化视觉。</li>
+        </ul></div></details>
+        <div class="hero-actions"><a class="button primary" href="projects.html#coach">闭卷抽查 ClearCoach</a><a class="button" href="system-design.html#questions">做生产系统设计题</a></div>
+      </section>
+
+      <section id="common">
+        <div class="eyebrow">06 · CROSS-PROJECT CORE</div>
+        <div class="section-head"><h2>机器人项目共通知识</h2><p>五个项目反复出现的工程原则</p></div>
+        <div class="grid-3">
+          <div class="card"><h3>状态必须带时间</h3><p>value、timestamp、sequence、valid、source、error 是一个整体。旧值存在不代表当前可用。</p></div>
+          <div class="card"><h3>实时环留在硬件附近</h3><p>500 Hz VCA PID、200 Hz motor trajectory 不经过浏览器、Wi‑Fi 或慢视觉。</p></div>
+          <div class="card"><h3>队列必须有界</h3><p>latest-frame、command mailbox、recorder queue、log ring buffer 都必须定义容量与 drop policy。</p></div>
+          <div class="card"><h3>安全优先于模式</h3><p>E-Stop、armed、fault latch、mechanical limit 在所有普通模式之外统一门控。</p></div>
+          <div class="card"><h3>共同时间基优先</h3><p>硬件 trigger 优于软件 start；monotonic clock 用于 dt/timeout，epoch 用于人类日志。</p></div>
+          <div class="card"><h3>标定不等于验证</h3><p>fit residual、RMS 和 R² 说明模型拟合；独立工况才说明 accuracy/generalization。</p></div>
+          <div class="card"><h3>接口表达语义</h3><p>raw vs normalized、absolute vs incremental、command vs event、source ownership 都必须写进 schema。</p></div>
+          <div class="card"><h3>失败数据也要保存</h3><p>run_id、config、commit、partial artifact、excluded reason 让实验和现场 bug 可复现。</p></div>
+          <div class="card"><h3>指标与任务对齐</h3><p>flow MSE、stereo RMS、composite PID cost、功能测试数量都不能代替最终任务指标。</p></div>
+        </div>
+        <div class="hero-actions"><a class="button primary" href="fundamentals.html">学习默认全栈基础</a><a class="button" href="system-design.html">练系统设计</a></div>
+      </section>
+
+      <section id="practice">
+        <div class="eyebrow">07 · ACTIVE RECALL & TEST</div>
+        <div class="section-head"><h2>知识正文之后的训练入口</h2><p>不同页面承担不同训练目标</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>项目抽查</h3><p>68 道逻辑递进问答，五个项目同级排列；另有硬件开放题。</p><div class="hero-actions"><a class="button" href="projects.html">进入抽查</a></div></div>
+          <div class="card"><h3>知识卡片</h3><p>233 个知识点，按 MantaBot → VCA → CLD 的优先级组织，可标记已掌握或加入待复习。</p><div class="hero-actions"><a class="button" href="index.html#cards">进入知识卡片中心</a></div></div>
+          <div class="card"><h3>系统设计</h3><p>12 道真实项目架构题，训练频率预算、所有权、失效、日志和 HIL 验证。</p><div class="hero-actions"><a class="button" href="system-design.html">进入系统设计</a></div></div>
+          <div class="card"><h3>Coding Test</h3><p>8 道核心 + 4 道可选，覆盖哈希、滑窗、队列、状态机、插值、同步和 Debug。</p><div class="hero-actions"><a class="button" href="coding.html">进入 Coding</a></div></div>
+        </div>
+        <div class="callout" style="margin-top:14px"><strong>知识卡片与主教材的分工</strong><p><a href="index.html#cards">233 张知识卡片</a>用于快速回忆、搜索和复习队列；本页负责按系统逻辑串联完整知识。卡片中心明确把 MantaBot 设为 P0，VCA 与 CLD 设为 P1。</p></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

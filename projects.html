@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>项目深潜问答 · Dive Station</title>
+  <meta name="description" content="MantaBot、VCA、Flow Sensing 与 ClearCoach 项目的系统化面试问答。">
+  <link rel="stylesheet" href="assets/guide.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">DS</span><span><strong>DIVE STATION</strong><small>ROBOTICS INTERVIEW LAB</small></span></a>
+    <nav class="topnav" aria-label="知识库主导航"><a href="index.html">首页</a><a href="handbook.html">知识大全</a><a href="index.html#cards">知识卡片</a><a href="projects.html" aria-current="page">项目抽查</a><a href="system-design.html">系统设计</a><a href="coding.html">Coding</a></nav>
+  </header>
+
+  <div class="page-shell">
+    <aside class="side" aria-label="本页目录">
+      <div class="side-label">PROJECT DEEP DIVES</div>
+      <a href="#method"><span>00</span>使用方法</a>
+      <a href="#mantabot"><span>01</span>MantaBot</a>
+      <a href="#vca"><span>02</span>VCA Joint</a>
+      <a href="#cld"><span>03</span>CLD Swimmer</a>
+      <a href="#flow"><span>04</span>Flow Sensing</a>
+      <a href="#coach"><span>05</span>ClearCoach</a>
+      <div class="side-note">每个项目都按“目标 → 架构 → 核心机制 → 硬件 → 失效 → 验证 → 边界”排列。灰色开放题没有从现有资料中推断答案。</div>
+    </aside>
+
+    <main>
+      <div class="eyebrow">CLEAR ANSWERS / NO TEMPLATE FILLER</div>
+      <h1>五个项目的<br>系统化抽查问答</h1>
+      <p class="lead">答案只保留能直接回答问题的技术内容。每道题都放在前一道题的基础上：先理解系统为何存在，再理解它如何工作，最后讨论失败、证据和边界。</p>
+      <div class="hero-actions"><a class="button primary" href="#mantabot">从 MantaBot 开始</a><a class="button" href="handbook.html">先读知识大全</a><a class="button" href="system-design.html">系统设计题</a></div>
+
+      <section id="method">
+        <div class="section-head"><h2>建议复习方式</h2><p>第一遍顺序读；第二遍闭卷口答；第三遍只练追问</p></div>
+        <div class="grid-4">
+          <div class="card"><h3>1. 先画系统</h3><p>能从输入沿着数据和控制流走到输出，并标出频率、协议与状态所有者。</p></div>
+          <div class="card"><h3>2. 再讲选择</h3><p>回答为什么是这个结构，而不是只报技术栈。每个选择都要对应一个约束。</p></div>
+          <div class="card"><h3>3. 主动讲边界</h3><p>指标说明测到了什么，也说明没有测到什么。不要让面试官替你指出过度表述。</p></div>
+          <div class="card"><h3>4. 硬件题自己补</h3><p>资料不足的问题集中放在每节末尾。想清楚后可把答案写进自己的项目记录。</p></div>
+        </div>
+      </section>
+
+      <section id="mantabot">
+        <div class="eyebrow">01 · BIO-INSPIRED UNDERWATER ROBOT</div>
+        <div class="section-head"><h2>MantaBot / MARIS</h2><p>分布式控制、遥操作、执行器、传感、双目与整机安全</p></div>
+        <div class="callout success"><strong>项目主线</strong><p>Steam Deck 表达操作者意图，Raspberry Pi 5 负责控制权与整机协调，独立高频执行器循环产生连续双翼轨迹，各传感器和相机异步采集，所有输出最后经过统一安全门控。</p></div>
+        <div class="qa-list" style="margin-top:13px">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">这个项目解决的核心问题是什么？</span><span class="q-priority">目标</span></summary><div class="q-answer"><p>目标不是单独驱动某个电机，而是把双翼、舵机、IMU、深度、双目、网络和操作者界面集成为一台可遥操作、可记录、可恢复的水下机器人。真正的系统难点是不同子系统频率和失效方式不同，但最终执行器行为必须连续、受限并且可预测。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">为什么系统要做成多速率架构？</span><span class="q-priority">架构</span></summary><div class="q-answer"><p>各任务所需带宽不同：双翼轨迹 200 Hz 才能保持正弦位置命令连续；操作者意图和整机协调 50 Hz 已足够；IMU 100 Hz、深度 10 Hz、相机目标 15 fps、遥测 10 Hz。全部塞进一个循环会让最慢的相机或网络阻塞控制，也会让所有任务为不需要的高频付出计算成本。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">操作者输入怎样变成双翼和舵机命令？</span><span class="q-priority">控制</span></summary><div class="q-answer"><p>mixer 先把高层意图与硬件解耦：前进输入映射为扑动频率和幅值，转向输入形成左右差动，pitch/yaw 映射为镜像舵机角度。之后再统一做 deadzone、限幅、控制权仲裁和 slew-rate。这样更换手柄或执行器时，不需要改动整套操作者语义。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">为什么用相位累加器生成扑动，而不是直接计算 sin(2πft)？</span><span class="q-priority">轨迹</span></summary><div class="q-answer"><p>如果直接用绝对时间乘当前频率，运行中改变 f 会立刻改变相位，位置可能跳变。相位累加器每周期执行 <code>phase += 2πf·dt</code>，频率只改变相位推进速度，不改变当前相位，因此轨迹连续。最终位置再叠加 amplitude、offset、镜像方向和 power-on neutral。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">为什么进入 MIT mode 时先捕获当前电机位置？</span><span class="q-priority">硬件安全</span></summary><div class="q-answer"><p>电机上电时机械位置通常不等于编码器定义的绝对零点。若进入位置控制后立即命令零点，机构可能猛跳。系统先读取当前反馈并把它作为 neutral，第一条命令保持当前位置；后续所有扑动和 ±70° 机械限位都相对这个 neutral 定义。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">差动转向后为什么需要相位重同步？</span><span class="q-priority">控制</span></summary><div class="q-answer"><p>左右翼差动频率用于产生转向，但会积累相位差。如果差动结束后瞬间强制同相，一侧命令会跳变；若不处理，两翼会长期失步。正确做法是在恢复直行时逐步收敛相位差，在保持位置连续的前提下回到目标相位关系。</p></div></details>
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">巡航、人工接管和退出巡航怎样避免机械冲击？</span><span class="q-priority">状态机</span></summary><div class="q-answer"><p>巡航锁定保存当前命令快照；摇杆超过带 hysteresis 的阈值后临时接管，松开时用 0.3 s 插值从最后人工命令回到快照。彻底退出巡航则用 2 s ramp 把运动降到安全状态。关键是把“控制权转换”和“输出连续性”作为两个显式问题处理。</p></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">为什么控制用 UDP，而遥测用 WebSocket？</span><span class="q-priority">通信</span></summary><div class="q-answer"><p>控制包 50 Hz 连续刷新，新包比补发旧包更有价值；UDP 丢一帧不会阻塞后续帧，但必须配 sequence、timestamp 和 500 ms watchdog。遥测需要长连接、浏览器/GUI 友好和结构化状态推送，10 Hz WebSocket 更合适。两个通道承担的可靠性语义不同。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">SharedState 怎样保证线程间数据一致，又不拖慢控制？</span><span class="q-priority">并发</span></summary><div class="q-answer"><p>各 worker 只更新自己拥有的数据块，并同时更新 timestamp、valid 和错误状态；读者通过 RLock 获取一次一致快照，随后立即释放锁，在锁外完成网络发送、UI 或计算。控制器用数据 age 判断是否仍有效，不能因为内存里还有旧值就继续使用。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">双目标定结果 0.246 px 说明什么，不说明什么？</span><span class="q-priority">感知</span></summary><div class="q-answer"><p>它是 24 对有效 checkerboard 图像上的 stereo reprojection RMS，说明标定模型对角点观测的拟合误差较小；0.146 px epipolar error 说明校正后的对应点基本在同一扫描线上。它不等于实际深度误差。深度还受 60.566 mm 基线、距离、纹理、曝光、两相机不同步和 StereoSGBM 匹配影响，必须用独立已知距离验证。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">为什么接近警告不能依赖单个最小深度像素？</span><span class="q-priority">感知安全</span></summary><div class="q-answer"><p>StereoSGBM 会产生孤立误匹配，单个像素可能给出极小但错误的距离。系统要求中心区域至少有 64 个有效像素，再对区域深度做统计，并使用 0.20 m 触发、0.25 m 解除的 hysteresis。即便如此，它仍只是操作者辅助，不是自主避障安全链。</p></div></details>
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">整机安全链按什么优先级工作？</span><span class="q-priority">安全</span></summary><div class="q-answer"><p>物理 E-Stop 最高，直接覆盖 demo、巡航和普通命令；armed gate 决定电机是否允许输出；链路 watchdog 撤销陈旧控制权；最终电机和舵机分别经过位置限幅与 slew-rate。65/70/75/80°C 逐级降低非关键负载，紧急温度触发 E-Stop。正常退出、信号退出和服务故障走同一 shutdown 路径。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">记录与回放为什么是控制系统的一部分，而不是附加功能？</span><span class="q-priority">验证</span></summary><div class="q-answer"><p>现场故障往往无法立即复现。JSONL 保存完整状态快照和明确的 motor、servo、IMU、pressure、camera、system、input 字段，相机帧用索引 sidecar 对齐。记录通过有界队列与 UI 解耦；回放复用 GUI 的同一数据入口，因此既能复盘故障，也能在没有真机时做界面和逻辑回归测试。</p></div></details>
+          <details class="qa"><summary><span class="q-no">14</span><span class="q-title">目前项目最重要的边界是什么？</span><span class="q-priority">边界</span></summary><div class="q-answer"><p>两相机不是硬件触发同步；15 fps 是配置目标而非完整端到端 benchmark；深度保持尚未实现；电池 SOC 不是集成传感器；0.246 px 不是 metric depth accuracy；接近警告不是自主避障。主动说清这些边界比把系统描述得更“完整”更可信。</p></div></details>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>硬件开放追问｜现有资料没有完整答案</strong><ul><li>整机电源树是什么？电机、舵机、Pi 和相机是否隔离供电，保险丝和反接/浪涌保护怎样选？</li><li>CAN 总线的拓扑、线长、终端电阻、接地和水下电磁干扰如何验证？</li><li>双 AK45-10 的峰值扭矩和翼根载荷怎样映射到机械安全系数？</li><li>浮心、重心、压载和密封舱位置怎样决定静态稳定性？</li><li>舵机堵转电流是否会造成 Pi brownout？电源压降测过吗？</li><li>水密连接器、动态轴封、泄漏检测与 3 m 深度压力测试流程是什么？</li><li>相机光学窗的折射是否纳入水下标定？空气标定在水中是否仍成立？</li><li>电池续航、热量在密封舱内的传导路径和紧急上浮方案是什么？</li></ul></div>
+      </section>
+
+      <section id="vca">
+        <div class="eyebrow">02 · ANTAGONISTIC VOICE-COIL JOINT</div>
+        <div class="section-head"><h2>VCA Joint</h2><p>双 MCU、Hall 标定、500 Hz PID、无线协议与安全调参</p></div>
+        <div class="callout success"><strong>项目主线</strong><p>Commander 只负责主机网关和消息确认；Driver 把传感、500 Hz 控制和功率输出留在执行器本地。系统首先保证失联和传感器故障时 coast，然后才讨论跟踪性能。</p></div>
+        <div class="qa-list" style="margin-top:13px">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">这个系统为什么采用双 VCA 拮抗结构？</span><span class="q-priority">目标</span></summary><div class="q-answer"><p>两个 VCA 以相反方向作用于同一关节，控制器用有符号输出选择主要驱动方向，从而实现双向角度调节。现有资料能确认系统支持 ±45°、开环 PWM 和闭环位置控制；预紧力、共收缩刚度是否被主动利用尚未验证，不能自行声称。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">为什么 500 Hz PID 必须运行在 Driver 上？</span><span class="q-priority">架构</span></summary><div class="q-answer"><p>Driver 同时连接 AS5600L 和 H 桥，可以在本地用实际 dt 闭环。若把 PID 放在浏览器、Python 主机或 Commander，串口、操作系统和 ESP-NOW 的抖动会直接进入反馈环。无线层只传模式、setpoint 和 gains；即使上位机短暂卡顿，Driver 仍能按本地周期执行或由 watchdog 安全退出。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">AS5600L 三点标定具体解决什么问题？</span><span class="q-priority">传感</span></summary><div class="q-answer"><p>它把 12-bit 环形 raw count 映射到物理关节角，并确定零点、比例和方向。工具在 neutral、+45°、−45° 各平均 20 次，先处理 0/4095 wrap，再拟合 angle 对 raw。结果 R²=0.9999326、三个标定点最大残差 0.43°；这些只证明三点拟合，不代表全范围绝对精度。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">0.20°“分辨率”是怎样得到的，为什么不能叫精度？</span><span class="q-priority">测量</span></summary><div class="q-answer"><p>静止状态 raw noise 标准差为 2.18 counts，乘以约 0.0907°/count 的标定比例，得到约 0.20° 的噪声等效角度。这描述短时重复测量能分辨的量级；绝对精度还受磁铁偏心、非线性、温漂、机械回差和标定参考误差影响。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">PID 实现为什么使用 derivative on measurement？</span><span class="q-priority">控制</span></summary><div class="q-answer"><p>若对 error 求导，setpoint 阶跃会产生 derivative kick，可能让 VCA 瞬间输出大脉冲。对测量角度求导只响应实际运动速度，不直接响应 setpoint 跳变；再通过 50 Hz 一阶低通抑制 Hall 噪声。P、I 仍基于误差，积分有 clamp anti-windup。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">为什么最终 Kd 几乎为零并不代表调参失败？</span><span class="q-priority">控制</span></summary><div class="q-answer"><p>系统本身的机械、电磁阻尼和测量噪声决定了额外 D 项是否有净收益。自动搜索中最佳 derivative 约 5×10⁻⁵，说明在当前评分、采样和机构下，D 的改善不足以抵消噪声放大。正确结论是“当前系统和工况不需要显著 D”，不是“所有 VCA 都不需要 D”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">dead-zone feedforward 和 integral 分别解决什么？</span><span class="q-priority">控制</span></summary><div class="q-answer"><p>dead-zone feedforward 直接补偿执行器开始产生有效运动所需的最小命令，减少小误差区内控制输出被死区吞掉；integral 用累计误差消除持续负载造成的稳态偏差。只靠 I 穿越死区会积累过多，运动开始后容易 overshoot，因此两者功能不同。</p></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">quiet-hold 为什么用 2°/3° 两个阈值？</span><span class="q-priority">状态</span></summary><div class="q-answer"><p>误差进入 2° 内就 coast，避免 Hall 噪声让两个 VCA 高频切换；只有误差重新超过 3° 才恢复控制。两个阈值形成 Schmitt hysteresis，使状态在噪声附近稳定。单一阈值会反复开关，产生热量、声音和 limit cycle。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">机械 ±45° 限位为什么只禁止“向外”输出？</span><span class="q-priority">安全</span></summary><div class="q-answer"><p>如果到达 +45° 后把所有输出都清零，机构可能因外力停在限位外且无法主动返回。方向性限位只禁止继续增大越界的命令，同时允许朝安全区的恢复输出。setpoint 本身也 clamp 在 ±45°，形成目标层和输出层双重保护。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">ESP-NOW 消息为什么还需要 message ID、ACK 和队列？</span><span class="q-priority">通信</span></summary><div class="q-answer"><p>无线发送成功回调不等于 Driver 已按应用语义处理命令。message ID 让 Commander 把 ACK 与请求匹配并识别重复/超时；FreeRTOS 有界接收队列把无线回调与控制任务解耦。STOP 使用优先路径，普通命令队列不能无限积累，否则会执行过期轨迹。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">手动、静态 PID 和 tracking 三种模式怎样分工？</span><span class="q-priority">模式</span></summary><div class="q-answer"><p>MANUAL 直接验证执行器方向、死区和功率级；STATIC_PID 在 Driver 本地保持固定角度；TRACKING 接受上位机约 20 Hz 的连续 setpoint，但本地仍以 500 Hz 闭环。模式切换要重置或对齐积分器和目标，不能让上一模式的内部状态泄漏到下一模式。</p></div></details>
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">自动调参的 38.5% 改善到底表示什么？</span><span class="q-priority">验证</span></summary><div class="q-answer"><p>在记录的 36 个安全候选、每个两次 0→+10→−10→0° 序列中，定义的 composite cost 从首个候选 183.43 降到最佳 112.89，下降 38.5%，且最佳试验没有输出饱和。它是该测试序列和评分函数下的相对改善，不是全工作区性能提升 38.5%。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">I²C 传感器故障后为什么必须锁存并显式 re-arm？</span><span class="q-priority">安全</span></summary><div class="q-answer"><p>位置反馈丢失时继续闭环可能把输出推向限位，因此 Driver 立即让两路 VCA coast 并锁存 encoder fault。通信恢复只能说明总线重新可读，不能证明角度、零点和机构仍安全；显式 re-arm 强制操作者确认状态，避免系统在无人预期时自动重新施力。</p></div></details>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>硬件开放追问｜需要你根据实物补充</strong><ul><li>每个 VCA 的线圈电阻、电感、连续/峰值电流和热时间常数是多少？“&gt;30 W”对应什么持续时间？</li><li>DRV8871/DRV8874 最终使用哪一版？fast/slow decay 对电流纹波和稳定性有什么实测影响？</li><li>电源电压、限流、保险丝、反接、反电动势和大电容如何设计？</li><li>IPROPI 的采样电阻和 ADC 满量程如何反算？实际电流标定做过吗？</li><li>两侧 VCA 的力臂、预紧、安装公差和机构摩擦如何影响控制模型？</li><li>AS5600L 磁铁的直径、气隙、同轴度和 stray-field 风险怎样控制？</li><li>关节回差、柔顺性和结构固有频率测过吗？它们是否限制 500 Hz 控制收益？</li><li>PCB 的功率回流、逻辑地、I²C 上拉和高 di/dt PWM 干扰怎样布置与验证？</li></ul></div>
+      </section>
+
+      <section id="cld">
+        <div class="eyebrow">03 · CONSTRAINED-LAYER DAMPING SWIMMER</div>
+        <div class="section-head"><h2>CLD Swimmer</h2><p>复阻抗、被动相位整形、PIV、快速加速与 RL 边界</p></div>
+        <div class="callout success"><strong>项目主线</strong><p>PLA / 亚克力泡沫 / PET 对称夹层把宏观弯曲转化为黏弹芯层剪切，使损耗分量随频率增长；项目再用干态阻抗、水洞推力、相位 PIV 和 3 kg 虚拟质量逐层验证这种被动相位整形能否转化为快速加速性能。</p></div>
+        <div class="qa-list" style="margin-top:13px">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">为什么加速工况下不能只追求共振？</span><span class="q-priority">目标</span></summary><div class="q-answer"><p>共振峰窄且依赖系统参数。加速时前进速度不断变化，流体附加质量、阻尼、约化频率与耦合边界条件随周期变化，系统会快速离开原来的共振点。即便维持振幅共振，也不等于每周期净推力冲量最大；瞬态推进更看重流体力与推进器速度的相位关系。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">CLD 为什么能主要提高损耗分量，而不显著改变储能刚度？</span><span class="q-priority">机理</span></summary><div class="q-answer"><p>弯曲时外侧 PET 约束层限制黏弹芯层的自由伸缩，使宏观弯曲转化为芯层剪切。亚克力泡沫是率相关材料，剪切应力和每周期耗散随频率上升；基体 PLA 主导低频弹性刚度，所以测试范围内 K′ 近似稳定、K″ 单调增长。对称铺层也降低了静态翘曲和非目标弯扭耦合。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">怎样从角度和扭矩数据里提取 K′、K″？为什么不用峰值比？</span><span class="q-priority">方法</span></summary><div class="q-answer"><p>对每个单频工况，将 θ(t) 与 T(t) 回归到同频正余弦基底，得到复幅值 θ̂ 与 T̂，再计算 <code>K*=T̂/θ̂</code>，实部和虚部分别对应储能与损耗。峰值比只给幅值并丢失相位，也容易受噪声、高次谐波和采样离散影响；锁相提取能分离目标基频。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">Strouhal 数在实验里怎么定义？0.2–0.8 怎样得到？</span><span class="q-priority">数字</span></summary><div class="q-answer"><p>采用 <code>St=fA/U</code>。实验 heave 为 ±0.04 m，因此峰—峰幅值 A=0.08 m；U=0.2 m/s，f=0.5–2 Hz，对应 St=0.2–0.8。回答时必须说明幅值定义，否则公式会产生一倍因子歧义。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">为什么低 St 推力差异小，而高 St 差异迅速扩大？</span><span class="q-priority">机理</span></summary><div class="q-answer"><p>低频时 K″ 较小，各构型的有效动力学接近；频率升高后芯层剪切耗散增加，覆盖率更高的构型对相位和寄生模态的调节更明显。高 St 流体载荷更强，结构阻抗失配造成的相位问题也被放大，因此性能差异非线性扩张。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">PIV 具体给了什么证据？如何避免过度解释？</span><span class="q-priority">验证</span></summary><div class="q-answer"><p>约 0.5π 时 design c 显示更大且连贯的附着 LEV 和较流向的 TEV；约 1.1π 换向时保持较好的弦向涡量连续性，并更早形成下一半周期 LEV。这支持相位与涡结构机制，但只是中展向二维平面、有限相位与工况，不能单独证明完整三维因果。</p></div></details>
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">为什么设计四种覆盖率，而不是只比较两个端点？</span><span class="q-priority">实验</span></summary><div class="q-answer"><p>0%、16.7%、33.3%、66.7% 的中间级能检查效果是否随 CLD 用量连续变化，减少两个样品偶然差异的解释空间，并观察阈值或饱和趋势。但四级只能支持当前范围内的趋势，不能证明最优覆盖率，也不能解析覆盖位置、厚度和层向的交互作用。</p></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">3 kg 虚拟质量验证的价值和局限是什么？</span><span class="q-priority">边界</span></summary><div class="q-answer"><p>它让测得推力实时驱动可控的一维动力学模型，能直接检查推力优势是否转化为加速度；但没有真实本体的姿态相关附加质量、横向/航向动力学、推进器—机身干扰和六自由度稳定性。它比固定测力更接近任务层，却不是物理自由游动。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">实验的主要误差源是什么？怎样做不确定度分析？</span><span class="q-priority">实验</span></summary><div class="q-answer"><p>测力链需处理 ATI 零漂、结构惯性和安装坐标；制造需记录层压厚度、气泡、粘结和覆盖位置；同步需丢弃启动周期并用统一时钟做相位平均；PIV 需报告标定、粒子密度、窗口与 vector validation。还要区分同一样品的 trial repeatability 和不同样品的 variability。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">为什么高阻尼没有必然降低推进效率？</span><span class="q-priority">权衡</span></summary><div class="q-answer"><p>系统效率取决于输入能量有多少形成有用轴向动量，不由材料耗散单项决定。适量耗散虽然损失部分结构能量，却能减少高 St 下的相位失配、寄生高频变形和无效侧向流动。结果也不是 design c 全程效率最高：baseline 在低 St 峰值约 20%，design c 约维持 10% 平台，优势主要在高 St。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">如果移植到真实机器人，首先补哪三项验证？</span><span class="q-priority">系统</span></summary><div class="q-answer"><ol><li>包含机身、浮力、附加质量和六自由度稳定性的物理自由游动。</li><li>吸水、温度、盐水、循环疲劳和粘结老化对 K′/K″ 的环境耐久。</li><li>覆盖位置、厚度、层向、质量和效率的可制造多目标优化，并加入多样品统计重复。</li></ol></div></details>
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">RL 为什么计划选择 SAC？</span><span class="q-priority">RL</span></summary><div class="q-answer"><p>动作是连续的频率和幅值；SAC 的 off-policy replay 提高样本利用率，熵正则鼓励探索，通常也比 DDPG 更稳。PPO 可用但 on-policy 样本成本更高；CPG 是动作生成先验，不是学习算法。最终选择仍需同预算基线，当前不能说 SAC 已证明最优。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">怎样验证“CLD 提高 sim-to-real 鲁棒性”这个假设？</span><span class="q-priority">RL</span></summary><div class="q-answer"><p>固定训练预算和策略结构，对 CLD 与刚性/纯弹性基线分别训练；评估时扰动阻力系数、附加质量、传感噪声、动作延迟和结构参数，例如水动力参数 ±30%，比较回报下降率与成功率。再用相同接口做硬件零样本和少量校准测试，并报告多随机种子置信区间。这些仍是待验证假设。</p></div></details>
+          <details class="qa"><summary><span class="q-no">14</span><span class="q-title">MuJoCo 中怎样表示频率相关 K(f)/B(f)？</span><span class="q-priority">建模</span></summary><div class="q-answer"><p>由材料/结构测试建立 K、B 随频率的查表或平滑拟合，在每个控制段按动作频率更新等效关节参数。最大风险是把线性、单频、稳态识别结果直接用于大振幅、非平稳、多关节水中运动；必须检查参数边界、插值连续性与能量合理性，并用硬件扫频逐层标定。</p></div></details>
+          <details class="qa"><summary><span class="q-no">15</span><span class="q-title">为什么称为“阻抗整形”，而不只是阻尼器？</span><span class="q-priority">表达</span></summary><div class="q-answer"><p>“阻尼器”描述元件功能，“阻抗整形”描述系统层效果。项目量化了 K′/K″ 组成随频率的变化，并把它连接到水中力—运动相位、推进波形、涡结构和任务级加速；核心是用频率选择性耗散被动调整耦合系统的相位响应。</p></div></details>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>硬件开放追问｜需要结合实物补充</strong><ul><li>PLA、黏弹芯层和 PET 的厚度、公差、粘接剂与固化流程是什么？</li><li>盐水、温度、吸水和循环疲劳会怎样改变 K′、K″ 与层间粘结？</li><li>ClearPath、ATI Mini-40、NI/Simulink 控制链的触发、时钟和坐标变换如何实现？</li><li>水洞安装结构的固有频率和惯性基线如何排除？</li><li>真实机器人上的密封、可更换鳍面、质量分布和失效安全怎样设计？</li></ul></div>
+      </section>
+
+      <section id="flow">
+        <div class="eyebrow">04 · SYNCHRONIZED FLOW SENSING</div>
+        <div class="section-head"><h2>Flow Sensing</h2><p>多传感采集、硬件同步、标定、数据配对与全场重建</p></div>
+        <div class="callout success"><strong>项目主线</strong><p>Teensy 用同一硬件时钟完成五路压力调度和 PIV TTL 触发，先把两种模态放到可信的共同时间轴，再讨论神经网络如何从稀疏观测重建全流场。</p></div>
+        <div class="qa-list" style="margin-top:13px">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">为什么这个项目首先是同步测量问题，而不是机器学习问题？</span><span class="q-priority">目标</span></summary><div class="q-answer"><p>模型输入是压力和稀疏 PIV，ground truth 是完整 PIV 流场。如果它们没有在同一物理时刻对齐，模型学到的是错位相关性；网络再复杂也无法补回被破坏的相位信息。因此共同时间基、传感器零偏和数据配对是模型有效性的前提。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">五个 MS5803 地址相同，为什么用 TCA9548A？</span><span class="q-priority">硬件</span></summary><div class="q-answer"><p>相同固定 I²C 地址的设备不能直接并联在同一总线上，否则主机无法区分响应者。TCA9548A 用独立下游通道隔离它们，Teensy 每次选择一个通道与对应传感器通信，同时保留统一的 400 kHz 上游接口。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">为什么要先启动所有通道的转换，再逐个读取？</span><span class="q-priority">采样</span></summary><div class="q-answer"><p>若每个通道都“启动转换 → 等待 → 读取”后再切下一个，后面通道的测量时刻会逐级推迟。先快速遍历通道启动转换，让五个传感器的内部转换尽量并行，再逐个读结果，可以显著缩小 channel-to-channel timing skew。仍应实测剩余 skew，而不是假设完全同步。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">80 Hz 确定性采样怎样实现和证明？</span><span class="q-priority">实时</span></summary><div class="q-answer"><p>Teensy 以 <code>micros()</code> 的绝对 deadline 调度，每 12.5 ms 产生一组样本；每条记录带 sequence、scheduled time、actual time、jitter 和 missed count。证明不靠打印“80 Hz”，而是统计长时间周期分布、P99 jitter 和 missed sample，并确认串口输出不会反向阻塞采集。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">为什么 TTL 上升沿比两个软件开始时间更可靠？</span><span class="q-priority">同步</span></summary><div class="q-answer"><p>键盘命令、Python 调用和 USB 接收都经过操作系统调度，延迟不可预测。Teensy 产生 1 ms、3.3 V TTL 给 PIV/PTU-X，同时用同一 microsecond clock 记录该边沿并安排压力采样。这样 PIV 与压力共享物理 t=0，软件启动延迟只影响日志，不影响模态对齐。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">第一条压力样本晚 12.5 ms 是同步误差吗？</span><span class="q-priority">同步</span></summary><div class="q-answer"><p>不是未知误差，而是已知采样计划：TTL 定义 t=0，sample 0 安排在 t=12.5 ms，之后每 12.5 ms 一次。配对时使用实际 TTL-relative timestamp 补偿即可。真正的问题是未测量、随运行变化的延迟；已知固定 offset 可以显式建模。</p></div></details>
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">Host–Teensy 时钟映射有什么用，为什么不能替代 TTL？</span><span class="q-priority">时钟</span></summary><div class="q-answer"><p>通过多次 round trip 和 minimum-RTT midpoint，可以估计 Teensy <code>micros()</code> 到 host epoch 的 offset，用于跨设备日志和绝对时间元数据。但它仍受串口路径与时钟漂移影响；PIV–压力的相对同步应以电气 TTL 为权威，不应退回 host receive time。</p></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">压力零偏和 common-mode subtraction 有什么区别？</span><span class="q-priority">标定</span></summary><div class="q-answer"><p>逐通道零偏校正用零流基线均值修正各传感器固定偏置：Δpᵢ=pᵢ−baselineᵢ。common-mode subtraction 再去除多个通道共同出现的慢变水静压或温漂，适合关注差压结构时使用。后者会删除真实的全局压力变化，因此必须根据物理目标决定，不能默认开启。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">压力样本和 PIV 帧应该怎样配对？</span><span class="q-priority">数据</span></summary><div class="q-answer"><p>先把两者都转换为 TTL-relative time，再按 PIV exposure/capture time 选择最近压力样本或在相邻压力样本间插值，同时保存 time difference 和配对方法。若差值超过允许阈值则标记无效；不能只按数组索引配对，因为掉帧或 missed sample 会让后续全部错位。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">为什么压力和稀疏 PIV 要先各自编码，再融合？</span><span class="q-priority">模型</span></summary><div class="q-answer"><p>两种输入的维度、空间结构和噪声完全不同：压力是少量时间信号，PIV patch 是局部二维向量场。独立 pathway 先提取各自适合的表示，再通过 cross-patch attention 融合，可以避免把未经对齐的异构数值直接拼接，让模型更明确地学习跨模态对应关系。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">为什么只看全场 MSE 会误导？</span><span class="q-priority">评估</span></summary><div class="q-answer"><p>流场大部分区域接近自由来流，模型即使把关键涡结构抹平，也可能得到较低平均误差。必须同时看 vorticity-weighted loss、gradient、vorticity SSIM、peak-vorticity error 和 vortex-core detection，才能判断模型是否恢复了对水动力真正重要的局部结构。</p></div></details>
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">怎样避免训练/测试数据泄漏？</span><span class="q-priority">评估</span></summary><div class="q-answer"><p>split 单位必须是完整 case/geometry/run，而不是随机 frame；同一试验的相邻相位高度相关，跨 split 会让测试结果虚高。normalization 只用 train 拟合；部署时不可获得的 phase 不能作为 oracle 输入。最终指标应按未见工况报告，而不只是所有帧混合平均。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">主动学习为什么用 ensemble uncertainty？</span><span class="q-priority">实验设计</span></summary><div class="q-answer"><p>水洞实验昂贵，不能均匀采遍所有 St、spacing 和 chord。多个独立训练模型在候选工况上的分歧可作为 epistemic uncertainty 近似，优先选择模型最不确定的 case 做新实验。Latin Hypercube 先保证初始覆盖，ensemble 再根据现有知识定向补充。</p></div></details>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>硬件开放追问｜需要进一步测量或确认</strong><ul><li>MS5803 的具体量程、过采样设置、conversion time 和噪声谱是多少？80 Hz 下每通道是否有足够 settling time？</li><li>TCA9548A 切换后的 bus settling、上拉电阻和总线电容如何验证？五个支路是否各有上拉？</li><li>压力孔、软管长度和内部容积形成的流体低通响应测过吗？相位延迟如何标定？</li><li>五个传感器的安装高度和水静压差如何处理？温度补偿是否逐通道完成？</li><li>TTL 的输入阻抗、触发阈值、地参考和长线反射是否在示波器上确认？是否需要隔离？</li><li>PIV 激光、相机 exposure 和 TTL edge 之间的真实延迟是多少？PTU-X 是否返回确认信号？</li><li>Teensy、传感器和 PIV 设备之间如何避免 ground loop 与水洞电噪声？</li><li>压力传感器封装、防水、气泡和堵塞对重复性有什么影响？怎样做泄漏/堵塞检查？</li></ul></div>
+      </section>
+
+      <section id="coach">
+        <div class="eyebrow">05 · MULTIMODAL COACHING APPLICATION</div>
+        <div class="section-head"><h2>ClearCoach</h2><p>视频预处理、多模态推理、知识约束、异步任务与生产边界</p></div>
+        <div class="callout success"><strong>项目主线</strong><p>确定性视觉先把长视频压缩成高信息密度候选，视觉模型识别动作阶段和证据，推理模型结合教练知识生成结构化反馈；产品层负责认证、异步任务、持久化和失败恢复。</p></div>
+        <div class="qa-list" style="margin-top:13px">
+          <details class="qa"><summary><span class="q-no">01</span><span class="q-title">ClearCoach 真正解决的用户问题是什么？</span><span class="q-priority">目标</span></summary><div class="q-answer"><p>用户不是要一段“AI 对视频的描述”，而是要知道自己的击球动作在哪个阶段出了什么问题、证据是什么、最优先应该改哪一点，以及下一次训练怎样执行。系统输出必须从长视频压缩到一个可行动的训练重点。</p></div></details>
+          <details class="qa"><summary><span class="q-no">02</span><span class="q-title">为什么不把整段视频直接交给大模型？</span><span class="q-priority">架构</span></summary><div class="q-answer"><p>30–90 分钟视频成本高、延迟大、有效击球稀疏，模型也容易错过短暂的击球瞬间。OpenCV 和音频/运动信号先做确定性搜索，把候选缩到有限 clip 和关键帧；大模型只处理需要语义判断的高价值片段。这样同时降低调用成本、上下文噪声和失败面。</p></div></details>
+          <details class="qa"><summary><span class="q-no">03</span><span class="q-title">视频质量 gate 应该在什么时候做，检查什么？</span><span class="q-priority">输入</span></summary><div class="q-answer"><p>在进入昂贵推理前检查时长、分辨率、亮度、清晰度、人物可见性和可解码性。不满足条件时直接给具体重拍建议，而不是让模型对无效输入生成自信答案。quality gate 也是产品可信度控制，不只是节省成本。</p></div></details>
+          <details class="qa"><summary><span class="q-no">04</span><span class="q-title">运动强度和关键帧筛选分别做什么？</span><span class="q-priority">视觉</span></summary><div class="q-answer"><p>帧差/运动分数用于从时间轴上发现动作活跃区间，减少需要分析的帧；关键帧筛选则在候选 clip 内选择能代表准备、引拍、击球和随挥的画面。前者解决“哪里发生了动作”，后者解决“哪些画面最能解释动作”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">05</span><span class="q-title">contact sheet 的核心 trade-off 是什么？</span><span class="q-priority">多模态</span></summary><div class="q-answer"><p>一张图放更多帧可以减少请求次数，但每帧变小后，手臂角度、拍面和击球点细节会消失；提高单帧分辨率又会增加图片数量、token 和延迟。<code>frames_per_sheet</code> 与 thumbnail size 必须根据实际识别准确率联合调，不应凭“看起来够清楚”决定。</p></div></details>
+          <details class="qa"><summary><span class="q-no">06</span><span class="q-title">为什么采用视觉模型 + 推理模型的分层 pipeline？</span><span class="q-priority">模型</span></summary><div class="q-answer"><p>视觉模型负责从图像中提取可观察事实：动作阶段、身体姿态、拍面和击球位置；推理模型再结合领域知识，把多个证据组织成错误类别、根因和训练建议。分层后每一步有更明确的输入输出，也可以分别评估“看错了”还是“推理错了”。</p></div></details>
+          <details class="qa"><summary><span class="q-no">07</span><span class="q-title">领域知识库怎样约束模型，而不是只增加 prompt 长度？</span><span class="q-priority">知识</span></summary><div class="q-answer"><p>知识应按动作阶段、常见错误、可观察证据、可能根因和对应练习结构化，只检索与当前阶段和错误候选相关的条目。模型必须引用当前视频中的证据，再从知识中选择解释和练习；不能仅凭知识库模板给所有用户相同建议。</p></div></details>
+          <details class="qa"><summary><span class="q-no">08</span><span class="q-title">怎样处理模型输出不稳定？</span><span class="q-priority">契约</span></summary><div class="q-answer"><p>服务端定义版本化 schema，用 Pydantic/等价验证检查阶段、证据、错误类别、优先目标和练习字段；清理 Markdown fence 只是兼容措施，不是契约。解析失败应有限重试或进入可恢复失败状态，不能把半结构化文本直接写入正式分析记录。</p></div></details>
+          <details class="qa"><summary><span class="q-no">09</span><span class="q-title">为什么长视频分析必须做异步任务？</span><span class="q-priority">后端</span></summary><div class="q-answer"><p>上传、解码、帧提取和多次模型调用可能持续很久，绑定普通 HTTP 请求会遭遇代理超时、进程占用和客户端断线。API 应创建 job，持久化阶段与进度，worker 执行幂等步骤，客户端轮询或订阅状态；重启后从已完成阶段恢复，而不是整条流水线重跑。</p></div></details>
+          <details class="qa"><summary><span class="q-no">10</span><span class="q-title">多用户系统最容易出现什么数据边界错误？</span><span class="q-priority">安全</span></summary><div class="q-answer"><p>只根据 video_id 查询而没有同时验证 owner，会造成越权读取；不同 job 共用目录或固定文件名会混合 clip；删除用户时只删数据库不删对象文件会泄漏。每个查询和存储路径都必须带 user/job scope，下载使用授权检查或短期签名 URL，游客还需独立限流。</p></div></details>
+          <details class="qa"><summary><span class="q-no">11</span><span class="q-title">与职业选手逐阶段对比怎样避免误导？</span><span class="q-priority">产品边界</span></summary><div class="q-answer"><p>只有在相同动作类型、相近视角和可比较阶段下才对齐；输出应描述可观察差异，而不是把职业选手姿态当作所有人的唯一标准。身高、柔韧性、技术流派、镜头透视和帧时刻都会影响表观角度，因此建议必须由用户自身证据和教练原则共同约束。</p></div></details>
+          <details class="qa"><summary><span class="q-no">12</span><span class="q-title">72 项自动化测试应该覆盖哪些层，而不是只测接口返回 200？</span><span class="q-priority">验证</span></summary><div class="q-answer"><p>纯函数层测视频质量、sampling、schema 和权限规则；服务层 mock 模型/存储，测任务状态和失败恢复；API 层测认证、越权、限流、无效上传和幂等；端到端用小型固定视频走完整流程。模型主观质量还需要标注样本和人工 rubric，不能被普通单元测试替代。</p></div></details>
+          <details class="qa"><summary><span class="q-no">13</span><span class="q-title">怎样评估系统真的帮助了训练，而不只是输出看起来专业？</span><span class="q-priority">评估</span></summary><div class="q-answer"><p>分三层：阶段/证据定位准确率；错误分类与教练判断一致性；用户执行建议后同类动作是否改善。还要测失败率、分析时延、重试率和单次成本。现有资料证明实现了完整功能和测试，不足以声称长期训练效果，后者需要教练标注与纵向用户研究。</p></div></details>
+        </div>
+        <div class="callout" style="margin-top:13px"><strong>采集与部署开放追问｜资料不足，建议自己准备</strong><ul><li>移动端相机的 fps、快门、曝光锁定和 rolling shutter 会怎样影响击球瞬间判断？</li><li>用户拍摄距离、相机高度、视角和人物占画面比例是否有标准化指导？</li><li>音频 onset 与视频帧的设备级同步误差是多少？转码后时间基是否保持？</li><li>是否需要棋盘格或人体尺度参考做 metric measurement，还是只做相对姿态判断？</li><li>上传原视频、派生 clip、关键帧和分析结果分别保留多久？用户如何彻底删除？</li><li>CPU/GPU、转码并发、模型调用速率和存储容量的实际瓶颈在哪里？</li><li>弱网下是否支持断点续传、客户端预压缩和上传完整性校验？</li><li>如果视觉模型服务不可用，系统是否保留确定性关键帧结果并允许稍后恢复？</li></ul></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -15,7 +15,7 @@
 html{-webkit-text-size-adjust:100%}
 body{background:var(--ink);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.55;overflow-x:hidden}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:3px solid rgba(25,135,124,.22);outline-offset:2px}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid rgba(25,135,124,.28);outline-offset:3px}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:.87em;color:var(--sonar);white-space:nowrap}
 pre{background:#fafcfd;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-size:13px;line-height:1.5;margin:10px 0}
 pre code{background:none;border:none;padding:0;color:var(--text);font-size:inherit;white-space:pre}
@@ -140,6 +140,8 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .kb-shell{min-height:100vh;background:
   radial-gradient(circle at 78% -10%,rgba(25,153,145,.18),transparent 30rem),
   linear-gradient(180deg,#eef4f5 0,#f6f7f5 35rem,#f4f5f3 100%);color:#17242b}
+.kb-skip{position:fixed;left:14px;top:8px;z-index:200;transform:translateY(-160%);border-radius:8px;background:#123f45;color:#fff;padding:8px 12px;text-decoration:none}
+.kb-skip:focus{transform:translateY(0)}
 .kb-top{position:sticky;top:0;z-index:50;height:68px;display:flex;align-items:center;gap:22px;padding:0 28px;
   background:rgba(248,250,249,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(26,63,68,.12)}
 .kb-brand{display:flex;align-items:center;gap:11px;min-width:max-content}
@@ -181,11 +183,42 @@ textarea:focus{outline:none;border-color:var(--sonardim)}
 .kb-title{font-size:clamp(28px,3.4vw,46px);line-height:1.12;letter-spacing:-.035em;margin:0;max-width:820px}
 .kb-lead{font-size:16px;color:#5a6e72;max-width:760px;margin:15px 0 0;line-height:1.75}
 .kb-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
-.kb-primary,.kb-secondary{border-radius:10px;padding:10px 15px;font-size:13px;font-weight:700}
+.kb-primary,.kb-secondary{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:10px 15px;font-size:13px;font-weight:700}
 .kb-primary{background:#123f45;color:#fff;box-shadow:0 7px 18px rgba(18,63,69,.16)}
 .kb-primary:hover{background:#19545b}
+.kb-primary.alt{background:#197f75;box-shadow:0 7px 18px rgba(25,127,117,.18)}
+.kb-primary.alt:hover{background:#126e66}
 .kb-secondary{background:#fff;border:1px solid #d6dfdf;color:#38555a}
 .kb-secondary:hover{border-color:#6caaa3}
+.kb-mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-top:24px}
+.kb-mode{display:block;text-align:left;border:1px solid #d8e2e0;border-radius:14px;background:#fff;padding:17px;color:#243d42;text-decoration:none;box-shadow:0 7px 20px rgba(34,67,69,.045)}
+.kb-mode:hover{border-color:#70aaa4;transform:translateY(-1px)}
+.kb-mode b{display:block;color:#19877c;font-size:10px;letter-spacing:.11em;margin-bottom:7px}
+.kb-mode strong{display:block;font-size:15px}
+.kb-mode span{display:block;color:#6d8084;font-size:11px;line-height:1.55;margin-top:5px}
+.kb-mode.main{background:#123f45;border-color:#123f45;color:#fff}
+.kb-mode.main b,.kb-mode.main span{color:#a9d4cf}
+.kb-focus-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:20px}
+.kb-focus-card{position:relative;display:block;text-align:left;border:1px solid #d7e2e0;border-radius:16px;background:#fff;padding:20px;color:#233b40;text-decoration:none;overflow:hidden;box-shadow:0 9px 26px rgba(34,67,69,.055)}
+.kb-focus-card:hover{border-color:#69a79f;transform:translateY(-2px)}
+.kb-focus-card.primary{grid-column:1/-1;background:linear-gradient(135deg,#123f45,#195b5b);border-color:#123f45;color:#fff;padding:25px}
+.kb-focus-card .rank{display:flex;align-items:center;gap:8px;color:#19877c;font-size:10px;font-weight:800;letter-spacing:.1em}
+.kb-focus-card.primary .rank{color:#94ddd2}
+.kb-focus-card h3{font-size:23px;margin:13px 0 7px}
+.kb-focus-card p{color:#65797d;font-size:12px;line-height:1.65;margin:0;max-width:720px}
+.kb-focus-card.primary p{color:#c4dcda}
+.kb-focus-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}
+.kb-focus-meta span{border-radius:20px;background:#edf4f2;color:#376965;padding:4px 9px;font-size:10px;font-weight:700}
+.kb-focus-card.primary .kb-focus-meta span{background:rgba(255,255,255,.11);color:#ddf2ef}
+.kb-extended-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.kb-extended{display:flex;align-items:center;gap:12px;border:1px solid #dce4e3;border-radius:13px;background:#fff;padding:14px;text-decoration:none;color:#314e53}
+.kb-extended:hover{border-color:#7bafa9}
+.kb-extended b{display:block;font-size:13px}.kb-extended span{display:block;color:#75878a;font-size:10px;margin-top:2px}.kb-extended em{margin-left:auto;color:#19877c;font-style:normal;font-size:11px;font-weight:800}
+.kb-side-projects{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.kb-project-switch{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;border-radius:9px;padding:7px 10px;color:#5b7074;font-size:11px}
+.kb-project-switch:hover{background:#edf3f1;color:#173f44}.kb-project-switch.on{background:#dcecea;color:#145f59;font-weight:800}
+.kb-project-switch small{font-size:9px;color:#839395}.kb-project-switch.on small{color:#397d77}
+.kb-priority-note{margin-top:14px;border-left:3px solid #19877c;background:#eef6f4;border-radius:0 10px 10px 0;padding:12px 14px;color:#47686a;font-size:11px;line-height:1.6}
 .kb-section{margin-top:38px}
 .kb-section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:14px}
 .kb-section h2{font-size:20px;letter-spacing:-.015em;margin:0}
@@ -267,6 +300,8 @@ a.kb-project-card{display:block;color:inherit;text-decoration:none}
   .kb-main{padding-left:30px;padding-right:30px}
   .kb-overview-grid{grid-template-columns:1fr}
   .kb-path{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kb-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kb-focus-grid{grid-template-columns:1fr 1fr}
 }
 @media(max-width:720px){
   .kb-top{height:60px;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));gap:9px}
@@ -288,6 +323,9 @@ a.kb-project-card{display:block;color:inherit;text-decoration:none}
   .kb-project-card{min-height:0;padding:18px}
   .kb-project-card h3{font-size:20px;margin:14px 0 6px}
   .kb-path{grid-template-columns:1fr 1fr}
+  .kb-mode-grid{grid-template-columns:1fr;gap:9px}
+  .kb-focus-grid,.kb-extended-grid{grid-template-columns:1fr}
+  .kb-focus-card.primary{grid-column:auto}
   .kb-title{font-size:31px}
   .kb-lead{font-size:14px;line-height:1.7}
   .kb-section{margin-top:31px}
@@ -339,12 +377,13 @@ a.kb-project-card{display:block;color:inherit;text-decoration:none}
       <div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
       <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
       <p class="kb-lead">围绕五个真实机器人项目，系统复盘架构、算法、协议、实验验证和故障根因，并补齐机器人全栈基础与 Coding 训练。</p>
+      <div class="kb-actions"><a class="kb-primary" href="handbook.html" style="text-decoration:none">知识大全 · 主教材</a><a class="kb-primary alt" href="#cards" style="text-decoration:none">知识卡片 · 233 个</a><a class="kb-secondary" href="projects.html" style="text-decoration:none">项目抽查 · 68 题</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding Test · 12 题</a></div>
       <div class="kb-project-grid">
-        <div class="kb-project-card"><span class="kb-project-no">01 · 水下仿生机器人</span><h3>MantaBot</h3><p>多速率控制、CAN 电机、双目视觉与整机安全。</p></div>
-        <div class="kb-project-card"><span class="kb-project-no">02 · 流体实验执行平台</span><h3>VCA Bot</h3><p>ESP-NOW、H 桥、编码器、保护链和实验控制。</p></div>
-        <a class="kb-project-card" href="cld.html"><span class="kb-project-no">03 · 被动阻抗整形</span><h3>CLD Swimmer</h3><p>复阻抗、力–速度相位、PIV、快速加速与 RL 延伸。</p></a>
-        <div class="kb-project-card"><span class="kb-project-no">04 · 稀疏传感流场重建</span><h3>Flow Sensing</h3><p>多模态融合、物理约束、数据泄漏与泛化。</p></div>
-        <div class="kb-project-card"><span class="kb-project-no">05 · 多模态运动分析</span><h3>ClearCoach</h3><p>音视频粗筛、LLM 精判、知识注入与生产部署。</p></div>
+        <a class="kb-project-card" href="projects.html#mantabot"><span class="kb-project-no">01 · 水下仿生机器人</span><h3>MantaBot</h3><p>多速率控制、CAN 电机、双目视觉与整机安全。</p></a>
+        <a class="kb-project-card" href="projects.html#vca"><span class="kb-project-no">02 · 流体实验执行平台</span><h3>VCA Bot</h3><p>ESP-NOW、H 桥、编码器、保护链和实验控制。</p></a>
+        <a class="kb-project-card" href="projects.html#cld"><span class="kb-project-no">03 · 被动阻抗整形</span><h3>CLD Swimmer</h3><p>复阻抗、力–速度相位、PIV、快速加速与 RL 延伸。</p></a>
+        <a class="kb-project-card" href="projects.html#flow"><span class="kb-project-no">04 · 稀疏传感流场重建</span><h3>Flow Sensing</h3><p>多模态融合、物理约束、数据泄漏与泛化。</p></a>
+        <a class="kb-project-card" href="projects.html#coach"><span class="kb-project-no">05 · 多模态运动分析</span><h3>ClearCoach</h3><p>音视频粗筛、LLM 精判、知识注入与生产部署。</p></a>
       </div>
     </main>
   </div>
@@ -874,6 +913,75 @@ const DECK = [
   {"id":"coach-google-generativeai-sdk-silently-deprecated","proj":"coach","cat":"gotcha","term":"`google-generativeai` SDK silently deprecated","detail":"In the ClearCoach coaching app, I used `google-generativeai` SDK silently deprecated, a failure mode I had to isolate at a component boundary. That addressed a specific project need — remaining on an EOL SDK that lacks Vertex AI and newer model features. In practice, I implemented it this way: Package still installs and works, but is EOL since Aug 2025. New features (Vertex AI, thinking models) are only in `google-genai`. No warning at import time. Fix: proactively migrate; `grep -rn \"google.generativeai\"` to verify zero old-SDK references remain.","solved":"remaining on an EOL SDK that lacks Vertex AI and newer model features","recall":"A dependency still works but is officially deprecated. How would you detect and migrate it before it becomes a production problem?","recall_zh":"依赖项仍然有效，但已被正式弃用。在它成为生产问题之前，你将如何检测并迁移它？","detail_zh":"在 ClearCoach 教练应用中，我把 `google-generativeai` SDK silently deprecated 当作组件边界上的故障模式来排查。它解决的是这个具体问题：保留在缺少 Vertex AI 和更新模型功能的 EOL SDK 上。具体实现上，软件包仍然可以安装并工作，但是自 8 月 2025 以来就是 EOL。新功能（Vertex AI、思维模型）仅在`google-genai`中。导入时没有警告。修复：主动迁移； `grep -rn \"google.generativeai\"` 验证是否保留零旧的 SDK 引用。","solved_zh":"保留在缺少 Vertex AI 和更新模型功能的 EOL SDK 上"},
   {"id":"coach-contact-sheet-resolution-vs-llm-token-budget","proj":"coach","cat":"gotcha","term":"Contact sheet resolution vs LLM token budget","detail":"In the ClearCoach coaching app, I used Contact sheet resolution vs LLM token budget, a failure mode I had to isolate at a component boundary. That addressed a specific project need — loss of arm-angle detail when too many undersized thumbnails share one contact sheet. In practice, I implemented it this way: 40 frames at 300px thumbnails → too small, LLM can't distinguish arm angles. 20 frames at 600px → sharp enough, but now you need 2 sheets for a 40-frame clip = 2 API calls. There's no free lunch. Fix: tune `frames_per_sheet` and `thumb_long` together based on actual LLM accuracy, not intuition.","solved":"loss of arm-angle detail when too many undersized thumbnails share one contact sheet","recall":"A vision model misses fine motion details when many frames share one image. How would you tune resolution against request count?","recall_zh":"很多帧挤在同一张图里时，视觉模型会丢掉动作细节。你会怎样权衡分辨率和请求次数？","detail_zh":"在 ClearCoach 教练应用中，我把 Contact sheet resolution vs LLM token budget 当作组件边界上的故障模式来排查。它解决的是这个具体问题：当太多尺寸过小的缩略图共享一个 contact sheet 时，手臂角度细节会丢失。具体实现上，40 帧配 300px 缩略图时细节太小，LLM 无法分辨手臂角度。改成每张 20 帧、600px 后图像足够清晰，但 40 帧 clip 需要 2 张 contact sheet，也就是 2 次 API 调用。这个 trade-off 无法消除。实际参数要根据模型准确率联合调整 `frames_per_sheet` 和 `thumb_long`，不能只凭直觉。","solved_zh":"当太多尺寸过小的缩略图共享一个 contact sheet 时，手臂角度细节会丢失"}
 ];
+
+/* Focus-track additions: deliberately weighted toward MantaBot, VCA, and CLD. */
+DECK.push(
+  {id:"mb-focus-multirate-budget",proj:"mantabot",cat:"algo",term:"Multi-rate control budget",solved_zh:"按物理带宽拆分 200 Hz 执行器、50 Hz 整机协调、100 Hz IMU、10 Hz 深度与遥测",detail_zh:"每个循环只承担需要该频率的工作：200 Hz 保证扑翼相位连续；50 Hz 处理操作者意图和控制权；慢传感器异步更新带时间戳的状态。慢相机或网络不能进入执行器关键路径。",recall_zh:"为什么不能把 MantaBot 的所有任务放进一个最高频循环？"},
+  {id:"mb-focus-command-freshness",proj:"mantabot",cat:"algo",term:"Command freshness and authority lease",solved_zh:"把 UDP 控制权视为带 500 ms 到期时间的 lease，而不是永久有效的最后命令",detail_zh:"每个控制包携带 sequence 和 timestamp；接收端只接受更新序列，并用 monotonic age 判断是否新鲜。超时后撤销远程控制权并进入显式安全输出，不能继续沿用内存中的旧命令。",recall_zh:"UDP 丢包时为什么不能只重复执行最后一条命令？"},
+  {id:"mb-focus-phase-resync",proj:"mantabot",cat:"algo",term:"Continuous phase re-synchronization",solved_zh:"差动转向结束后逐步收敛左右翼相位，而不是瞬间强制同相",detail_zh:"转向时左右频率不同会累积相位差；恢复直行时对相位误差做 wrap，并限制每周期最大修正量。这样最终回到目标相位关系，同时保证位置命令和速度连续。",recall_zh:"双翼差动频率结束后，怎样恢复同步又不造成位置跳变？"},
+  {id:"mb-focus-degradation-tree",proj:"mantabot",cat:"algo",term:"Graceful-degradation decision tree",solved_zh:"根据故障影响范围选择禁用单功能、降级遥操作或整机 E-Stop",detail_zh:"单路相机失败可保留基础遥操作；深度数据过期应禁用依赖深度的功能；控制链失联、执行器异常或紧急温度必须撤销输出。降级策略以“还能保证什么”为依据，不是所有异常都直接重启。",recall_zh:"一个相机掉线和一个电机掉线，为什么不应该走同一故障处理？"},
+
+  {id:"mb-focus-state-ownership",proj:"mantabot",cat:"pylang",term:"State ownership and immutable snapshots",solved_zh:"每个 worker 只写自己拥有的状态块，消费者一次复制一致快照后在锁外工作",detail_zh:"状态块同时包含 value、timestamp、valid 和 error；RLock 只保护短暂复制，不把编码、网络发送或 UI 更新放进临界区。这样能说清谁写、谁读、数据何时失效。",recall_zh:"SharedState 怎样避免线程互相覆盖，又不让锁拖慢 200 Hz 控制？"},
+  {id:"mb-focus-bounded-queues",proj:"mantabot",cat:"pylang",term:"Bounded queues and backpressure",solved_zh:"日志、视频和遥测队列必须有上限，并为不同数据定义丢弃策略",detail_zh:"控制状态优先保留最新值；日志可用 ring buffer；视频积压应丢旧帧而不是延迟播放。队列满不是偶发异常，而是系统过载信号，应计数并进入 telemetry。",recall_zh:"如果视频编码速度跟不上采集速度，应该阻塞采集还是丢帧？为什么？"},
+  {id:"mb-focus-monotonic-deadlines",proj:"mantabot",cat:"pylang",term:"Monotonic deadline scheduling",solved_zh:"控制周期用 monotonic clock 和绝对 deadline 计算 dt、timeout 与 missed cycle",detail_zh:"wall clock 会被 NTP 或人工调整，不适合控制；每周期用 next_deadline += period，超期则记录 lateness 和 missed count，避免简单 sleep(period) 让计算时间累积成漂移。",recall_zh:"为什么控制循环不能用系统日期时间计算 dt？"},
+  {id:"mb-focus-unified-shutdown",proj:"mantabot",cat:"pylang",term:"Idempotent unified shutdown",solved_zh:"正常退出、信号、服务故障和 E-Stop 最终走同一可重复调用的关停路径",detail_zh:"关停顺序先撤销执行器输出，再停止生产者，最后关闭 CAN、相机、网络和日志；每一步允许重复执行并独立捕获异常。这样不会因为某个 cleanup 失败而跳过后续安全动作。",recall_zh:"多线程机器人程序怎样避免不同退出路径遗漏电机停机？"},
+
+  {id:"mb-focus-can-physical",proj:"mantabot",cat:"hw",term:"CAN physical layer and bus load",solved_zh:"1 Mbps CAN 除了帧格式，还要验证总线拓扑、双端 120 Ω 终端、接地和负载率",detail_zh:"两台电机 200 Hz 命令与反馈要纳入 worst-case arbitration 和 error frame；终端电阻应在断电时测得约 60 Ω。水下长线、高 di/dt 电机和地电位差都需要示波器或错误计数验证。",recall_zh:"CAN 能收发不等于可靠；你会怎样检查物理层和总线容量？"},
+  {id:"mb-focus-neutral-limits",proj:"mantabot",cat:"hw",term:"Power-on neutral and relative mechanical limits",solved_zh:"进入 MIT mode 后先捕获当前反馈位置，再把 ±70° 限位定义在该 neutral 周围",detail_zh:"编码器零点不保证等于机构装配中位；第一条位置命令必须保持当前位置，随后才允许 ramp 到目标。neutral、方向符号和机械限位需要随每台电机配置并记录。",recall_zh:"为什么上电后直接命令编码器零位可能损坏扑翼机构？"},
+  {id:"mb-focus-ms5837-pipeline",proj:"mantabot",cat:"hw",term:"MS5837 pressure-to-depth pipeline",solved_zh:"10 Hz 压力读取要经过补偿、表面基准、密度假设、异常值检查和 freshness gate",detail_zh:"深度由压力差除以 ρg 得到；水密度、温度和大气压都会影响绝对值。启动时不能在机器人已下水后盲目把当前压力当作零点，压力尖峰也不能直接进入控制。",recall_zh:"MS5837 给出压力后，还要经过哪些步骤才能成为可信深度？"},
+  {id:"mb-focus-power-domains",proj:"mantabot",cat:"hw",term:"Actuator and compute power-domain isolation",solved_zh:"电机、舵机与 Pi 的供电回路要限制浪涌和回灌，避免执行器堵转造成 brownout",detail_zh:"需要明确电源树、保险丝、反接与浪涌保护、公共地策略和舵机峰值电流；仅靠软件 slew-rate 不能替代电气保护。Pi 重启而执行器仍带电是必须专门分析的故障组合。",recall_zh:"舵机堵转时怎样避免 Raspberry Pi 掉电并失去安全控制？"},
+
+  {id:"mb-focus-stereo-uncertainty",proj:"mantabot",cat:"math",term:"Stereo depth uncertainty propagation",solved_zh:"由 Z=fB/d 可知远距离小视差会把亚像素误差放大成很大的深度误差",detail_zh:"一阶近似为 |δZ|≈fB·|δd|/d²；60.566 mm 基线决定量程与近距离几何。0.246 px reprojection RMS 只能描述标定拟合，不能直接代入当作所有场景的 disparity error。",recall_zh:"为什么双目在远距离会迅速变得不可靠？0.246 px 能否直接换算深度精度？"},
+  {id:"mb-focus-loop-jitter",proj:"mantabot",cat:"math",term:"Control-loop jitter metrics",solved_zh:"评估 200 Hz 循环不能只看平均频率，还要看 period 分布、P99 lateness 和 missed deadline",detail_zh:"5 ms 是目标周期；均值接近 5 ms 仍可能隐藏偶发 30 ms stall。应记录 actual dt、deadline miss、最长连续超期，并在相机、网络和日志全开时做压力测试。",recall_zh:"“平均 200 Hz”为什么不足以证明控制循环满足实时需求？"},
+  {id:"mb-focus-pressure-units",proj:"mantabot",cat:"math",term:"Pressure, depth, and unit discipline",solved_zh:"压力单位、表压/绝压、水密度和坐标正方向必须在接口中显式统一",detail_zh:"Pa、mbar 与 bar 的混用会造成数量级错误；深度向下为正还是向上为正必须贯穿 UI、控制和日志。用静水已知深度点检查斜率和零偏，比只相信驱动库更可靠。",recall_zh:"深度数据接口最容易出现哪些单位和符号错误？"},
+  {id:"mb-focus-proximity-evidence",proj:"mantabot",cat:"math",term:"Robust proximity evidence",solved_zh:"接近告警要求中心区域至少 64 个有效深度像素，并使用 0.20/0.25 m hysteresis",detail_zh:"单个最小像素极易来自 StereoSGBM 误匹配；区域统计先过滤无效/离群值，再基于有效像素数量判断证据是否足够。该逻辑是操作者辅助，不是经过安全认证的自主避障。",recall_zh:"为什么接近告警要同时检查距离、有效像素数和解除阈值？"},
+
+  {id:"mb-focus-camera-sync-boundary",proj:"mantabot",cat:"gotcha",term:"Configured stereo is not synchronized stereo",solved_zh:"两台 IMX219 没有共同硬件触发，快速运动时左右帧可能来自不同物理时刻",detail_zh:"软件同时发起采集不能保证曝光同步；时间偏差会破坏 epipolar correspondence，并把运动误差伪装成视差。面试时应明确它适合低速辅助感知，不能声称完成动态场景的精确双目。",recall_zh:"两路相机都标成同一时间戳，为什么仍不能叫硬件同步？"},
+  {id:"mb-focus-fps-claim-boundary",proj:"mantabot",cat:"gotcha",term:"Configured frame rate versus measured throughput",solved_zh:"1280×720、15 fps 是配置目标，不是端到端已验证吞吐率",detail_zh:"实际 pipeline 还包含采集、颜色转换、双目匹配、JPEG 编码、网络和客户端解码。可信表述需要同时报告 sustained fps、延迟分布、丢帧与 CPU 温度。",recall_zh:"为什么相机配置为 15 fps 不等于用户稳定看到 15 fps？"},
+  {id:"mb-focus-depth-hold-boundary",proj:"mantabot",cat:"gotcha",term:"Planned depth hold is not implemented control",solved_zh:"级联深度/速度 PID 是设计方案，当前项目不能表述为已经实现并验证",detail_zh:"可以解释计划中的 outer depth loop、inner vertical-velocity loop、滤波和 anti-windup；但没有闭环实验、调参记录和扰动响应就不能给出性能结论。",recall_zh:"面试官问深度保持效果时，怎样区分架构设计和已完成结果？"},
+  {id:"mb-focus-soc-boundary",proj:"mantabot",cat:"gotcha",term:"Battery voltage is not integrated SOC",solved_zh:"当前系统没有完整的电池 SOC 估计链，不能把电压读数等同剩余续航",detail_zh:"负载压降、化学体系、温度与老化都会影响开路电压—SOC 关系。若要产品化，需要电流积分、静置校准、容量模型和低电量安全策略。",recall_zh:"为什么只读电池电压不能可靠估计水下机器人的剩余时间？"},
+
+  {id:"vca-focus-local-pid",proj:"vcabot",cat:"algo",term:"500 Hz local PID ownership",solved_zh:"角度闭环留在 Driver 本地运行，上位机只发送模式、setpoint 和 gains",detail_zh:"AS5600L 与 H 桥都直接连接 Driver，500 Hz 环路用本地实际 dt；串口、浏览器和 ESP-NOW 抖动不进入反馈环。无线失联后由本地 watchdog coast。",recall_zh:"为什么 VCA PID 不应该运行在 Python 主机或浏览器里？"},
+  {id:"vca-focus-derivative-measurement",proj:"vcabot",cat:"algo",term:"Derivative on measurement with low-pass",solved_zh:"D 项对测量角度求导并做 50 Hz 一阶低通，避免 setpoint 阶跃产生 derivative kick",detail_zh:"P、I 基于误差，D 近似负速度反馈；最佳搜索结果 Kd 约 5×10⁻⁵，说明当前机构额外微分收益有限。不能把接近零的 Kd 泛化到所有 VCA。",recall_zh:"derivative on measurement 怎样减少阶跃目标带来的输出尖峰？"},
+  {id:"vca-focus-message-semantics",proj:"vcabot",cat:"pylang",term:"Message ID, ACK, and bounded receive queue",solved_zh:"ESP-NOW 发送成功不等于 Driver 已按应用语义执行命令",detail_zh:"message ID 用来匹配 ACK、检测重复与超时；无线回调只把消息放入有界 FreeRTOS 队列，控制任务负责验证和执行。STOP 走优先路径，普通轨迹不能无限积压。",recall_zh:"为什么 ESP-NOW 已有发送回调，应用层仍需要 ACK？"},
+  {id:"vca-focus-telemetry-decimation",proj:"vcabot",cat:"pylang",term:"Control/telemetry rate decimation",solved_zh:"500 Hz 控制、50 Hz telemetry 和约 10 Hz 浏览器显示分层运行",detail_zh:"控制状态每周期更新，但网络和 DOM 无需同频；telemetry 只复制一致快照并降采样，既保留诊断带宽，又避免序列化和 Web UI 干扰控制。",recall_zh:"为什么 500 Hz PID 不应该把每个样本都推送到浏览器？"},
+  {id:"vca-focus-directional-limit",proj:"vcabot",cat:"hw",term:"Directional mechanical-limit gating",solved_zh:"到达 ±45° 时只禁止继续向外的输出，仍允许执行器返回安全区",detail_zh:"setpoint 先 clamp 在机械范围内，输出层再根据当前位置和命令方向门控。若越界后把所有输出清零，外力可能让机构停在限位外且无法主动恢复。",recall_zh:"为什么机械限位保护不能简单地在越界后禁用所有方向？"},
+  {id:"vca-focus-fault-latch",proj:"vcabot",cat:"hw",term:"Encoder fault latch and explicit re-arm",solved_zh:"I²C 角度反馈失败后立即 coast、锁存故障，并要求显式 re-arm",detail_zh:"总线重新可读只说明通信恢复，不证明零点、角度和机构仍安全。显式 re-arm 把恢复控制权交给操作者，避免系统在无人预期时自动重新施力。",recall_zh:"传感器通信恢复后为什么不能自动恢复闭环输出？"},
+  {id:"vca-focus-calibration-evidence",proj:"vcabot",cat:"math",term:"Three-point Hall calibration evidence",solved_zh:"neutral、+45°、−45° 各平均 20 次，处理 12-bit wrap 后拟合 raw count 到角度",detail_zh:"R²=0.9999326、三点最大残差 0.43° 只证明这三个标定点的线性拟合；全范围绝对精度还需要独立角度、多方向扫描和回差测试。",recall_zh:"很高的 R² 为什么仍不能证明整个 ±45° 范围都准确？"},
+  {id:"vca-focus-resolution-accuracy",proj:"vcabot",cat:"math",term:"Noise-equivalent resolution versus accuracy",solved_zh:"2.18 counts 静态噪声乘 0.0907°/count 得到约 0.20° 噪声等效分辨率",detail_zh:"它描述短时重复测量的抖动，不包含磁铁偏心、非线性、温漂、机械回差和参考角误差，因此不能称为绝对精度。",recall_zh:"0.20° 是怎样算出的？为什么应该叫分辨率而不是精度？"},
+  {id:"vca-focus-autotune-boundary",proj:"vcabot",cat:"gotcha",term:"Autotune score is task-specific",solved_zh:"composite cost 从 183.43 降到 112.89 的 38.5% 改善只对应既定序列与评分函数",detail_zh:"数据来自 36 个安全候选、每个两次 0→+10→−10→0°；最佳试验饱和率为 0%。它不能代表全工作区、所有负载或所有轨迹都提升 38.5%。",recall_zh:"怎样准确解释自动调参的 38.5% 改善而不过度承诺？"},
+  {id:"vca-focus-mode-reset",proj:"vcabot",cat:"gotcha",term:"Mode-transition state leakage",solved_zh:"MANUAL、STATIC_PID、TRACKING 切换时必须重置或对齐积分器、目标和 quiet-hold 状态",detail_zh:"上一模式留下的积分和 setpoint 会在新模式第一周期产生突变；安全切换要先定义输出连续性，再初始化内部状态，必要时从当前测量开始 ramp。",recall_zh:"为什么控制模式切换时即使 setpoint 合法也可能突然冲击？"},
+
+  {id:"cld-passive-impedance-shaping",proj:"cld",cat:"algo",term:"Passive frequency-selective impedance shaping",solved_zh:"用随频率增长的损耗分量被动改变力—运动相位，而不是实时主动调刚度",detail_zh:"加速时前进速度和流体载荷不断变化，窄带共振难以保持；CLD 让结构在高频自动增加耗散，抑制寄生响应并改善净推力时序。",recall_zh:"CLD 的核心控制思想为什么不是追踪一个固定共振频率？"},
+  {id:"cld-symmetric-laminate",proj:"cld",cat:"algo",term:"Symmetric constrained-layer laminate",solved_zh:"两侧对称的 PET—黏弹芯层—PLA 铺层减少静态翘曲与非目标弯扭耦合",detail_zh:"外侧约束层限制芯层自由伸缩，把鳍面弯曲转成芯层剪切；对称结构让比较更接近“损耗变化”而不是制造出来的偏置曲率。",recall_zh:"为什么 CLD 要采用对称层压，而不是只在鳍面一侧贴阻尼层？"},
+  {id:"cld-mechanical-lowpass",proj:"cld",cat:"algo",term:"Mechanical low-pass behavior",solved_zh:"频率相关耗散抑制高频寄生弯曲，使尾缘轨迹更接近主驱动频率",detail_zh:"这不是数字滤波器；被耗散的是结构高阶模态能量。判断是否有效应比较频谱、尾缘轨迹和力相位，而不只是看形状更平滑。",recall_zh:"为什么可以把 CLD 描述为机械低通，但不能把它等同软件滤波？"},
+  {id:"cld-coverage-sweep",proj:"cld",cat:"algo",term:"Coverage-ratio design sweep",solved_zh:"用 0%、16.7%、33.3%、66.7% 四级覆盖率检查趋势、阈值和饱和",detail_zh:"中间级减少两个样品偶然差异的解释空间；当前结果可支持范围内趋势，但不能证明 66.7% 是全局最优，也没有分离位置、厚度与层向交互。",recall_zh:"为什么四种覆盖率比 baseline 对最高覆盖率更有说服力？"},
+  {id:"cld-sac-action-space",proj:"cld",cat:"algo",term:"SAC high-level action space (planned)",solved_zh:"RL 动作压缩为频率和幅值两个连续高层参数，而不是逐关节逐时刻扭矩",detail_zh:"低维动作先检验 CLD 是否压缩控制搜索空间；SAC 的 off-policy replay 和熵正则适合连续动作，但尚需和 PPO/DDPG 在相同预算下比较。当前是研究设计，不是已有结果。",recall_zh:"为什么计划让 SAC 输出频率和幅值，而不是直接输出每个关节扭矩？"},
+
+  {id:"cld-lockin-pipeline",proj:"cld",cat:"pylang",term:"Lock-in harmonic regression pipeline",solved_zh:"把 θ(t) 与 T(t) 回归到目标频率正余弦基底，再用复幅值比计算 K*",detail_zh:"pipeline 先丢弃启动周期，再按同一时间基切稳态窗口，输出幅值、相位、残差和谐波质量指标。相比直接找峰值，它能隔离噪声和非目标频率。",recall_zh:"锁相谐波回归的数据处理步骤是什么？"},
+  {id:"cld-trial-schema",proj:"cld",cat:"pylang",term:"Experiment trial schema and provenance",solved_zh:"每个 trial 必须绑定 specimen、覆盖率、频率、St、校准、时间基和排除原因",detail_zh:"目录名不能承担全部语义；结构化 metadata 还要记录原始文件 hash、处理版本、坐标约定和重复编号，保证推力、PIV 与阻抗结果能追溯到同一工况。",recall_zh:"怎样防止 CLD 多设备实验的数据在后处理时错配？"},
+  {id:"cld-phase-alignment-code",proj:"cld",cat:"pylang",term:"Phase-aligned averaging",solved_zh:"按驱动相位而非壁钟时间对多个周期重采样和平均",detail_zh:"先用共同触发或参考信号估计每周期相位，再映射到统一 0–2π 网格；报告周期间方差并剔除启动段。这样不同频率工况可以在相同相位位置比较。",recall_zh:"为什么 PIV 和推力波形应按相位平均，而不是按时间直接平均？"},
+  {id:"cld-mujoco-lookup",proj:"cld",cat:"pylang",term:"Frequency-dependent K(f)/B(f) lookup",solved_zh:"由硬件扫频建立有边界的查表或平滑拟合，并在控制段更新等效关节参数",detail_zh:"实现必须限制外推、保证插值连续并检查能量合理性；频率估计滞后、幅值与温度依赖都会让稳态线性参数失效。",recall_zh:"MuJoCo 中动态更新 K 和 B 时，最容易引入什么数值与物理错误？"},
+  {id:"cld-virtual-mass-cps",proj:"cld",cat:"pylang",term:"Cyber-physical virtual-mass loop",solved_zh:"实测推力实时驱动 3 kg 一维质量模型，再把计算速度反馈给实验边界",detail_zh:"积分器、采样周期、坐标符号、滤波和延迟都必须记录；这个闭环连接真实测力与虚拟动力学，价值高于离线积分，但仍不等于物理自由游动。",recall_zh:"虚拟质量实验为什么属于 cyber-physical system，而不只是离线仿真？"},
+
+  {id:"cld-material-stack",proj:"cld",cat:"hw",term:"PLA / acrylic foam / PET material stack",solved_zh:"PLA 提供主要弹性骨架，亚克力泡沫提供率相关剪切损耗，PET 提供约束",detail_zh:"材料角色必须和厚度、覆盖位置、粘接与固化流程一起描述；若层间滑移或气泡不可控，测到的 K″ 可能来自制造缺陷而非设计机理。",recall_zh:"CLD 三种材料各自承担什么机械功能？"},
+  {id:"cld-clearpath-mini40",proj:"cld",cat:"hw",term:"ClearPath actuator + ATI Mini-40 measurement chain",solved_zh:"ClearPath 施加已知 ±9° 单频运动，ATI Mini-40 测量反力矩并做坐标变换",detail_zh:"需要做静态归零、空载惯性基线、安装偏差检查和量程确认；执行器命令角不等于鳍根真实角，最好有独立角度观测。",recall_zh:"干态阻抗台架中，驱动器和六轴测力计分别提供什么量？"},
+  {id:"cld-piv-hardware",proj:"cld",cat:"hw",term:"Phase-resolved PIV hardware chain",solved_zh:"Photron Nova R3、激光/粒子和 DaVis 在中展向平面重建速度与涡量",detail_zh:"触发延迟、曝光时刻、标定平面、粒子密度和 interrogation window 都影响相位结论；必须报告 vector validation 与空间分辨率。",recall_zh:"PIV 设备能够直接测出涡量吗？从图像到涡量还经过哪些步骤？"},
+  {id:"cld-water-tunnel-fixture",proj:"cld",cat:"hw",term:"Water-tunnel fixture and inertial baseline",solved_zh:"约束推进装置必须把鳍面水动力与支架惯性、振动和安装共振分开",detail_zh:"应做无鳍/刚性件基线、检查台架固有频率，并把测力坐标转换到流向推力；否则高频时测到的增长可能来自夹具。",recall_zh:"怎样证明高频推力增长不是水洞支架或执行器惯性造成的？"},
+  {id:"cld-environment-durability",proj:"cld",cat:"hw",term:"Water absorption, fatigue, and bond durability",solved_zh:"盐水、温度、吸水和循环疲劳可能同时改变黏弹损耗与层间粘结",detail_zh:"真实机器人需要浸泡前后扫频、循环寿命、剥离/气泡检查和多样品统计；短期水洞性能不能替代环境耐久结论。",recall_zh:"CLD 从论文样机走向机器人，材料层面首先缺哪些验证？"},
+
+  {id:"cld-complex-stiffness",proj:"cld",cat:"math",term:"Complex bending impedance K*=K′+iK″",solved_zh:"K′ 表示与角位移同相的储能分量，K″ 表示正交的损耗分量",detail_zh:"由目标频率下的复扭矩 T̂ 除以复角度 θ̂ 得到；K′、K″ 的单位一致，损耗角可由 atan2(K″,K′) 表示。解释时要说明线性单频稳态假设。",recall_zh:"K′、K″ 各自代表什么？怎样从测量信号计算？"},
+  {id:"cld-strouhal",proj:"cld",cat:"math",term:"Strouhal-number convention",solved_zh:"实验采用 St=fA/U，其中 A=0.08 m 是 ±0.04 m heave 的峰—峰幅值",detail_zh:"U=0.2 m/s、f=0.5–2 Hz，因此 St=0.2–0.8。必须主动说明 A 的约定，否则使用单边幅值会得到一半的 St。",recall_zh:"CLD 的 St=0.2–0.8 怎样从实验参数计算？"},
+  {id:"cld-thrust-acceleration",proj:"cld",cat:"math",term:"From mean thrust to virtual-mass acceleration",solved_zh:"St=0.8 时平均推力由 0.16 N 增至 0.51 N，3 kg 虚拟质量峰值加速度由 0.039 增至 0.191 m/s²",detail_zh:"任务层结果还包括 3.8 s 终端速度从 0.105 增至 0.291 m/s。数值来自一维 CPS，不应直接说真实机器人自由游动快了相同比例。",recall_zh:"CLD 的推力、峰值加速度和终端速度三个指标分别说明什么？"},
+  {id:"cld-efficiency-tradeoff",proj:"cld",cat:"math",term:"Useful propulsive efficiency versus material loss",solved_zh:"材料耗散增加不必然降低系统推进效率，因为它可能减少相位失配和无效侧向动量",detail_zh:"baseline 在低 St 效率峰值约 20%，design c 更接近约 10% 平台并在高 St 显示优势；正确结论是工况相关 trade-off，不是阻尼越大越好。",recall_zh:"怎样解释“更多材料耗散”与“高 St 推进更好”并不矛盾？"},
+  {id:"cld-uncertainty",proj:"cld",cat:"math",term:"Repeatability versus specimen variability",solved_zh:"同一条件三次重复的标准差只能描述 trial repeatability，不能代表制造样品间差异",detail_zh:"更强的不确定度分析要分层报告传感器、trial、specimen 和处理参数贡献，并用独立样品重复覆盖率趋势。",recall_zh:"为什么每个工况重复三次仍不足以证明 CLD 制造具有一致性？"},
+
+  {id:"cld-resonance-boundary",proj:"cld",cat:"gotcha",term:"Resonance is not the transient objective",solved_zh:"项目不是否定共振，而是指出快速加速时系统参数变化使窄带共振难以持续",detail_zh:"稳态巡航仍可能利用共振；瞬态任务更关心每周期净冲量和力—速度相位。把论点说成“共振没有用”会被轻易反驳。",recall_zh:"怎样说明 CLD 与共振设计的关系而不做过度否定？"},
+  {id:"cld-damping-fallacy",proj:"cld",cat:"gotcha",term:"More damping is not always better",solved_zh:"CLD 的价值是合适频段与覆盖率下的阻抗组成，而不是无限增加损耗",detail_zh:"过高耗散会降低振幅、增加输入功率或改变目标模态；当前四种覆盖率只显示研究范围内趋势，不能推出最大覆盖或最大阻尼最优。",recall_zh:"如果面试官问“那为什么不把整个鳍都做成最高阻尼”，你怎么回答？"},
+  {id:"cld-virtual-mass-boundary",proj:"cld",cat:"gotcha",term:"Virtual mass is not free swimming",solved_zh:"3 kg 一维虚拟质量缺少真实机身、姿态相关附加质量和六自由度稳定性",detail_zh:"它能证明实测推力可转化为一维任务加速，但不能证明真实机器人航向稳定、推进器—机身干扰或自由游动性能。",recall_zh:"虚拟质量实验最有价值的结论和最重要的局限各是什么？"},
+  {id:"cld-piv-boundary",proj:"cld",cat:"gotcha",term:"2D phase PIV evidence boundary",solved_zh:"中展向二维 PIV 支持 LEV/TEV 与力相位解释，但不能覆盖完整三维尾迹",detail_zh:"有限相位、面外速度、激光平面位置和空间窗口都会限制因果强度；应说“支持机制解释”，而不是“PIV 单独证明机制”。",recall_zh:"如何用 PIV 证据支持结论，同时主动说明它没有证明什么？"},
+  {id:"cld-rl-status-boundary",proj:"cld",cat:"gotcha",term:"RL design versus validated result",solved_zh:"SAC、课程学习、±30% 参数扰动和 sim-to-real 对照目前是研究计划",detail_zh:"可以说已定义状态、动作、奖励、对照与 MuJoCo 参数接口；没有多随机种子曲线和硬件迁移结果，就不能声称 CLD 已提高训练效率或鲁棒性。",recall_zh:"面试时怎样准确划分 CLD 已完成实验和 RL 进行中工作？"}
+);
 
 /* ============ Problems ============ */
 const ZONES=[["ah","Arrays & Hashing"],["tp","Two Pointers"],["sw","Sliding Window"],["st","Stack"],["bs","Binary Search"],["gr","Grid Search"],["gp","Graphs"],["hp","Heaps"],["iv","Intervals"],["mx","Matrix Ops"],["dp","Dynamic Programming"],["tr","Trees"],["rb","Robotics Bay"],["db","Debug Bay"]];
@@ -2182,7 +2290,7 @@ function kbEsc(s){return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;"
 function kbMd(s){return kbEsc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
 const KB_PROJECTS={
   mantabot:{
-    no:"01",name:"MantaBot",type:"水下仿生机器人",accent:"#58b9ad",
+    no:"01",name:"MantaBot",type:"水下仿生机器人",accent:"#58b9ad",priority:"P0 主线",share:"45%",core:true,
     tagline:"从操作者输入到水下执行器闭环：多速率控制、CAN 电机、双目视觉与整机安全。",
     intro:"MantaBot 是一套运行在 Raspberry Pi 5 上的水下仿生机器人系统。我负责把游戏手柄、控制状态机、双 CAN 电机、PWM 舵机、MS5837 深度传感器和双目相机组织成可调试的多速率架构。项目的核心不只是“让电机转”，而是让不同频率、不同失效模式的子系统在掉线、过温、切换控制权等边界情况下仍然可预测、可恢复。",
     pitch:"我做 MantaBot 时最重视的是控制权和故障边界。50 Hz 的操作者输入只表达意图，200 Hz 的执行器循环负责相位连续和限幅，CAN 接收、相机和 UI 各自独立运行；所有线程只通过共享状态交换带时间戳的数据。这样既避免慢设备阻塞控制，也能让急停和 watchdog 在任何普通命令之前生效。",
@@ -2202,7 +2310,7 @@ const KB_PROJECTS={
     ]
   },
   vcabot:{
-    no:"02",name:"VCA Bot",type:"流体实验执行平台",accent:"#e7aa4a",
+    no:"02",name:"VCA Bot",type:"流体实验执行平台",accent:"#e7aa4a",priority:"P1 核心",share:"25%",core:true,
     tagline:"从电路板到实验量纲：ESP-NOW、H 桥、编码器、保护链和可复现实验控制。",
     intro:"VCA Bot 是为流体实验设计的无线双执行器平台。它用 ESP32 commander/driver 拓扑发送控制命令，通过 DRV8871/DRV8874 驱动拮抗执行器，用 AS5600L 读取角度，并围绕 Strouhal 数、相位平均和 PIV 同步组织实验。这个项目最重要的价值是把一次真实的烧板故障变成了系统化的保护设计原则。",
     pitch:"VCA Bot 的难点是跨越电气、固件和实验三个层级。无线层选 ESP-NOW 是为了低延迟且不依赖现场 Wi‑Fi；执行器层接受真实的 bang-bang 工作区间，不用虚假的查表精度掩盖物理限制；实验层用 St=fA/U 把频率和振幅变成可比较的无量纲参数。烧板后我把启动电平、反电动势和 USB 回灌分别建模并逐条加保护。",
@@ -2221,8 +2329,28 @@ const KB_PROJECTS={
       ["IPROPI / ADC","电机电流估计","无需独立电流传感器，保护和诊断兼用","采样电阻必须按 ADC 3.3 V 上限反算"]
     ]
   },
+  cld:{
+    no:"03",name:"CLD Swimmer",type:"被动阻抗整形推进器",accent:"#8fa55b",priority:"P1 核心",share:"20%",core:true,
+    tagline:"从材料到任务性能：复阻抗、力—运动相位、PIV、虚拟质量与 RL 证据边界。",
+    intro:"CLD Swimmer 用 PLA / 亚克力泡沫 / PET 对称约束层阻尼结构，在基本保持储能刚度的同时让损耗分量随频率增长。项目通过 0–5 Hz 干态阻抗、水洞推力、相位分辨 PIV 和 3 kg 虚拟质量逐层验证：被动相位整形能在快速加速工况下抑制寄生形变，并把更有序的涡结构转化为更高推力和加速度。",
+    pitch:"CLD 项目的关键不是简单增加阻尼，而是按频率整形复阻抗。对称夹层把鳍面弯曲转化为黏弹芯层剪切，使 K′ 基本稳定而 K″ 随频率上升；我再用干态锁相识别、水洞约束推进、相位 PIV 和 3 kg 虚拟质量形成从材料到任务性能的证据链。结果必须限定在一维虚拟质量与有限 PIV 平面，真实六自由度自由游动和 RL 鲁棒性仍是下一步。",
+    layers:[
+      ["结构设计","PLA 基体、亚克力泡沫黏弹芯层、PET 约束层与对称层压"],
+      ["干态识别","0–5 Hz 扫频、角度/扭矩锁相回归、复阻抗 K′/K″"],
+      ["水洞推进","四种覆盖率、St 0.2–0.8、推力/效率/相位"],
+      ["流场证据","中展向相位 PIV、LEV/TEV、换向阶段涡量连续性"],
+      ["任务验证","3 kg 虚拟质量一维积分、加速度/位移/终端速度与 RL 延伸"]
+    ],
+    protocols:[
+      ["ClearPath + 角度驱动","施加 ±9° 单频弯曲","可控频率和幅值，便于锁相识别","安装惯性、回差与结构共振需做空载基线"],
+      ["ATI Mini-40","测量扭矩和水中载荷","六轴测力并支持坐标变换","零漂、量程、安装偏差和惯性力会污染结果"],
+      ["NI / Simulink 实时链","200 Hz 数据采集与虚拟质量闭环","统一控制、采样和记录时序","软件时间不等于传感器真实相位，需验证延迟"],
+      ["Photron + DaVis PIV","相位分辨速度/涡量场","能连接力波形与 LEV/TEV 机制","二维切面、面外速度和窗口参数限制结论"],
+      ["MuJoCo / MJCF（进行中）","频率相关 K(f)/B(f) 与连续动作 RL","便于受控对照和参数扰动","不能把规划中的 SAC、鲁棒性或 sim-to-real 当成已有结果"]
+    ]
+  },
   flow:{
-    no:"04",name:"Flow Sensing",type:"稀疏传感流场重建",accent:"#7d91d7",
+    no:"04",name:"Flow Sensing",type:"稀疏传感流场重建",accent:"#7d91d7",priority:"P2 补充",share:"5%",core:false,
     tagline:"从 5 个稀疏传感器到稠密流场：多模态融合、物理约束、数据泄漏与泛化。",
     intro:"Flow Sensing 研究如何用 5 个局部压力/PIV 观测重建完整速度与涡量场。方法采用两阶段训练：先让 autoencoder decoder 学习流场结构，再学习稀疏传感器到隐空间/网格查询的映射；同时用 Fourier 位置编码、梯度损失、涡量加权和散度约束保留尖锐涡结构。",
     pitch:"这个项目的核心不是堆更大的模型，而是判断信息瓶颈在哪里。早期 cross-attention 只有 5 个 sensor token，输出秩被限制在 5 左右，涡量 SSIM 长期卡在约 0.13；继续调参不会解决结构性瓶颈。我加入 learnable spatial tokens，并重新审视 case-level split、phase oracle leakage 和自由来流像素主导指标的问题，确保模型学到的是可部署的泛化，而不是数据集捷径。",
@@ -2241,7 +2369,7 @@ const KB_PROJECTS={
     ]
   },
   coach:{
-    no:"05",name:"ClearCoach",type:"多模态运动分析应用",accent:"#d87562",
+    no:"05",name:"ClearCoach",type:"多模态运动分析应用",accent:"#d87562",priority:"P2 补充",share:"5%",core:false,
     tagline:"从长视频到可执行反馈：音视频粗筛、LLM 精判、知识注入与生产部署。",
     intro:"ClearCoach 是面向羽毛球训练的多模态分析应用。它先用音频 onset、帧差和物理时间约束从 30–90 分钟视频中定位候选击球，再把高信息密度的 contact sheet 交给视觉模型做动作阶段和技术问题分析，最后结合结构化中文教练知识生成可执行反馈。",
     pitch:"ClearCoach 的工程关键是让确定性计算和 LLM 各做擅长的部分。传统信号处理负责把搜索空间从长视频缩到 30 帧左右，LLM 只做需要语义理解的精判；Flash 做便宜的第一阶段，Pro 做少量高价值分析。上线时我又处理了大文件上传、长请求超时、输出 schema 不稳定和多用户文件隔离，避免原型在生产边界失效。",
@@ -2270,6 +2398,8 @@ const KB_CATS=[
   ["gotcha","故障复盘与排查","!"],
   ["interview","面试表达与追问","◎"]
 ];
+const KB_PROJECT_ORDER=["mantabot","vcabot","cld","flow","coach"];
+const KB_CORE_PER_CAT={flow:3,coach:3};
 const KB_CAT_INTRO={
   algo:["算法与控制策略","重点不在背名词，而在说明：输入是什么、状态如何变化、边界条件在哪里、为什么比备选方案更可靠。"],
   pylang:["软件架构与实现","从线程/进程边界、数据所有权、时序、接口契约和可测试性解释代码结构。"],
@@ -2292,31 +2422,51 @@ function kbLoad(){
 }
 function kbSave(){try{localStorage.setItem(KB_KEY,JSON.stringify(KB_STATE))}catch(e){}}
 function kbProjectCards(p){return DECK.filter(c=>c.proj===p)}
+function kbCoreCards(p){
+  const cards=kbProjectCards(p),limit=KB_CORE_PER_CAT[p];
+  if(!limit)return cards;
+  return ["algo","pylang","hw","math","gotcha"].flatMap(cat=>cards.filter(c=>c.cat===cat).slice(0,limit))
+}
 function kbCategoryName(k){const x=KB_CATS.find(c=>c[0]===k);return x?x[1]:k}
 function kbKnownCount(p){return kbProjectCards(p).filter(c=>KB_STATE.known[c.id]).length}
 function kbTotalKnown(){return DECK.filter(c=>KB_STATE.known[c.id]).length}
+function kbApplyRoute(){
+  const parts=decodeURIComponent(location.hash.slice(1)).split("/").filter(Boolean);
+  if(parts[0]==="cards"){
+    const p=parts[1];
+    if(p&&KB_PROJECTS[p]){KB_STATE.project=p;KB_STATE.view=KB_CATS.some(x=>x[0]===parts[2])?parts[2]:"overview";KB_STATE.filter=KB_PROJECTS[p].core?"all":"core"}
+    else{KB_STATE.project=null;KB_STATE.view="cards";KB_STATE.filter="all"}
+  }else if(parts[0]==="review"){KB_STATE.project=null;KB_STATE.view="review";KB_STATE.filter="starred"}
+  else{KB_STATE.project=null;KB_STATE.view="home";KB_STATE.filter="all"}
+  kbSave()
+}
+function kbNavigate(hash){
+  if(location.hash===hash){kbApplyRoute();kbRender();window.scrollTo(0,0)}else location.hash=hash
+}
 function kbShell(){
   document.body.innerHTML=`<div class="kb-shell">
+    <a class="kb-skip" href="#kbMain">跳到主要内容</a>
     <header class="kb-top">
-      <button class="kb-iconbtn kb-mobile-menu" id="kbMenu" aria-label="打开目录">☰</button>
+      <button class="kb-iconbtn kb-mobile-menu" id="kbMenu" aria-label="打开项目与模块目录" aria-expanded="false">☰</button>
       <button class="kb-brand" id="kbHome" aria-label="返回知识库首页">
         <span class="kb-mark">DS</span><span><strong>DIVE STATION</strong><small>项目面试知识库</small></span>
       </button>
-      <div class="kb-search"><input id="kbSearch" type="search" placeholder="搜索项目、协议、零部件或故障…" autocomplete="off"><kbd>⌘ K</kbd></div>
-      <div class="kb-head-actions"><a class="kb-iconbtn" href="cld.html">CLD</a><a class="kb-iconbtn" href="fundamentals.html">全栈基础</a><a class="kb-iconbtn" href="system-design.html">系统设计</a><a class="kb-iconbtn" href="coding.html">Coding</a><button class="kb-iconbtn" id="kbStarred">待复习</button><button class="kb-iconbtn" id="kbProgress">已掌握 ${kbTotalKnown()} / ${DECK.length}</button></div>
+      <div class="kb-search"><input id="kbSearch" type="search" aria-label="搜索全部知识卡片" placeholder="搜索项目、协议、零部件或故障…" autocomplete="off"><kbd>⌘ K</kbd></div>
+      <div class="kb-head-actions"><a class="kb-iconbtn" href="handbook.html">知识大全</a><a class="kb-iconbtn" href="#cards">知识卡片 ${DECK.length}</a><a class="kb-iconbtn" href="projects.html">项目抽查</a><a class="kb-iconbtn" href="system-design.html">系统设计</a><a class="kb-iconbtn" href="coding.html">Coding</a><a class="kb-iconbtn" href="#review">待复习</a><a class="kb-iconbtn" href="#cards">已掌握 ${kbTotalKnown()} / ${DECK.length}</a></div>
     </header>
-    <div class="kb-layout"><aside class="kb-side" id="kbSide"></aside><main class="kb-main" id="kbMain"></main></div>
+    <div class="kb-layout"><aside class="kb-side" id="kbSide" aria-label="知识卡片项目与模块导航"></aside><main class="kb-main" id="kbMain" tabindex="-1"></main></div>
     <div class="kb-scrim" id="kbScrim" aria-hidden="true"></div>
   </div>`;
-  document.getElementById("kbHome").onclick=()=>{KB_STATE.project=null;KB_STATE.view="home";KB_STATE.filter="all";kbSave();kbRender()};
+  document.getElementById("kbHome").onclick=()=>kbNavigate("");
+  document.querySelector(".kb-skip").onclick=e=>{e.preventDefault();const main=document.getElementById("kbMain");main.focus();main.scrollIntoView({block:"start"})};
   document.getElementById("kbMenu").onclick=()=>kbDrawer(!document.getElementById("kbSide").classList.contains("open"));
   document.getElementById("kbScrim").onclick=()=>kbDrawer(false);
-  document.getElementById("kbStarred").onclick=()=>{KB_STATE.filter=KB_STATE.filter==="starred"?"all":"starred";kbRender()};
-  document.getElementById("kbProgress").onclick=()=>{KB_STATE.filter=KB_STATE.filter==="unknown"?"all":"unknown";kbRender()};
   const si=document.getElementById("kbSearch");
   si.onfocus=()=>kbOpenSearch(si.value);si.oninput=()=>kbOpenSearch(si.value);
   document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("kbSearch")?.focus()}if(e.key==="Escape"){document.querySelector(".kb-modal")?.remove();kbDrawer(false)}});
   window.addEventListener("resize",()=>{if(window.innerWidth>720)kbDrawer(false)});
+  window.addEventListener("hashchange",()=>{kbApplyRoute();kbRender();window.scrollTo(0,0)});
+  kbApplyRoute();
   kbRender();
 }
 function kbDrawer(open){
@@ -2338,34 +2488,42 @@ function kbRender(){
     menu.style.visibility="hidden";
     layout.classList.add("home");
     main.style.maxWidth="1240px";main.style.width="100%";main.style.margin="0 auto";
-    kbRenderHome(main);return
+    if(KB_STATE.view==="cards")kbRenderCardsHub(main);
+    else if(KB_STATE.view==="review")kbRenderAllReview(main);
+    else kbRenderHome(main);
+    return
   }
   side.style.display="";menu.style.visibility="";layout.classList.remove("home");
   main.style.maxWidth="";main.style.width="";main.style.margin="";
   const p=KB_STATE.project,meta=KB_PROJECTS[p],cards=kbProjectCards(p),done=kbKnownCount(p),pct=Math.round(100*done/cards.length);
-  side.innerHTML=`<button class="kb-back" data-home>← 全部项目</button>
+  side.innerHTML=`<a class="kb-back" href="#cards" style="display:block;text-decoration:none">← 知识卡片中心</a>
+    <div class="kb-side-label">切换项目</div>
+    <div class="kb-side-projects">${KB_PROJECT_ORDER.map(k=>{const x=KB_PROJECTS[k];return`<a class="kb-project-switch ${p===k?"on":""}" href="#cards/${k}/overview" ${p===k?'aria-current="page"':""}><span>${x.no} · ${x.name}</span><small>${x.priority}</small></a>`}).join("")}</div>
     <div class="kb-project-title"><span>${meta.type}</span><h2>${meta.name}</h2></div>
     <div class="kb-side-label">项目模块</div>
-    ${KB_CATS.map(([k,n,i])=>`<button class="kb-navbtn ${KB_STATE.view===k?"on":""}" data-view="${k}"><span class="kb-navico">${i}</span><span>${n}</span>${["algo","pylang","hw","math","gotcha"].includes(k)?`<span class="kb-count">${cards.filter(c=>c.cat===k).length}</span>`:""}</button>`).join("")}
+    ${KB_CATS.map(([k,n,i])=>`<a class="kb-navbtn ${KB_STATE.view===k?"on":""}" href="#cards/${p}/${k}" ${KB_STATE.view===k?'aria-current="page"':""} style="text-decoration:none"><span class="kb-navico">${i}</span><span>${n}</span>${["algo","pylang","hw","math","gotcha"].includes(k)?`<span class="kb-count">${cards.filter(c=>c.cat===k).length}</span>`:""}</a>`).join("")}
     <div class="kb-side-progress"><div class="row"><span>项目掌握度</span><b>${done} / ${cards.length}</b></div><div class="kb-progress"><i style="width:${pct}%"></i></div></div>`;
-  side.querySelector("[data-home]").onclick=()=>{KB_STATE.project=null;KB_STATE.view="home";KB_STATE.filter="all";kbSave();kbRender()};
-  side.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{KB_STATE.view=b.dataset.view;KB_STATE.filter="all";kbSave();kbRender();window.scrollTo(0,0)});
   if(KB_STATE.view==="overview")kbRenderOverview(main,p);
   else if(KB_STATE.view==="interview")kbRenderInterview(main,p);
   else kbRenderCategory(main,p,KB_STATE.view);
-  document.getElementById("kbProgress").textContent=`已掌握 ${kbTotalKnown()} / ${DECK.length}`;
-  document.getElementById("kbStarred").classList.toggle("on",KB_STATE.filter==="starred");
 }
 function kbRenderHome(main){
   const totalStar=DECK.filter(c=>KB_STATE.starred[c.id]).length;
-  main.innerHTML=`<div class="kb-eyebrow">INTERVIEW READINESS SYSTEM</div>
-    <h1 class="kb-title">把“我做过”变成<br>“每个决定我都讲得清”</h1>
-    <p class="kb-lead">围绕五个真实机器人项目，系统复盘架构、算法、协议、零部件选型、实验验证和故障根因；再用全栈基础题和低负担 Coding 练习补齐项目之外的默认知识。</p>
-    <div class="kb-actions"><button class="kb-primary" data-open="mantabot">从 MantaBot 开始</button><a class="kb-secondary" href="cld.html" style="text-decoration:none">CLD 项目深潜</a><a class="kb-secondary" href="fundamentals.html" style="text-decoration:none">机器人全栈基础</a><a class="kb-secondary" href="system-design.html" style="text-decoration:none">机器人系统设计</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding 训练场</a><button class="kb-secondary" data-review>查看 ${totalStar} 个待复习知识点</button></div>
-    <div class="kb-project-grid">${Object.entries(KB_PROJECTS).map(([k,p])=>`<button class="kb-project-card" data-project="${k}" style="--accent:${p.accent};order:${p.no}">
+  main.innerHTML=`<div class="kb-eyebrow">ROBOTICS FULL-STACK INTERVIEW HANDBOOK</div>
+    <h1 class="kb-title">先系统学习知识，<br>再用卡片和问题抽查</h1>
+    <p class="kb-lead">“知识大全”是按系统逻辑整理的主教材；“知识卡片”保留原有 ${DECK.length} 个知识点，用于快速回忆和标记掌握度。项目抽查、系统设计和 Coding 是学完后的训练区。</p>
+    <div class="kb-actions"><a class="kb-primary" href="handbook.html" style="text-decoration:none">打开知识大全 · 主教材</a><a class="kb-primary alt" href="#cards" style="text-decoration:none">打开知识卡片 · ${DECK.length} 个</a><a class="kb-secondary" href="projects.html" style="text-decoration:none">项目抽查 · 68 题</a><a class="kb-secondary" href="system-design.html" style="text-decoration:none">系统设计 · 12 题</a><a class="kb-secondary" href="coding.html" style="text-decoration:none">Coding Test · 12 题</a><a class="kb-secondary" href="#review" style="text-decoration:none">待复习 · ${totalStar} 个</a></div>
+    <div class="kb-mode-grid" aria-label="主要学习入口">
+      <a class="kb-mode main" href="handbook.html"><b>01 · LEARN</b><strong>知识大全</strong><span>项目架构、数字、数据结构、协议、算法、硬件与验证的系统主教材。</span></a>
+      <a class="kb-mode" href="#cards"><b>02 · RECALL</b><strong>知识卡片 · ${DECK.length} 个</strong><span>先进入卡片中心选择项目；任意页面都能切换项目和模块。</span></a>
+      <a class="kb-mode" href="projects.html"><b>03 · CHECK</b><strong>项目抽查 · 68 题</strong><span>五个项目同级排列，沿系统逻辑检验能否把关键设计讲清楚。</span></a>
+      <a class="kb-mode" href="coding.html"><b>04 · PRACTICE</b><strong>Coding Test · 12 题</strong><span>低负担高频题型；系统设计题从顶部训练入口进入。</span></a>
+    </div>
+    <section class="kb-section"><div class="kb-section-head"><h2>五个项目抽查</h2><span class="kb-section-note">主教材学完后再进入</span></div>
+    <div class="kb-project-grid">${KB_PROJECT_ORDER.map(k=>{const p=KB_PROJECTS[k];return`<a class="kb-project-card" href="projects.html#${k==="vcabot"?"vca":k}" style="--accent:${p.accent};order:${p.no}">
       <span class="kb-project-no">${p.no} · ${p.type}</span><h3>${p.name}</h3><p>${p.tagline}</p>
-      <span class="kb-project-meta"><span class="kb-pill">${kbProjectCards(k).length} 个知识点</span><span class="kb-pill">已掌握 ${kbKnownCount(k)}</span></span>
-    </button>`).join("")}<a class="kb-project-card" href="cld.html" style="--accent:#8fa55b;order:3"><span class="kb-project-no">03 · 被动阻抗整形</span><h3>CLD Swimmer</h3><p>复阻抗、力–速度相位、PIV、快速加速与 RL 延伸。</p><span class="kb-project-meta"><span class="kb-pill">15 个高概率追问</span><span class="kb-pill">独立深潜页</span></span></a></div>
+      <span class="kb-project-meta"><span class="kb-pill">项目抽查</span><span class="kb-pill">含硬件追问</span></span>
+    </a>`}).join("")}</div></section>
     <section class="kb-section"><div class="kb-section-head"><h2>建议复习顺序</h2><span class="kb-section-note">先建立系统图，再下钻细节</span></div>
       <div class="kb-path">
         <div class="kb-step"><b>STEP 01</b><strong>90 秒项目陈述</strong><p>问题、职责、系统、难点、结果。</p></div>
@@ -2374,29 +2532,42 @@ function kbRenderHome(main){
         <div class="kb-step"><b>STEP 04</b><strong>讲透一次失败</strong><p>现象、定位、根因、修复和防复发。</p></div>
       </div>
     </section>`;
-  main.querySelectorAll("[data-project],[data-open]").forEach(b=>b.onclick=()=>{KB_STATE.project=b.dataset.project||b.dataset.open;KB_STATE.view="overview";KB_STATE.filter="all";kbSave();kbRender();window.scrollTo(0,0)});
-  main.querySelector("[data-review]").onclick=()=>{KB_STATE.filter="starred";kbRenderAllReview(main)};
+}
+function kbRenderCardsHub(main){
+  const core=KB_PROJECT_ORDER.filter(k=>KB_PROJECTS[k].core),extended=KB_PROJECT_ORDER.filter(k=>!KB_PROJECTS[k].core);
+  main.innerHTML=`<div class="kb-eyebrow">KNOWLEDGE CARDS · PRIORITY ROUTE</div>
+    <h1 class="kb-title">知识卡片中心</h1>
+    <p class="kb-lead">这里不是平均分配复习时间。MantaBot 是唯一 P0 主线；VCA 和 CLD 是 P1 核心。Flow Sensing 与 ClearCoach 保留完整资料，但默认只抽核心卡片。</p>
+    <div class="kb-focus-grid">${core.map(k=>{const p=KB_PROJECTS[k],cards=kbProjectCards(k),done=kbKnownCount(k);return`<a class="kb-focus-card ${k==="mantabot"?"primary":""}" href="#cards/${k}/overview" style="--accent:${p.accent}">
+      <div class="rank"><span>${p.priority}</span><span>·</span><span>建议复习 ${p.share}</span></div><h3>${p.no} · ${p.name}</h3><p>${p.tagline}</p>
+      <div class="kb-focus-meta"><span>${cards.length} 张核心卡片</span><span>已掌握 ${done}</span><span>${k==="mantabot"?"最细粒度主线":"核心项目"}</span></div></a>`}).join("")}</div>
+    <section class="kb-section"><div class="kb-section-head"><h2>补充项目</h2><span class="kb-section-note">保留全库，默认每类先看 3 张核心卡</span></div>
+      <div class="kb-extended-grid">${extended.map(k=>{const p=KB_PROJECTS[k],all=kbProjectCards(k),coreCount=kbCoreCards(k).length;return`<a class="kb-extended" href="#cards/${k}/overview"><span><b>${p.no} · ${p.name}</b><span>${p.priority} · 建议复习 ${p.share}</span></span><em>核心 ${coreCount} / 全部 ${all.length} →</em></a>`}).join("")}</div>
+    </section>
+    <div class="kb-priority-note"><b>推荐顺序：</b>MantaBot 从总览顺序学完全部模块 → VCA → CLD → 回到待复习队列；另外两个项目只补岗位可能追问的交叉知识。</div>
+    <div class="kb-actions"><a class="kb-primary" href="#cards/mantabot/overview" style="text-decoration:none">从 MantaBot 开始</a><a class="kb-secondary" href="#review" style="text-decoration:none">查看待复习</a><a class="kb-secondary" href="handbook.html" style="text-decoration:none">返回知识大全</a></div>`;
 }
 function kbRenderOverview(main,p){
   const m=KB_PROJECTS[p],cards=kbProjectCards(p),known=kbKnownCount(p);
-  main.innerHTML=`<div class="kb-eyebrow">${m.no} · ${m.type}</div><h1 class="kb-title">${m.name} 项目全景</h1><p class="kb-lead">${m.intro}</p>
-    <div class="kb-actions"><button class="kb-primary" data-next>进入算法与控制策略</button><button class="kb-secondary" data-copy>复制 90 秒陈述</button></div>
+  const deepId=p==="vcabot"?"vca":p;
+  main.innerHTML=`<div class="kb-eyebrow">${m.priority} · 建议复习 ${m.share} · ${m.type}</div><h1 class="kb-title">${m.name} 项目全景</h1><p class="kb-lead">${m.intro}</p>
+    <div class="kb-actions"><a class="kb-primary" href="handbook.html#${deepId}" style="text-decoration:none">阅读知识大全章节</a><button class="kb-primary alt" data-next>打开本项目知识卡片</button><a class="kb-secondary" href="projects.html#${deepId}" style="text-decoration:none">进入项目抽查</a><button class="kb-secondary" data-copy>复制 90 秒陈述</button></div>
     <div class="kb-overview-grid">
       <section class="kb-hero-card"><h3>90 秒项目陈述</h3><p>${m.pitch}</p><div class="kb-talking"><b>回答主线</b><p>项目目标 → 我的职责 → 系统分层 → 最难的技术判断 → 如何验证 → 最终学到了什么。不要按时间流水账讲。</p></div></section>
       <section class="kb-panel"><h3>系统数据与控制流</h3><div class="kb-architecture">${m.layers.map((x,i)=>`<div class="kb-layer" data-n="${i+1}"><b>${x[0]}</b>${x[1]}</div>`).join("")}</div></section>
     </div>
     <section class="kb-section"><div class="kb-section-head"><h2>模块地图</h2><span class="kb-section-note">${known} / ${cards.length} 已掌握</span></div>
-      <div class="kb-story-grid">${KB_CATS.filter(x=>["algo","pylang","hw","math","gotcha"].includes(x[0])).map(([k,n])=>{const a=cards.filter(c=>c.cat===k);return`<button class="kb-story" data-cat="${k}"><span>${String(a.length).padStart(2,"0")} 个知识点</span><h3>${n}</h3><p>${KB_CAT_INTRO[k][1]}</p></button>`}).join("")}</div>
+      <div class="kb-story-grid">${KB_CATS.filter(x=>["algo","pylang","hw","math","gotcha"].includes(x[0])).map(([k,n])=>{const a=cards.filter(c=>c.cat===k),core=kbCoreCards(p).filter(c=>c.cat===k);return`<a class="kb-story" href="#cards/${p}/${k}" style="display:block;text-decoration:none;color:inherit"><span>${m.core?`${String(a.length).padStart(2,"0")} 个知识点`:`核心 ${core.length} / 全部 ${a.length}`}</span><h3>${n}</h3><p>${KB_CAT_INTRO[k][1]}</p></a>`}).join("")}</div>
     </section>`;
-  main.querySelector("[data-next]").onclick=()=>{KB_STATE.view="algo";kbSave();kbRender();window.scrollTo(0,0)};
+  main.querySelector("[data-next]").onclick=()=>kbNavigate(`#cards/${p}/algo`);
   main.querySelector("[data-copy]").onclick=async e=>{try{await navigator.clipboard.writeText(m.pitch);e.currentTarget.textContent="已复制"}catch(x){e.currentTarget.textContent="复制失败，请手动选择"}};
-  main.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{KB_STATE.view=b.dataset.cat;kbSave();kbRender();window.scrollTo(0,0)});
 }
 function kbCardHTML(c){
   const solved=kbClean(c.solved_zh||c.solved),detail=kbClean(c.detail_zh||c.detail),recall=kbClean(c.recall_zh||c.recall);
+  const bodyId=`kb-card-body-${c.id}`;
   return `<article class="kb-card ${KB_STATE.known[c.id]?"done":""}" data-id="${c.id}">
-    <button class="kb-card-head" aria-expanded="false"><span class="kb-dot">${KB_STATE.known[c.id]?"✓":"·"}</span><span class="kb-card-title"><strong>${kbMd(solved)}</strong><span>${kbMd(c.term)}</span></span><span class="kb-chevron">⌄</span></button>
-    <div class="kb-card-body">
+    <button class="kb-card-head" aria-expanded="false" aria-controls="${bodyId}"><span class="kb-dot">${KB_STATE.known[c.id]?"✓":"·"}</span><span class="kb-card-title"><strong>${kbMd(solved)}</strong><span>${kbMd(c.term)}</span></span><span class="kb-chevron" aria-hidden="true">⌄</span></button>
+    <div class="kb-card-body" id="${bodyId}">
       <div class="kb-block"><label>技术关键词</label><p>${kbMd(c.term)}</p></div>
       <div class="kb-block"><label>这个项目为什么需要它</label><p>${kbMd(solved)}</p></div>
       <div class="kb-block"><label>项目中的做法与权衡</label><p>${kbMd(detail)}</p></div>
@@ -2407,12 +2578,13 @@ function kbCardHTML(c){
 function kbRenderCategory(main,p,cat){
   const m=KB_PROJECTS[p],intro=KB_CAT_INTRO[cat]||[kbCategoryName(cat),""],all=kbProjectCards(p).filter(c=>c.cat===cat);
   let list=all;
+  if(KB_STATE.filter==="core")list=kbCoreCards(p).filter(c=>c.cat===cat);
   if(KB_STATE.filter==="unknown")list=list.filter(c=>!KB_STATE.known[c.id]);
   if(KB_STATE.filter==="known")list=list.filter(c=>KB_STATE.known[c.id]);
   if(KB_STATE.filter==="starred")list=list.filter(c=>KB_STATE.starred[c.id]);
   main.innerHTML=`<div class="kb-eyebrow">${m.name} · ${m.type}</div><h1 class="kb-title">${intro[0]}</h1><p class="kb-lead">${intro[1]}</p>
     ${cat==="hw"?kbProtocolTable(p):""}
-    <div class="kb-filterbar"><button class="kb-filter ${KB_STATE.filter==="all"?"on":""}" data-filter="all">全部 ${all.length}</button><button class="kb-filter ${KB_STATE.filter==="unknown"?"on":""}" data-filter="unknown">未掌握</button><button class="kb-filter ${KB_STATE.filter==="known"?"on":""}" data-filter="known">已掌握</button><button class="kb-filter ${KB_STATE.filter==="starred"?"on":""}" data-filter="starred">待复习</button></div>
+    <div class="kb-filterbar">${!m.core?`<button class="kb-filter ${KB_STATE.filter==="core"?"on":""}" data-filter="core">核心必会 ${kbCoreCards(p).filter(c=>c.cat===cat).length}</button>`:""}<button class="kb-filter ${KB_STATE.filter==="all"?"on":""}" data-filter="all">全部 ${all.length}</button><button class="kb-filter ${KB_STATE.filter==="unknown"?"on":""}" data-filter="unknown">未掌握</button><button class="kb-filter ${KB_STATE.filter==="known"?"on":""}" data-filter="known">已掌握</button><button class="kb-filter ${KB_STATE.filter==="starred"?"on":""}" data-filter="starred">待复习</button></div>
     <div class="kb-cards">${list.length?list.map(kbCardHTML).join(""):'<div class="kb-empty">当前筛选下没有知识点。</div>'}</div>`;
   kbWireCards(main);
   main.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{KB_STATE.filter=b.dataset.filter;kbSave();kbRender()});
@@ -2450,23 +2622,44 @@ function kbRenderInterview(main,p){
 function kbRenderAllReview(main){
   const list=DECK.filter(c=>KB_STATE.starred[c.id]);
   main.innerHTML=`<div class="kb-eyebrow">REVIEW QUEUE</div><h1 class="kb-title">待复习知识点</h1><p class="kb-lead">这里集中放仍然讲不顺、容易忘或需要补证据的细节。掌握后可以直接移出。</p>
-    <div class="kb-filterbar"><button class="kb-secondary" data-back>← 返回全部项目</button></div>
+    <div class="kb-filterbar"><a class="kb-secondary" href="#cards" style="text-decoration:none">← 返回知识卡片中心</a></div>
     <div class="kb-cards">${list.length?list.map(kbCardHTML).join(""):'<div class="kb-empty">还没有待复习知识点。展开任意知识卡，点击“加入待复习”即可。</div>'}</div>`;
-  main.querySelector("[data-back]").onclick=()=>kbRenderHome(main);kbWireCards(main);
+  kbWireCards(main);
 }
 function kbOpenSearch(initial=""){
+  const returnFocus=document.activeElement;
   document.querySelector(".kb-modal")?.remove();
   const modal=document.createElement("div");modal.className="kb-modal";
-  modal.innerHTML=`<div class="kb-modal-box"><div class="kb-modal-top"><input id="kbModalSearch" placeholder="例如：CAN、watchdog、为什么选 ESP-NOW、烧板…" value="${kbEsc(initial)}"><button class="kb-iconbtn" data-close>关闭</button></div><div class="kb-results"></div></div>`;
+  modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");modal.setAttribute("aria-label","搜索全部知识卡片");
+  modal.innerHTML=`<div class="kb-modal-box"><div class="kb-modal-top"><input id="kbModalSearch" aria-label="输入知识卡片搜索关键词" placeholder="例如：CAN、watchdog、为什么选 ESP-NOW、烧板…" value="${kbEsc(initial)}"><button class="kb-iconbtn" data-close>关闭</button></div><div class="kb-results" aria-live="polite"></div></div>`;
   document.body.appendChild(modal);
   const input=modal.querySelector("input"),results=modal.querySelector(".kb-results");
   function run(){
     const q=input.value.trim().toLowerCase();
     const hits=(q?DECK.filter(c=>[c.term,c.detail,c.detail_zh,c.solved,c.solved_zh,c.recall,c.recall_zh,KB_PROJECTS[c.proj].name].join(" ").toLowerCase().includes(q)):DECK.filter(c=>KB_STATE.starred[c.id])).slice(0,30);
     results.innerHTML=hits.length?hits.map(c=>`<button class="kb-result" data-result="${c.id}"><strong>${kbMd(kbClean(c.solved_zh||c.solved))}</strong><span>${KB_PROJECTS[c.proj].name} · ${kbCategoryName(c.cat)} · ${kbMd(c.term)}</span></button>`).join(""):`<div class="kb-empty">${q?"没有找到匹配内容。试试协议名、部件型号或故障现象。":"输入关键词开始全库搜索。"}</div>`;
-    results.querySelectorAll("[data-result]").forEach(b=>b.onclick=()=>{const c=DECK.find(x=>x.id===b.dataset.result);KB_STATE.project=c.proj;KB_STATE.view=c.cat;KB_STATE.filter="all";kbSave();modal.remove();kbRender();setTimeout(()=>{const card=document.querySelector('[data-id="'+c.id+'"]');if(card){card.classList.add("open");card.scrollIntoView({behavior:"smooth",block:"center"})}},50)});
+    results.querySelectorAll("[data-result]").forEach(b=>{
+      b.onclick=()=>{
+        const c=DECK.find(x=>x.id===b.dataset.result);
+        modal.remove();
+        kbNavigate(`#cards/${c.proj}/${c.cat}`);
+        setTimeout(()=>{
+          let card=document.querySelector('[data-id="'+c.id+'"]');
+          if(!card&&KB_STATE.filter==="core"){
+            KB_STATE.filter="all";kbRender();
+            card=document.querySelector('[data-id="'+c.id+'"]')
+          }
+          if(card){
+            card.classList.add("open");
+            card.querySelector(".kb-card-head").setAttribute("aria-expanded","true");
+            card.scrollIntoView({behavior:"smooth",block:"center"})
+          }
+        },80)
+      }
+    });
   }
-  input.oninput=run;modal.querySelector("[data-close]").onclick=()=>modal.remove();modal.onclick=e=>{if(e.target===modal)modal.remove()};input.focus();run();
+  const close=()=>{modal.remove();const target=returnFocus?.id==="kbSearch"?document.getElementById("kbHome"):returnFocus;if(target&&target.focus)target.focus()};
+  input.oninput=run;modal.querySelector("[data-close]").onclick=close;modal.onclick=e=>{if(e.target===modal)close()};modal.onkeydown=e=>{if(e.key==="Escape"){e.stopPropagation();close()}};input.focus();run();
 }
 
 kbLoad();
