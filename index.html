@@ -2407,6 +2407,354 @@ const KB_CAT_INTRO={
   math:["数学、实验与验证","公式要能落到量纲、假设、测量方法和验收指标；同时知道公式何时失效。"],
   gotcha:["故障复盘与排查","用“现象 → 假设 → 隔离实验 → 根因 → 修复 → 防复发”讲清楚真实工程能力。"]
 };
+/* One concrete technical supplement for every card in the original 178-card deck.
+   Arrays follow the original card order inside each project/category. */
+const KB_LEGACY_TECH={
+  mantabot:{
+    algo:[
+      "转换表还要定义 entry/exit action；只有 supervisory loop 能改变巡航状态，执行器线程只消费最终命令。",
+      "判定顺序是 `pressed = current && !previous`，完成本周期事件分发后再更新 previous；否则会漏掉边沿。",
+      "进入阈值必须大于退出阈值：巡航接管为 0.12/0.08，接近告警为 0.20/0.25 m，热急停/恢复为 80/75°C。",
+      "插值系数用 monotonic elapsed/duration 并 clamp 到 [0,1]；起点必须取切换瞬间的实际输出，而不是旧目标值。",
+      "每周期执行 `phase=(phase+2πf·dt) mod 2π`；dt 用 monotonic clock 实测，不能假设线程永远正好 5 ms。",
+      "统一式为 `q=neutral+sign·(A sinφ+bias)`；A=0 时 bias 就是静态保持，因此不需要第二套输出路径。",
+      "snapshot 应是不可变命令副本，不能保存指向 live state 的引用；恢复前仍要经过限幅和 slew-rate。",
+      "固定容量 ring buffer 的 append/覆盖为 O(1)；日志条目保留 monotonic timestamp、level、source 和 message。",
+      "先生成 common/differential 分量，再做左右饱和；若先各自 clamp，会扭曲期望的转向比例。",
+      "规划中的级联环应让慢速深度外环输出垂向速度目标，快速内环抑制扰动；目前没有闭环实验，不能报告性能。",
+      "优先级在最终 actuator gate 统一执行：E-Stop > thermal fault > armed > source lease > cruise/manual > mechanical limit。"
+    ],
+    pylang:[
+      "200 Hz 执行器、50 Hz supervisor、100 Hz IMU、10 Hz depth 和相机 worker 分离；共享区只传带 timestamp 的 snapshot。",
+      "command dataclass 应显式写单位、坐标约定、source、sequence 和 timestamp；跨线程传递时优先不可变实例。",
+      "后台线程不能直接改 QML 控件；Qt queued signal 把更新投递到 GUI event loop，避免线程亲和性错误。",
+      "每个 Q_PROPERTY 都要有稳定 getter 和 notify signal；高频原始数据先在后端降采样，不能让 200 Hz 更新淹没 UI。",
+      "WebSocket coroutine 只序列化状态快照；慢客户端需要发送超时、断线清理和 latest-state 策略，不能无限排队。",
+      "transport interface 固定 open/send/receive/close 与错误语义；mock transport 用于无硬件回放，不能把 CAN 细节泄漏到控制层。",
+      "callback 注册要规定调用线程、参数所有权和异常处理；回调失败不能终止 CAN 接收线程。",
+      "频率、角度、温度和 timeout 从同一配置读取并在启动时校验单位与范围，避免 GUI、控制器和驱动各有一套常量。"
+    ],
+    hw:[
+      "1 Mbps CAN 需要线性拓扑和总线两端 120 Ω 终端；断电测 CAN-H/CAN-L 约 60 Ω，并记录 error frame 与 bus-off。",
+      "MIT mode 进入确认帧必须按厂商协议检查 arbitration ID、payload 和状态位；收到任意 CAN 帧不等于模式切换成功。",
+      "logical motor ID 与 Linux socketcan interface 分开配置；接收端按 arbitration ID 路由，禁止依赖报文到达顺序。",
+      "Pi 5 PWM 由 RP1 暴露，channel/pin mapping 要用实际波形验证；sysfs 写入成功不代表引脚已正确复用。",
+      "舵机目标以 50 Hz 更新并限制 40°/s；限速减小电流尖峰，但电源隔离、保险丝和堵转保护仍必须独立设计。",
+      "控制 UDP 为 50 Hz，包内需 sequence、sender monotonic time 和 source；500 ms 无新包就撤销控制权。",
+      "MS5837 约 10 Hz 读取要遵守 conversion time；I²C 上拉、电平、CRC、异常压力和 bus recovery 都要处理。",
+      "MJPEG 使用 latest-frame 单槽或有界队列；编码慢时丢旧帧而不是积累延迟，并监控 CPU 温度和实际 fps。",
+      "NetworkManager profile 应绑定 MAC/稳定接口身份；现场 AP 与互联网链路的 routing metric、掉线恢复和控制面隔离要明确。"
+    ],
+    math:[
+      "标定链是单目标定→双目外参→rectify→逐对重投影误差→剔除异常对→重新求解；运行分辨率和 sensor mode 必须一致。",
+      "stereo RMS 0.246 px 是角点拟合残差，不是米制误差；深度误差还由 `Z=fB/d` 中的视差、基线和距离决定。",
+      "校正后对应点纵坐标差应接近 0；项目的 epipolar error 为 0.146 px，异常增大通常指向标定或同步问题。",
+      "Q matrix 把 fixed-point disparity 还原后投影为 XYZ；先剔除 d≤0 和超范围值，60.566 mm 基线限制远距离精度。",
+      "ROI 至少 64 个有效像素，再取 median 抑制孤立误匹配；统计量仍需携带 valid-count 和置信状态。",
+      "相位误差先 wrap 到 (−π,π]，再限制每周期修正量；直接 reset phase 会造成位置不连续。",
+      "common/differential mixing 应写成明确矩阵并检查符号；饱和后要验证左右命令仍符合机械方向约定。",
+      "deadzone 后通常重新缩放剩余区间，再依次做语义限幅、mixer 限幅和 driver 机械限位；顺序会改变手感。"
+    ],
+    gotcha:[
+      "IMX219 更换 resolution/sensor mode 会改变 crop 与有效内参；标定文件必须绑定模式，不能只按相机序列号选择。",
+      "根因是摇杆落回 deadzone 后 live command 突然切回 snapshot；修复需显式 OVERRIDE 状态和 0.3 s 回归 ramp。",
+      "config.txt 写错 section 时 overlay 可能无明显错误；检查 debugfs/pinctrl 和示波器输出，而不是只看文件内容。",
+      "删除 unit 文件不等于服务消失；还要 daemon-reload、disable、检查 wants symlink、ExecStart 和残留进程。",
+      "MIT 位置零点不是装配中位；入模式后先捕获反馈为 neutral，第一条命令保持当前位置，再允许轨迹渐入。",
+      "左右独立累加相位且经历不同频率后必然漂移；统一 dt 并在差动结束时做受限相位收敛。",
+      "电机电流和 CAN 线束会污染 magnetometer；分别做电机断电/上电静态试验，yaw 不能只依赖磁航向。",
+      "Pi 5 缺少预期硬件 H.264 路径；选择 MJPEG/软件编码时要按双 720p 负载测 CPU、温度、延迟和掉帧。",
+      "wlan0/wlan1 是枚举结果，不是设备身份；profile 绑定 MAC，并测试拔插、重启和接口缺失时的降级。",
+      "trigger 已在客户端归一化到 [0,1]，服务端再次从 [−1,1] 转换会压缩范围；schema 必须标 raw/normalized。",
+      "Picamera2 `RGB888` 到 PIL 已是 RGB；只有进入 OpenCV BGR 运算时才交换通道，边界处用色块单测。",
+      "GUI 和 gamepad 的 E-Stop 必须调用同一 safety action；该 action 同时清 armed、巡航、积分器和最终输出。",
+      "开放校园网的认证租期不可作为控制依赖；本地 AP 保留控制通道，互联网只承担非关键管理流量。",
+      "ARM64 扩展 SIGSEGV 用最小 CLI 替代路径隔离；生产运行不依赖 IDE extension，并锁定可工作的工具版本。"
+    ]
+  },
+  vcabot:{
+    algo:[
+      "角度跨 ±40° 进入锁存、回到 0° 释放；阈值和释放面分离可避免噪声在边界反复换向。",
+      "Driver 用 `millis()` 无符号差判断 500 ms 超时；所有阻塞等待都必须短于 watchdog 或主动续租。",
+      "STOP 使用最高优先级且可清空过期运动命令；同优先级再按 sequence，而不是只按到达时间执行。",
+      "bang-bang 是旧开环机构在 PWM≈170 后跳向限位的实测约束；新 500 Hz 位置闭环不能把旧限制假装成线性。",
+      "keep-alive 以绝对 deadline 每约 250 ms 续发，实际运动相位不能由无线包到达时刻定义。",
+      "polarity inversion 只放在最低硬件适配层；控制器始终使用统一的正角度/正输出语义。",
+      "slew-rate 限制命令变化，共激活会增加热量；两者必须与电流、温升和机械预紧一起验证。",
+      "12-bit 环形差值用 `((raw-ref+2048) mod 4096)-2048` 映射到 [−2048,2047]，再换算角度。"
+    ],
+    pylang:[
+      "packed struct 要显式固定整数宽度、字节序、版本和 CRC/length；双方用 static_assert 检查 size，不能依赖默认 padding。",
+      "500 Hz 控制在 MCU；telemetry 约 50 Hz 发出、浏览器约 10 Hz 渲染，WebSocket 慢消费不能反压控制环。",
+      "串口命令设置 timeout，并按 message ID/正则过滤对应响应；不能把异步 telemetry 误当 ACK。",
+      "CONFIG 区集中 pin、频率、限位和 timeout，并在编译/启动时检查冲突；运行关键值还应随日志保存。",
+      "标定 JSON 除 slope/intercept 外还要保存设备 ID、raw points、时间、单位、方向和 schema version。",
+      "轨迹用共同 phase 生成两路反相命令；改变频率时累加 phase，不能用新的 f 乘绝对时间。"
+    ],
+    hw:[
+      "Commander 处理主机协议，Driver 本地连接 Hall 和 H 桥；ESP-NOW 只传高层命令，失联由 Driver 自主 coast。",
+      "20 kHz LEDC 避开可闻频段；Arduino Core v3 的 channel API 与 v2 不同，启动前先写安全 duty 再 attach。",
+      "DRV8871 IN1/IN2 组合决定正转、反转、brake/coast；fast/slow decay 会改变电流纹波和低速响应。",
+      "AS5600L 是 12-bit、约 400 kHz I²C；磁铁气隙、同轴度、wrap 和 magnet status 都要进入有效性判断。",
+      "MP2338 选型要从输入范围、输出电流、开关频率、L/C ripple、补偿和热设计逐项核算，不能只抄典型电路。",
+      "IPROPI 电阻按最大电流到 ADC 3.3 V 满量程反算，并留故障裕量；还需用已知电流做斜率/零偏标定。",
+      "保护链至少覆盖反接、反灌、反电动势、过流、保险丝和 TVS；每条能量路径都要画回路。",
+      "每个 H 桥旁放高频陶瓷与 bulk 电容，功率回流避开 Hall/I²C 地；用示波器测负载阶跃而不是凭容量判断。"
+    ],
+    math:[
+      "`St=fA/U` 中 A 的单边或峰峰定义必须固定；改变 f 时还要用实测 A(f)，否则目标 St 会偏离。",
+      "A(f) 通过扫频实测后插值，再迭代求满足目标 St 的频率/命令；插值范围外禁止静默外推。",
+      "先用触发或参考信号求每周期相位，再重采样到统一 0–2π 网格；平均前丢弃启动周期并报告周期间方差。",
+      "事后视频恢复相位依赖可见 marker、稳定 fps 和时间基；只能补救，精度通常低于共同硬件触发。",
+      "lock-in 提取目标频率的复幅值并观察相对相位是否稳定；只看 FFT 峰值不能区分同步与偶然同频。",
+      "quiet-hold 使用 2° 进入、3° 退出；静态 raw 噪声 2.18 counts 对应约 0.20°，阈值要高于噪声带。",
+      "neutral、±45° 各平均 20 次；先处理 0/4095 wrap 再拟合，R²=0.9999326 不替代全范围验证。"
+    ],
+    gotcha:[
+      "GPIO3/D3 与 JTAG/启动功能冲突时先查芯片 pin matrix 和 boot log；换 pin 后做上电安全电平测试。",
+      "boot 时 GPIO 浮空/默认功能曾让执行器上电；硬件下拉、driver enable 和固件先设安全态要三层同时存在。",
+      "烧板由启动误驱动、反电动势和 USB 回灌共同形成；逐条切断能量路径后再分别验证，不能归因于单一过流。",
+      "B 通道物理反接应在 HAL 用 `CHANNEL_INVERT` 修正；高层轨迹和日志仍保持统一方向定义。",
+      "开环 PWM→角度映射在摩擦、负载和迟滞下不是单值函数；查表不能替代反馈控制。",
+      "10 kΩ IPROPI 会在故障电流下让 ADC 远超 3.3 V；按 datasheet 比例和最大电流反算阻值与功耗。",
+      "AS5600L 与 AS5600 的地址/寄存器不可混用；启动时读取 device-specific status 并把器件型号写进配置。",
+      "长 delay 会让 loop 无法刷新 500 ms watchdog；轨迹必须用非阻塞 deadline 状态机实现。",
+      "VBUS 是 USB 5 V，不是电池母线；USB 调试时可能形成回灌路径，电源 OR-ing 和测点必须画清。",
+      "无 trigger-in 的设备不能靠抖动的无线消息实现精确 PIV 同步；使用共同 TTL 并测量真实 exposure delay。",
+      "复制 KiCad 文件会破坏 project UUID、sheet/link 关系；用官方另存/归档流程，并跑 ERC、路径和输出文件检查。"
+    ]
+  },
+  flow:{
+    algo:[
+      "第一阶段只用训练 split 学 flow manifold；第二阶段复用 decoder 时仍需避免让 test case 参与 normalization 或 checkpoint 选择。",
+      "每个输出 grid query 对 sensor tokens 做 attention；只有 5 个 token 时输出受低秩瓶颈限制，不能靠加深 MLP 消除。",
+      "sensor self-attention 在进入 decoder 前建模五个位置的相互约束；必须加位置编码，否则网络无法区分传感器身份。",
+      "额外 learnable spatial tokens 扩展 K/V basis，打破 rank≤5；token 数量要用消融验证，不能无限增加。",
+      "压力标量与 PIV patch 分别编码后再融合；先对齐尺度和时间窗，避免高维图像特征淹没压力通道。",
+      "五个 patch 共享 encoder 参数以降低样本需求；传感器位置通过显式 positional embedding 注入，而不是靠不同权重记位置。",
+      "多个独立 decoder head 的方差近似 epistemic uncertainty；训练需改变初始化/采样，完全相同 head 不产生有效分歧。",
+      "split 单位是完整 case/geometry/run，不是相邻 frame；normalization、AE 预训练和超参选择都只能看 train。"
+    ],
+    pylang:[
+      "T 帧按 channel 堆叠后输入维度是 T×每帧通道数；dataset、model config 和 checkpoint 必须共同记录 T。",
+      "architecture flag 改变的不只是类名，还包括输入 shape、冻结策略和 checkpoint compatibility；启动时打印完整 resolved config。",
+      "对 B×N×patch×T×C×H×W 的变换要在每步标维度；`einsum` 下标重复错误可能数值可运行但语义已错。",
+      "perceptual module 应 `eval()`、关闭梯度并固定 normalization；否则 BatchNorm/Dropout 会让损失目标随 batch 改变。",
+      "W&B run 名只用于阅读，真正复现依赖 dataset version、split IDs、seed、commit、完整 config 和 artifact hash。",
+      "MATLAB column-major 与 NumPy 轴顺序不同；加载后按变量 schema 显式 transpose，并用已知坐标点验证 x/y 不互换。"
+    ],
+    hw:[
+      "OV9281 全局快门可避免高速粒子 rolling-shutter 剪切；1280×800 仍要权衡曝光、粒子位移、镜头和照明。",
+      "五路压力与 PIV 要共享硬件触发/时间基；记录每路采样时刻、conversion delay 和 trigger-to-exposure 延迟。",
+      "不同相机 FOV 映射不能只按像素比例缩放；应通过标定板/物理坐标求 homography 或几何映射并验证边界误差。"
+    ],
+    math:[
+      "二维涡量 `ω=∂v/∂x−∂u/∂y` 对噪声敏感；导数必须除以物理网格间距，并说明边界差分与平滑策略。",
+      "Fourier feature 对每个归一化坐标生成多频 sin/cos；最高频率受网格分辨率限制，过高会引入混叠。",
+      "Sobel loss 比像素 MSE 更强调剪切层边缘；卷积核需按 Δx、Δy 缩放，否则 x/y 梯度权重失真。",
+      "vorticity-weighted MSE 需要限制权重动态范围；否则少数极端像素主导训练并牺牲自由来流稳定性。",
+      "不可压缩惩罚使用 `∂u/∂x+∂v/∂y`；它是软约束，边界条件和二维截面假设不满足时不能期望为零。",
+      "只平均最后两个稳态周期；相位 bin 需有足够样本，并分别保留周期方差，不能只保存均值场。",
+      "Reynolds 分解的 mean 必须由训练/同一物理定义得到；部署不可使用包含未来测试帧的时间均值。",
+      "u/U、x/c 和 Cp 的参考 U、c、ρ 必须随 case 保存；U 接近零或参考不一致会破坏跨工况比较。",
+      "SSIM 衡量局部结构而非量纲误差；窗口大小要与涡尺度匹配，并与速度 RMSE、涡量指标同时报告。",
+      "POD 可检查预测是否覆盖主要能量模态，但截断基会平滑小尺度结构，因此只作诊断而不作为唯一 decoder。"
+    ],
+    gotcha:[
+      "AE 若在全数据预训练，test flow structure 已泄漏到 decoder；split 必须在任何拟合、normalization 和模型选择之前完成。",
+      "5 个 K/V token 使 cross-attention 输出落在有限 basis 张成空间；新增 spatial tokens 或分层 decoder 才改变结构容量。",
+      "第一阶段 encoder 接受全场，第二阶段 encoder 接受稀疏 patch，shape/语义不同；通常只转移 decoder，不能盲载 encoder。",
+      "T=1 仍可能把历史、模态和派生量拼成 6 channel；用 dataset sample shape 断言，不凭配置名推断输入通道。",
+      "约 40 个 phase-averaged 样本配 batch 32，每 epoch 只有极少更新；指标波动和过拟合会被大 batch 掩盖。",
+      "phase 若部署时不可测，就不能作为输入；若可由 actuator/trigger 获得，必须把传感链和误差写清楚。",
+      "第一周期含启动瞬态，和稳态周期分布不同；明确丢弃规则，或把 transient 作为独立任务而非混入训练。",
+      "固定 St 可能使不同 f/A/U 尾迹近似自相似；split 要阻止模型仅靠 St 或 geometry shortcut 记忆答案。",
+      "自由来流像素数量远多于涡区，整体 MSE 会虚高表现；按 ROI、涡量阈值和结构指标分别报告。"
+    ]
+  },
+  coach:{
+    algo:[
+      "contact sheet 的帧号必须映射回原视频 timestamp；网格行列、thumbnail 尺寸和压缩质量共同决定可辨细节。",
+      "帧差先灰度/缩放再求绝对差并聚合为 motion score；相机抖动会抬高全局分数，需要 ROI 或稳像。",
+      "onset strength 来自频谱能量变化；阈值和 hop length 决定时间分辨率，邻场击球仍需视觉信号排除。",
+      "音频峰与运动峰在 ±1 s 内共同出现才保留；融合前统一到秒制时间轴，不能直接比较不同采样率的 index。",
+      "确定性 motion peak 先把搜索缩到 ±5/±15 帧，LLM 只在局部判断接近—接触—离开，减少视觉先验偏差。",
+      "Flash 负责可观察事实，Pro 负责跨证据比较；两级输出都要有 schema、置信/证据字段和失败状态。",
+      "八阶段必须严格递增且相邻至少 2 frame；违反约束时应返回可诊断错误或重新选择，不可静默排序伪造。",
+      "采样比例 25% 前段、60% 击球区、15% 后段；击球附近保持连续帧，避免只见姿势而看不到运动方向。",
+      "知识检索按动作阶段、错误候选和可观察证据过滤；模型必须引用视频证据，不能直接复述教练模板。",
+      "知识抽取先切片、再结构化原子规则、最后人工/程序校验引用；每条规则保留来源和适用动作阶段。",
+      "分类层级先判断动作/阶段，再判错误类型与严重度；父类不确定时不能给出过细子类结论。",
+      "后处理检查 frame order、时间范围、字段枚举和跨阶段冲突；sanity check 只能拒绝坏输出，不能证明语义正确。"
+    ],
+    pylang:[
+      "Flask blueprint 按 auth/video/analysis 分模块；业务逻辑放 service，数据库和外部模型通过明确接口注入。",
+      "API client singleton 统一 model、timeout、retry 和 rate limit；客户端本身必须线程安全，密钥只从环境读取。",
+      "backend switch 只改变实现绑定，不改变 service contract；启动时验证所需环境变量并记录非敏感配置。",
+      "SDK 迁移先封装 adapter，再对请求、响应、异常和 streaming 做契约测试；全库搜索确认旧 import 为零。",
+      "Pydantic migration 要处理字段 alias、Optional/required、validator 和序列化差异；schema version 与数据库记录绑定。",
+      "去 Markdown fence 只是兼容层；解析后仍要 schema validation，失败有限重试并保存原始响应供诊断。",
+      "frame-exact extraction 以原生 fps 和目标 frame index seek/read；VFR 视频需以 timestamp 校验，不能只信 CAP_PROP_POS_FRAMES。",
+      "`subprocess.run` 使用参数数组、`check=True`、timeout 和 stderr capture；禁止把用户文件名拼进 shell 字符串。",
+      "Whisper 本地推理要统一 16 kHz mono、模型版本和语言参数；长音频分块需保留绝对 timestamp。",
+      "UUID 只提供难猜标识，不替代授权；所有文件路径和数据库查询仍必须校验 owner 与 job scope。",
+      ".env 路径相对项目文件解析，不依赖当前工作目录；生产 secret 不进仓库，缺失时启动失败。",
+      "wizard 每步只提交已验证状态；后台任务通过 signal 更新 UI，取消操作要能终止 subprocess/worker 并清理临时文件。",
+      "服务器安装 headless OpenCV 避免 GUI/X11 依赖冲突；与 opencv-python 不能同时存在，版本写入锁文件。",
+      "Gunicorn 多 worker 不共享进程内任务状态；长任务、上传进度和结果必须放持久存储/队列。"
+    ],
+    hw:[
+      "Nginx 终止 TLS、限制 body、设置 proxy timeout 并传递真实 IP；大文件上传与长任务不能只提高 timeout 解决。",
+      "service worker 缓存静态 shell，不缓存含用户隐私的分析响应；版本更新时清旧 cache 并定义离线边界。",
+      "PostgreSQL 至少分 user/video/job/result，外键与 owner scope 明确；对状态、owner、created_at 建组合索引。",
+      "ffmpeg 切片优先用准确 timestamp 与显式 codec 策略；stream copy 快但关键帧边界可能不精确，需验证输出时长。",
+      "SRT 序号递增、时间格式为 `HH:MM:SS,mmm` 且区间不重叠；字幕 timestamp 必须沿用原视频时间基。",
+      "部署流程应先在新版本跑迁移/health check，再原子切换服务；回滚同时考虑代码与数据库 schema。"
+    ],
+    math:[
+      "帧差分数常用像素绝对差的均值/分位数；先统一尺寸和颜色空间，并用静止片段估计噪声基线。",
+      "Gaussian σ 决定平滑时间尺度；换 fps 后 kernel 必须按秒重算，否则同一动作得到不同峰位置。",
+      "spectral onset strength 的 hop_length/sample_rate 给出时间分辨率；峰值时间要加回音频片段的全局 offset。",
+      "band-pass 截止频率要由目标击球声频谱与环境噪声实测确定；滤波器阶数过高会产生 ringing 和相位影响。",
+      "minimum peak gap 来自动作物理上限；以秒定义再换算帧/音频 hop，避免不同采样率下约束失效。",
+      "20 帧×600 px 与 40 帧×300 px 的 trade-off 要用识别准确率验证；模型内部缩放会进一步损失小图细节。",
+      "窗口 `[t_hit−1.5 s,t_hit+1.0 s]` 偏向保留更长准备段；靠近视频边界时 clamp 并记录实际窗口。"
+    ],
+    gotcha:[
+      "模型偏早选择抬臂帧时，用独立 motion peak 限定局部窗口；不要在 prompt 中反复要求模型自我纠正。",
+      "同一模型验证自己的旧答案会产生 confirmation bias；复核信号必须来自计算峰值、第二模型或人工标注。",
+      "从真实入口 `process_clip()` 追调用图并加 coverage；函数存在、测试单独通过都不代表生产路径实际执行。",
+      "从 60 fps 重采样到 10 fps 后 frame index 不再对应播放器；跨组件传 timestamp，并保留 native frame number。",
+      "bare JSON 和 fenced JSON 都先规范化，再做 Pydantic 校验；解析失败保存 model/version/request ID，不能直接写半成品。",
+      "相邻球场音频是真实 transient，单音频阈值无法区分来源；要求目标人物 ROI 的同步运动证据。",
+      "`proxy_read_timeout 300s` 只能缓解同步请求；2–5 分钟分析更合理的是 job API、持久进度和异步 worker。",
+      "Nginx 默认 body limit 可能在应用前返回 413；代理、应用和对象存储三层限制必须一致，并支持分块/断点策略。",
+      "model ID 集中配置并在启动时向供应商验证；升级需记录模型版本，避免静默 fallback 改变结果。",
+      "前后端共享 versioned schema/OpenAPI client；契约测试同时覆盖字段名、nullability、enum 和错误响应。",
+      "每个 run 使用独立 job 目录和 manifest；重跑前明确 replace/resume，不能向旧 labels.json 和 clips 盲目追加。",
+      "依赖仍能 import 不代表受支持；监控弃用公告、锁版本并用 adapter 迁移，CI 搜索确保旧 SDK 引用清零。",
+      "contact sheet 数量、thumbnail 分辨率和视觉 token 成本联合调参；用标注集比较接触帧误差而不是肉眼挑参数。"
+    ]
+  }
+};
+
+const KB_FOCUS_TECH={
+  mantabot:{
+    algo:[
+      "调度验收还要记录每个 worker 的 WCET、P99 data age 和 missed deadline；只有频率标签没有实时性证据。",
+      "sequence 应处理重复、乱序与整数回绕；接收时间只用于本机 freshness，不能用发送端 wall clock 直接判超时。",
+      "相位修正速度要小于执行器可接受的瞬时频率偏差；同时监控 wrapped phase error 是否单调收敛。",
+      "建立 sensor/actuator × failure-mode 矩阵，为 stale、invalid、disconnect、over-range 分别定义保持、降级或停机。"
+    ],
+    pylang:[
+      "snapshot 要避免内部 list/dict 被写线程继续修改；可用 frozen dataclass、tuple 或复制受控字段，并给快照加版本号。",
+      "队列 overflow 要计数并上报 source、capacity、drop-old/drop-new；没有指标的丢弃策略会把过载伪装成随机丢帧。",
+      "若当前时间已跨过多个 deadline，应跳到下一个未来周期并累计 missed count，不能连续补跑旧控制周期。",
+      "线程 join 设置 timeout；仍未退出的 worker 记录名称和栈边界，但执行器 disable 必须在等待线程前完成。"
+    ],
+    hw:[
+      "worst-case bus load 要包含命令、反馈、仲裁位、bit stuffing、错误重发和其他节点；平均帧率不能替代峰值分析。",
+      "neutral 是本次上电的运行基准，不应跨装配盲目复用；若需持久绝对零位，必须增加机械标定与防错流程。",
+      "压力转深度使用 `z=(p−p0)/(ρg)`；p0 的采集状态、海水密度与温度补偿应随记录保存。",
+      "用电子负载/堵转模拟测 5 V rail 最低电压、Pi undervoltage flag 和恢复行为；软件限速不能证明供电安全。"
+    ],
+    math:[
+      "由 `∂Z/∂d=−fB/d²` 可直接画出距离—深度不确定度曲线，并据此定义有效工作区，而不是给单一精度数字。",
+      "jitter 报告应包含周期直方图、P50/P95/P99、最大连续超期和测试负载；平均值只说明长期速率。",
+      "水面零偏要和绝对压力分开保存；若机器人启动时已经下潜，自动归零会把真实深度抹掉。",
+      "除了 median，还可报告 MAD/分位数和 connected valid area；64 像素阈值需要用误报/漏报数据验证。"
+    ],
+    gotcha:[
+      "软件 timestamp 应区分 request、exposure start、frame complete 和 host receive；只有共同触发才能约束左右曝光偏差。",
+      "端到端视频 benchmark 同时记录 capture-to-display latency、sustained fps、drop ratio、CPU 和 thermal throttle。",
+      "实现深度保持前先离线验证 pressure→depth、depth derivative、噪声谱和 actuator authority，再做带 tether 的低增益闭环。",
+      "可靠 SOC 需要电流积分、容量/温度修正和静置电压校准；低电量策略还要预留返航/上浮能量。"
+    ]
+  },
+  vcabot:{
+    algo:[
+      "500 Hz 的 2 ms 周期必须覆盖 I²C read、PID 和 PWM update；积分 clamp 与输出饱和状态一起记录，便于判断 windup。",
+      "measurement derivative 的单位是 degree/s；低通系数要由实际 dt 与 50 Hz cutoff 计算，不能把固定 alpha 跨采样率复用。"
+    ],
+    pylang:[
+      "ACK 还要携带 accepted/rejected reason 和当前 mode；重复 message ID 的幂等处理可避免主机重试导致命令执行两次。",
+      "降采样 telemetry 除最后值外还应保留窗口 min/max 或 saturation/fault 计数，否则短暂尖峰会被 10 Hz UI 完全漏掉。"
+    ],
+    hw:[
+      "方向限位同时检查 angle validity；编码器无效时不能根据未知角度放行恢复方向，而应先 coast 并进入 fault。",
+      "re-arm 顺序应是读取稳定→核对当前位置/磁状态→重置 PID 状态→从当前角度建立目标→显式 enable。"
+    ],
+    math:[
+      "三点线性拟合应再用未参与拟合的中间角验证，并分别做正向/反向扫描以量化回差。",
+      "静态标准差可随时间窗和滤波改变；同时报告未滤波 raw、采样率、温漂和机械静止条件。"
+    ],
+    gotcha:[
+      "composite cost 应公开 tracking error、overshoot、settling、effort 与 saturation 的权重；候选搜索始终受角度/电流安全约束。",
+      "bumpless transfer 可把新模式目标初始化为当前角度，并反算/清零积分项，使第一周期输出接近切换前输出。"
+    ]
+  },
+  cld:{
+    algo:[
+      "黏弹响应可用复模量或广义 Maxwell 模型描述；只有在小振幅近线性范围内，单频 K*(ω) 才能直接迁移。",
+      "被动性可通过每周期 `∮T dθ` 的耗散能非负检查；若拟合的 K″<0，优先排查相位符号和同步。",
+      "机械低通应比较尾缘位移 PSD 中基频与高次谐波能量比，并同时确认主频振幅没有被过度衰减。",
+      "覆盖率之外还应把位置、厚度和附加质量纳入 DOE；比较时要控制总质量，否则性能变化可能来自惯性差异。",
+      "SAC 对照至少固定 environment steps、网络规模、seed 数和 evaluation protocol；样本效率用达到同一回报阈值的步数比较。"
+    ],
+    pylang:[
+      "正余弦回归矩阵还可加入常数项和低阶 drift；检查 condition number，并从协方差传播 K′/K″ 不确定度。",
+      "metadata 用枚举和单位化字段，禁止从文件名猜 coverage/St；excluded trial 保留原因而不是从数据集中物理删除。",
+      "相位平均采用 circular mean；跨 2π 的样本不能用普通算术平均，否则 359° 与 1° 会错误得到 180°。",
+      "K/B 插值最好约束非负耗散并在频段边界 clamp；每次参数变化要限制速率，避免仿真刚度突跳注入能量。",
+      "虚拟质量积分器要报告步长敏感性；用实测 force 的零偏/滤波版本做对照，确认 3.8 s 结果不由积分漂移主导。"
+    ],
+    hw:[
+      "每个 specimen 记录三层厚度、覆盖实际面积、质量和粘接批次；几何公差会同时改变刚度与水动力。",
+      "ATI 坐标先通过静态已知载荷验证；空载执行相同轨迹得到惯性基线，再从装鳍测量中扣除。",
+      "PIV 的粒子位移目标通常以 interrogation window 的像素比例设定；曝光间隔太短噪声高，太长会丢配对。",
+      "台架模态应通过 dry sweep 识别，并与 0.5–2 Hz 试验频段比较；支架共振重合时结果不可直接归因于鳍。",
+      "耐久测试应在预定循环数后重复完整 K′/K″ 扫频，而不只检查外观；失效指标包括脱层、漂移和推力衰减。"
+    ],
+    math:[
+      "复幅值相除要统一 Fourier 符号约定；相位延迟符号一旦反转，K″ 和能量解释都会反向。",
+      "A=0.08 m 是峰峰 heave；若论文或代码用单边幅值 0.04 m，必须在变量名中区分 `A_pp` 与 `a`。",
+      "平均推力除以 3 kg 给出平均加速度约 0.17 m/s²，而报告的 0.191 m/s² 是峰值；两者不能混用。",
+      "推进效率需明确 useful power（如 T̄U）与输入功率的测法；只有推力与速度不能推出材料能耗占比。",
+      "统计模型应把 coverage/frequency 作为 fixed effect、specimen/trial 作为层级随机效应，避免把重复周期当独立样本。"
+    ],
+    gotcha:[
+      "共振判断至少需要幅频与相频响应；仅观察大振幅不能区分共振、执行器增益变化或流体激励增强。",
+      "最优损耗取决于任务频段和输入限制；建立 thrust/efficiency/actuation-power 的 Pareto 曲线比单指标排序更可靠。",
+      "自由游动还会出现 surge–pitch–heave 耦合和速度相关附加质量；一维模型只能验证 force-to-translation 链。",
+      "若要补足二维 PIV，应增加多平面/stereo-PIV 或体积测量，并检查 spanwise flow 与 tip vortex。",
+      "RL 结果至少需要 learning curve、seed 置信区间、扰动 sweep 和硬件 transfer；只有环境代码或单次 rollout 不构成证据。"
+    ]
+  }
+};
+
+function kbExtractLegacyImplementation(detail){
+  let text=String(detail||"");
+  const marker="具体实现上，";
+  if(text.includes(marker))text=text.split(marker)[1];
+  const tails=["我把规则、状态和控制权写清楚","我把数据归属和接口收窄","我先在最低层验证信号或数据包","我先在最小可观察边界复现问题","我明确记录单位、符号和坐标约定","我通过结构化输入输出和边界检查","只修表面症状会保留根因","未经验证的经验规则"];
+  for(const tail of tails){const i=text.indexOf(tail);if(i>=0)text=text.slice(0,i)}
+  text=text.trim().replace(/[。 ]+$/,"");
+  return text?text+"。":""
+}
+function kbRewriteLegacyDeck(){
+  const pos={};
+  DECK.filter(c=>c.detail).forEach(c=>{
+    const key=`${c.proj}/${c.cat}`,i=pos[key]||0;pos[key]=i+1;
+    c.detail_zh=kbExtractLegacyImplementation(c.detail_zh);
+    c.tech_zh=KB_LEGACY_TECH[c.proj]?.[c.cat]?.[i]||"";
+  });
+  const focusPos={};
+  DECK.filter(c=>!c.detail).forEach(c=>{
+    const key=`${c.proj}/${c.cat}`,i=focusPos[key]||0;focusPos[key]=i+1;
+    c.tech_zh=KB_FOCUS_TECH[c.proj]?.[c.cat]?.[i]||c.tech_zh||""
+  })
+}
+kbRewriteLegacyDeck();
 const KB_CLEAN_REPL=[
   ["试点接管","操作者接管"],["飞行员意图","操作者意图"],["棒覆盖","摇杆覆盖"],
   ["降价围栏","Markdown 代码围栏"],["邻近法庭","相邻球场"],["颤动","抖振"],
@@ -2564,13 +2912,15 @@ function kbRenderOverview(main,p){
 }
 function kbCardHTML(c){
   const solved=kbClean(c.solved_zh||c.solved),detail=kbClean(c.detail_zh||c.detail),recall=kbClean(c.recall_zh||c.recall);
+  const tech=kbClean(c.tech_zh||"");
   const bodyId=`kb-card-body-${c.id}`;
   return `<article class="kb-card ${KB_STATE.known[c.id]?"done":""}" data-id="${c.id}">
     <button class="kb-card-head" aria-expanded="false" aria-controls="${bodyId}"><span class="kb-dot">${KB_STATE.known[c.id]?"✓":"·"}</span><span class="kb-card-title"><strong>${kbMd(solved)}</strong><span>${kbMd(c.term)}</span></span><span class="kb-chevron" aria-hidden="true">⌄</span></button>
     <div class="kb-card-body" id="${bodyId}">
       <div class="kb-block"><label>技术关键词</label><p>${kbMd(c.term)}</p></div>
-      <div class="kb-block"><label>这个项目为什么需要它</label><p>${kbMd(solved)}</p></div>
-      <div class="kb-block"><label>项目中的做法与权衡</label><p>${kbMd(detail)}</p></div>
+      <div class="kb-block"><label>解决的问题</label><p>${kbMd(solved)}</p></div>
+      <div class="kb-block"><label>具体实现与关键参数</label><p>${kbMd(detail)}</p></div>
+      ${tech?`<div class="kb-block"><label>补充技术细节</label><p>${kbMd(tech)}</p></div>`:""}
       <div class="kb-block"><label>面试官可能追问</label><p class="kb-question">${kbMd(recall)}</p></div>
       <div class="kb-card-tools"><button class="kb-mini ${KB_STATE.known[c.id]?"on":""}" data-known>${KB_STATE.known[c.id]?"✓ 已掌握":"标记为已掌握"}</button><button class="kb-mini ${KB_STATE.starred[c.id]?"on":""}" data-star>${KB_STATE.starred[c.id]?"★ 待复习":"☆ 加入待复习"}</button></div>
     </div></article>`;
@@ -2636,7 +2986,7 @@ function kbOpenSearch(initial=""){
   const input=modal.querySelector("input"),results=modal.querySelector(".kb-results");
   function run(){
     const q=input.value.trim().toLowerCase();
-    const hits=(q?DECK.filter(c=>[c.term,c.detail,c.detail_zh,c.solved,c.solved_zh,c.recall,c.recall_zh,KB_PROJECTS[c.proj].name].join(" ").toLowerCase().includes(q)):DECK.filter(c=>KB_STATE.starred[c.id])).slice(0,30);
+    const hits=(q?DECK.filter(c=>[c.term,c.detail_zh,c.tech_zh,c.solved_zh||c.solved,c.recall_zh||c.recall,KB_PROJECTS[c.proj].name].join(" ").toLowerCase().includes(q)):DECK.filter(c=>KB_STATE.starred[c.id])).slice(0,30);
     results.innerHTML=hits.length?hits.map(c=>`<button class="kb-result" data-result="${c.id}"><strong>${kbMd(kbClean(c.solved_zh||c.solved))}</strong><span>${KB_PROJECTS[c.proj].name} · ${kbCategoryName(c.cat)} · ${kbMd(c.term)}</span></button>`).join(""):`<div class="kb-empty">${q?"没有找到匹配内容。试试协议名、部件型号或故障现象。":"输入关键词开始全库搜索。"}</div>`;
     results.querySelectorAll("[data-result]").forEach(b=>{
       b.onclick=()=>{
